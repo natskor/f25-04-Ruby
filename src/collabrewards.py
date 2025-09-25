@@ -11,9 +11,9 @@ def main(page: ft.Page):
     page.spacing=0
     
     page.fonts = {
-        "LibreBaskerville": "assets/fonts/LibreBaskerville-Regular.ttf",
-        "LibreBaskerville-Bold": "assets/fonts/LibreBaskerville-Bold.ttf",
-        "LibreBaskerville-Italic": "assets/fonts/LibreBaskerville-Italic.ttf",
+        "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
+        "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
+        "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
      
     title = ft.Text(
