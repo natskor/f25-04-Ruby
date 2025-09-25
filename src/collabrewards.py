@@ -1,0 +1,190 @@
+import flet as ft
+
+def main(page: ft.Page):
+    page.title = "Family Reward"
+    page.horizontal_alignment = "center"
+    page.vertical_alignment = "center"
+    page.theme_mode = "light"
+    
+    # To remove the white space border around the gradient background
+    page.padding=0
+    page.spacing=0
+    
+    page.fonts = {
+        "LibreBaskerville": "assets/fonts/LibreBaskerville-Regular.ttf",
+        "LibreBaskerville-Bold": "assets/fonts/LibreBaskerville-Bold.ttf",
+        "LibreBaskerville-Italic": "assets/fonts/LibreBaskerville-Italic.ttf",
+    }
+     
+    title = ft.Text(
+        "Family Reward",
+        size=40,
+        weight=ft.FontWeight.BOLD,
+        color= "black",
+        text_align="center",
+        font_family="LibreBaskerville",
+        )
+
+    # Menu bar with icons
+    page.appbar = ft.AppBar(
+        leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff",),
+        center_title=True,
+        bgcolor="#404040",
+        actions=[
+            ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="#ffffff",),
+            ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
+            ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
+        ],
+    )
+
+    # Reward container
+    reward_card = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("Trip to Busch Gardens\nWilliamsburg",
+                        size=18, 
+                        weight=ft.FontWeight.BOLD, 
+                        text_align="center", 
+                        font_family="LibreBaskerville"),
+                ft.Text("Limited Time Reward Expires in:\n14 Days", 
+                        text_align="center",
+                        size=14, 
+                        color="#473c9c", 
+                        font_family="LibreBaskerville"),
+            ],
+            alignment="center",
+            horizontal_alignment="center",
+            spacing=5,
+        ),
+        padding=20,
+        bgcolor=ft.Colors.WHITE,
+        border_radius=15,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=350,
+        gradient=ft.RadialGradient(
+            center=ft.alignment.center,
+            radius=1.5,
+            colors=["#f6f6f6", "#d8d5d5"],
+        ),
+    )
+
+    # Family Progress Ring
+    family_progress = ft.Container(
+        content=ft.Column(
+            [
+                ft.ProgressRing(value=0.6, 
+                                color="#8c52ff", 
+                                width=125, 
+                                height=125,
+                                stroke_width=25, 
+                                bgcolor="#74a8ce",),            
+                ft.Icon(ft.Icons.FAMILY_RESTROOM, 
+                        color="#473c9c", 
+                        size=60),
+                ft.Text("Family Progress", 
+                        size=18, 
+                        weight=ft.FontWeight.BOLD, 
+                        font_family="LibreBaskerville"),
+                ft.Text("9000 XP / 15000 XP", 
+                        size=14, 
+                        color="#473c9c", 
+                        font_family="LibreBaskerville"),
+            ],
+            alignment="center",
+            horizontal_alignment="center",
+            spacing=10,
+        ),
+        padding=20,
+        bgcolor=ft.Colors.WHITE,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=350,
+        gradient=ft.RadialGradient(
+            center=ft.alignment.center,
+            radius=1.5,
+            colors=["#f6f6f6", "#d8d5d5"],
+        ),
+    )
+
+    # Individual Progress Bar for family reward contribution
+    your_progress = ft.Container(
+        content=ft.Row(
+            [
+                ft.Icon(ft.Icons.STAR, color="#df961a", size=45),
+                ft.Column(
+                    [
+                        ft.Container(
+                            content=ft.ProgressBar(
+                                value=0.6,
+                                width=180,
+                                bar_height=25,
+                                border_radius=ft.border_radius.all(10),
+                                color="#473c9c",
+                                bgcolor="#9d9d9d",
+                            ),
+                            height=25,
+                            border_radius=15,
+                            alignment=ft.alignment.center,   
+                        ),
+                        ft.Text(
+                            "Your Progress",
+                            size=16,
+                            weight=ft.FontWeight.BOLD,
+                            font_family="LibreBaskerville-Bold",
+                            text_align="center",
+                        ),
+                        ft.Text(
+                            "3000 XP / 5000 XP",
+                            size=14,
+                            color="#473c9c",
+                            font_family="LibreBaskerville",
+                            text_align="center",
+                        ),
+                    ],
+                    alignment="center",
+                    horizontal_alignment="center",
+                    spacing=5,
+                ),
+                ft.Icon(ft.Icons.STAR, color="#df961a", size=45),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
+        padding=20,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=350,
+        gradient=ft.RadialGradient(
+            center=ft.alignment.center,
+            radius=1.5,
+            colors=["#f6f6f6", "#d8d5d5"],
+        ),
+    )
+
+    content = ft.Column(
+        [
+            title,
+            reward_card,
+            family_progress,
+            your_progress,
+        ],
+        alignment="center",
+        horizontal_alignment="center",
+        spacing=25,
+        expand=True,
+    )
+
+    page.add(
+        ft.Container(
+            content=content,
+            expand=True,
+            gradient=ft.LinearGradient(
+                begin=ft.alignment.top_left,
+                end=ft.alignment.bottom_right,
+                colors=["#cdffd8", "#94b9ff"],
+            ),
+            alignment=ft.alignment.center,
+        )
+    )
+
+ft.app(main)
