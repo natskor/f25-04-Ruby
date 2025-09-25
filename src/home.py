@@ -12,9 +12,55 @@ def main(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
     
-    # page.theme = ft.Theme(
-    #     font_family="LibreBaskerville",
-    # )
+    def create_account(route):
+        page.go("/create_account")
+        
+    def login(route):
+        page.go("/login")
+        
+    def home(route):
+        page.views.pop()
+        page.update()
+
+    def route_change(route):
+        if page.route == "/create_account":
+            page.views.append(
+                ft.View(
+                    "/create_account",
+                    [
+                        ft.Text(
+                            "Placeholder Create Account Page GUI Navigation",
+                            size=30,
+                            weight=ft.FontWeight.BOLD,
+                            font_family="LibreBaskerville",
+                        ),
+                        ft.ElevatedButton("Back", on_click=home),
+                    ],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                )
+            )
+        
+        elif page.route == "/login":
+            page.views.append(
+                ft.View(
+                    "/login",
+                    [
+                        ft.Text(
+                            "Placeholder Login Page GUI Navigation",
+                            size=30,
+                            weight=ft.FontWeight.BOLD,
+                            font_family="LibreBaskerville",
+                        ),
+                        ft.ElevatedButton("Back", on_click=home),
+                    ],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                )
+            )
+        page.update()
+    
+    page.on_route_change = route_change
 
     # Title
     title = ft.Text(
@@ -45,6 +91,7 @@ def main(page: ft.Page):
         width=200,
         bgcolor="#6562DF",
         color="white",
+        on_click=create_account,
     )
 
     login_btn = ft.ElevatedButton(
@@ -52,6 +99,7 @@ def main(page: ft.Page):
         width=200,
         bgcolor="#6562DF",
         color="white",
+        on_click=login,
     )
 
 
