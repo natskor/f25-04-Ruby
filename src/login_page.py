@@ -16,7 +16,7 @@ def main(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    page.appbar - ft.AppBar(
+    page.appbar = ft.AppBar(
         leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff"),
         center_title = True,
         bgcolor="#404040",
