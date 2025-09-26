@@ -130,5 +130,5 @@ def main(page: ft.Page):
 
 if __name__ == "__main__":
     # Make sure you run with assets available:
-    #   python -m flet src/pages/login_page.py -w
+    #   python -m flet src/login_page.py -w or python -m src.login_page
     ft.app(target=main, assets_dir="../assets")

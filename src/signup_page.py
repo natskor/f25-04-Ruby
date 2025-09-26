@@ -145,5 +145,5 @@ def main(page: ft.Page):
 
 if __name__ == "__main__":
     # Run with your assets:
-    #   python -m flet src/pages/signup_page.py -w
+    #   python -m flet src/signup_page.py -w or python -m src.signup_page
     ft.app(target=main, assets_dir="../assets")
