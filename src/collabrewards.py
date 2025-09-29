@@ -118,6 +118,7 @@ def main(page: ft.Page):
                                 value=0.6,
                                 width=180,
                                 bar_height=25,
+                                height=30,
                                 border_radius=ft.border_radius.all(10),
                                 color="#473c9c",
                                 bgcolor="#9d9d9d",

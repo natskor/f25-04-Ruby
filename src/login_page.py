@@ -6,7 +6,7 @@ def main(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.theme_mode = "light"
-    page.paddinmg = 0
+    page.padding = 0
     page.spacing = 0
 
     #Fonts from /assets/fonts
@@ -29,7 +29,7 @@ def main(page: ft.Page):
     )
        # ---------- Card contents ----------
     title = ft.Text(
-        "Welcome back",
+        "Welcome Back!",
         size=32,
         weight=ft.FontWeight.BOLD,
         color="black",
