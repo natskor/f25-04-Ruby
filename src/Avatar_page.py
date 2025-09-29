@@ -1,5 +1,5 @@
 # questnest/avatar.py
-# Avatar selection: 2 per row, compact, circle avatars with better fit + background
+
 
 import flet as ft
 
@@ -22,7 +22,7 @@ def main(page: ft.Page):
         is_selected = selected_idx["value"] == idx
         border_color = "#6B8AF6" if is_selected else "#DADDE6"
 
-        # Circle avatar with soft background + proper fit
+       
         img = ft.Container(
             width=90,
             height=90,
