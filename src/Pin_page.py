@@ -1,5 +1,4 @@
-# questnest/pin.py
-# PIN screen (compact, works on older Flet). Simple interactions only.
+# PIN screen 
 
 import flet as ft
 
@@ -9,7 +8,7 @@ def main(page: ft.Page):
     # ---- state ----
     pin = {"value": ""}
 
-    # ---- UI helpers ----
+
     def pin_dot(filled: bool) -> ft.Control:
         # empty/filled dot (visual only)
         return ft.Container(
