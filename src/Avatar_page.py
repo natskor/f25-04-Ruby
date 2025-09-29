@@ -1,4 +1,4 @@
-# questnest/avatar.py
+
 
 
 import flet as ft
@@ -26,13 +26,13 @@ def main(page: ft.Page):
         img = ft.Container(
             width=90,
             height=90,
-            border_radius=45,                     # perfect circle
+            border_radius=45,                     
             alignment=ft.alignment.center,
             clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-            bgcolor="#E0F0FF",                    # light blue so the avatar pops
+            bgcolor="#E0F0FF",                    
             content=ft.Image(
                 src=path,
-                fit=ft.ImageFit.CONTAIN,          # show the whole avatar inside the circle
+                fit=ft.ImageFit.CONTAIN,         
             ),
         )
 
@@ -51,7 +51,7 @@ def main(page: ft.Page):
             padding=8,
             border=ft.border.all(2 if is_selected else 1, border_color),
             border_radius=12,
-            width=160,    # smaller box so 2 fit nicely per row
+            width=160,
             height=130,
         )
 
@@ -74,7 +74,7 @@ def main(page: ft.Page):
                 "#6B8AF6" if sel else "#DADDE6",
             )
 
-    # group into rows of 2 (stable on older Flet versions)
+    # group into rows of 2 
     rows: list[ft.Row] = []
     for i in range(0, len(tiles), 2):
         pair = tiles[i:i+2]
