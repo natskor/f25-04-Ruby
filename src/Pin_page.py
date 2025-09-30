@@ -5,6 +5,13 @@ import flet as ft
 
 def main(page: ft.Page):
     page.title = "QuestNest – PIN"
+    
+     #Fonts from /assets/fonts
+    page.fonts = {
+        "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
+        "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
+        "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
+    }
 
     # ---- state ----
     pin = {"value": ""}
@@ -16,9 +23,9 @@ def main(page: ft.Page):
             width=40, height=40,
             border_radius=12,
             bgcolor="#EEF2F7",
-            border=ft.border.all(1, "#DADDE6"),
+            border=ft.border.all(1, "#2D3C68"),
             alignment=ft.alignment.center,
-            content=ft.Text("•" if filled else "", size=24, weight=ft.FontWeight.W_700),
+            content=ft.Text("•" if filled else "", size=24, color="#1a1a1a", weight=ft.FontWeight.W_700),
         )
 
     def rebuild_dots():
@@ -34,28 +41,37 @@ def main(page: ft.Page):
             width=64, height=64,
             border_radius=32,
             bgcolor="#F4F6FA",
-            border=ft.border.all(1, "#DADDE6"),
+            border=ft.border.all(1, "#2D3C68"),
             alignment=ft.alignment.center,
-            content=ft.Text(label, size=20, weight=ft.FontWeight.W_600),
+            content=ft.Text(label, size=20, color="#1A1A1A", weight=ft.FontWeight.W_600),
             on_click=on_click,
         )
 
+    def go_back(e):
+        page.snack_bar = ft.SnackBar(ft.Text("Back pressed (placeholder)"))
+        page.snack_bar.open = True
+        page.update()
+        # later, replace with page.go("/previous") or page.clean() etc.
+        
     # ---- header ----
     header = ft.Row(
-        [
-            ft.Container(
-                width=36, height=36, border_radius=18,
-                bgcolor="#ECF0FF",
-                border=ft.border.all(1, "#D0D6FF"),
-                alignment=ft.alignment.center,
-                content=ft.Text("←", size=16),
-            )
-        ],
-        alignment=ft.MainAxisAlignment.START,
-    )
+    [
+        ft.IconButton(
+            icon=ft.Icons.ARROW_BACK,
+            icon_size=20,
+            icon_color="#1a1a1a",
+            style=ft.ButtonStyle(
+                shape=ft.RoundedRectangleBorder(radius=18),
+                bgcolor={ft.ControlState.DEFAULT: "#ECF0FF"},
+            ),
+            on_click=go_back,
+        )
+    ],
+    alignment=ft.MainAxisAlignment.START,
+)
 
-    title = ft.Text("Enter PIN", size=26, weight=ft.FontWeight.BOLD)
-    subtitle = ft.Text("Enter your 4-digit PIN", size=12, color="#6B7280")
+    title = ft.Text("Enter PIN", size=26, color="#425986" ,weight=ft.FontWeight.BOLD, font_family="LibreBaskerville")
+    subtitle = ft.Text("Enter your 4-digit PIN", size=16, color="#6B7280", font_family="LibreBaskerville")
 
     # ---- PIN dots panel ----
     row = ft.Row(spacing=12, alignment=ft.MainAxisAlignment.CENTER)
@@ -63,9 +79,10 @@ def main(page: ft.Page):
 
     pin_panel = ft.Container(
         content=row,
+        width=300,
         padding=16,
         border_radius=16,
-        bgcolor="#EAF0FF80",  # light translucent panel
+        bgcolor="#f6f6f6",  # light translucent panel
     )
 
     # ---- keypad handlers ----
@@ -122,18 +139,19 @@ def main(page: ft.Page):
         page.snack_bar.open = True
         page.update()
 
-    continue_btn = ft.ElevatedButton("Continue", width=220, disabled=True, on_click=on_continue)
+    continue_btn = ft.ElevatedButton("Continue", width=220, disabled=True, 
+                                     on_click=on_continue,  )
 
     footer_hint = ft.Text(
         "Ask your parents if you forgot your PIN",
-        size=11, color="#5575FF",
+        size=12, color="#2D3C68",
     )
 
     # ---- assemble ----
     content = ft.Column(
         [
             header,
-            ft.Text("🛡️", size=28),
+            ft.Text("🛡️", size=38),
             title, subtitle,
             pin_panel,
             ft.Container(height=8),

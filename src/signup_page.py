@@ -15,17 +15,17 @@ def main(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    page.appbar = ft.AppBar(
-        leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff"),
-        center_title=True,
-        bgcolor="#404040",
-        actions=[
-            ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="#ffffff"),
-            ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
-            ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
-        ],
-        title=ft.Text("QuestNest", color="white", font_family="LibreBaskerville-Bold"),
-    )
+    # page.appbar = ft.AppBar(
+    #     leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff"),
+    #     center_title=True,
+    #     bgcolor="#404040",
+    #     actions=[
+    #         ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="#ffffff"),
+    #         ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
+    #         ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
+    #     ],
+    #     title=ft.Text("QuestNest", color="white", font_family="LibreBaskerville-Bold"),
+    # )
 
     # ---------- Card contents ----------
     title = ft.Text(
@@ -146,4 +146,4 @@ def main(page: ft.Page):
 if __name__ == "__main__":
     # Run with your assets:
     #   python -m flet src/signup_page.py -w or python -m src.signup_page
-    ft.app(target=main, assets_dir="../assets")
+    ft.app(target=main, assets_dir="assets")

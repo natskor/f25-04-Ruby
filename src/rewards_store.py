@@ -80,14 +80,15 @@ def main(page: ft.Page):
             ft.Row ([
                 ft.Column ([
                     ft.Image (
-                        src="images/logo.png",
+                        src="images/icecream.webp",
                         width=300,
                         height=175,
-                        fit=ft.ImageFit.CONTAIN,
+                        border_radius=8,
+                        fit=ft.ImageFit.COVER,
                     ),
                     ft.Container (
                         ft.Text(
-                            "Reward #1", 
+                            "Ice Cream", 
                             size=15, 
                             color="#000000", 
                             weight=ft.FontWeight.BOLD, 
@@ -129,14 +130,15 @@ def main(page: ft.Page):
             ft.Row ([
                 ft.Column ([
                     ft.Image (
-                        src="images/logo.png",
+                        src="images/movietheater.jpg",
                         width=300,
                         height=175,
-                        fit = ft.ImageFit.CONTAIN,
+                        border_radius=8,
+                        fit=ft.ImageFit.COVER,
                     ),
                     ft.Container (
                         ft.Text(
-                            "Reward #2", 
+                            "Movie Night", 
                             size=15, 
                             color="#000000", 
                             weight=ft.FontWeight.BOLD, 

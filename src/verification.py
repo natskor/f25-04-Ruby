@@ -26,7 +26,7 @@ def main(page: ft.Page):
             ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
             ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
         ],
-        title=ft.Text("QuestNest", color="white", font_family="LibreBaskerville-Bold"),
+        # title=ft.Text("QuestNest", color="white", font_family="LibreBaskerville-Bold"),
     )
 
     # ---------- verification card ----------
@@ -82,10 +82,11 @@ def main(page: ft.Page):
 
     buttons = ft.Row(
         [
+             ft.IconButton(ft.Icons.CHECK, icon_color="white", bgcolor="#228b22",
+                          icon_size=35, on_click=verify, style=ft.ButtonStyle(shape=ft.CircleBorder())),
             ft.IconButton(ft.Icons.CLOSE, icon_color="white", bgcolor="#8b0000",
                           icon_size=35, on_click=reject, style=ft.ButtonStyle(shape=ft.CircleBorder())),
-            ft.IconButton(ft.Icons.CHECK, icon_color="white", bgcolor="#228b22",
-                          icon_size=35, on_click=verify, style=ft.ButtonStyle(shape=ft.CircleBorder())),
+
         ],
         alignment="spaceEvenly",
         vertical_alignment="center",

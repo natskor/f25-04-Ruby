@@ -26,7 +26,7 @@ def main(page: ft.Page):
             ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
             ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
         ],
-        title=ft.Text("QuestNest", color="white", font_family="LibreBaskerville-Bold"),
+        # title=ft.Text("QuestNest", color="white", font_family="LibreBaskerville-Bold"),
     )
 
     # ---------- XP progress card ----------
