@@ -3,6 +3,15 @@ import flet as ft
 # Replace Photos
 # Add Paint (to characters)
 
+# Functionality to Implement:
+# -> Claim Button: Deducts Points from User's Spendable XP
+# -> Scrollbar: View Longer List of Rewards
+
+# Maybe:
+# -? Parent is Notified when Award is Claimed
+# -? Reward Image Upload
+# -? Flesh out Logic More Clearly.
+
 def main(page: ft.Page):
     page.title = "Rewards Store"
     page.vertical_alignment="center"
