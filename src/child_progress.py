@@ -162,7 +162,7 @@ def main(page: ft.Page):
             gradient=ft.LinearGradient(
                 begin=ft.alignment.top_center,
                 end=ft.alignment.bottom_center,
-                colors=["#94b9ff", "#fff6c4"],
+                colors=["#cdffd8", "#94b9ff"],
             ),
             alignment=ft.alignment.center,
         )
