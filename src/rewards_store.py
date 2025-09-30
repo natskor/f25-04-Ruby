@@ -1,5 +1,8 @@
 import flet as ft
 
+# Replace Photos
+# Add Paint (to characters)
+
 def main(page: ft.Page):
     page.title = "Rewards Store"
     page.vertical_alignment="center"

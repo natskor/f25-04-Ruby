@@ -1,5 +1,11 @@
+import calendar
 import datetime
+import pytz
+
 import flet as ft
+
+# Functionality to Implement:
+    # Set Timezone 
 
 def main(page: ft.Page):
     page.title="Family Calendar"
@@ -37,19 +43,56 @@ def main(page: ft.Page):
     )
     
     # Calendar
+    #calendar = calendar.TextCalendar()   
+    
+    def button_clicked(e):
+        page.update()
+    
     calendar = ft.Container (
-        # Formatting (no design)
-            # Set Timezone
-            # Get Calendar dates
-            # Move to 'Formatting (w/ design)'
-            
         # Formatting (w/ design)...
-            # Current Month & Year, w/ clickable navigation arrows
-            # Days of the Week
-            # Dates (loads current day w/ white tile)
-            # User clicks date = Selected date has white tile
-            # Prompt User to add event ('Add Event' button)
-        
+        ft.Column (
+            [
+            ft.Row ( # MONTH/YEAR
+                [
+                    ft.IconButton (
+                        ft.Icons.ARROW_CIRCLE_LEFT_OUTLINED, 
+                        on_click=button_clicked,
+                        icon_color="#59226b",
+                        icon_size=36,
+                        alignment=ft.alignment.center_left,
+                        ),
+                    ft.Text (
+                        "July",
+                        color="#000000",
+                        size=28,
+                        text_align="center",
+                        weight=ft.FontWeight.BOLD,
+                        ),
+                    ft.IconButton (
+                        ft.Icons.ARROW_CIRCLE_RIGHT_OUTLINED,
+                        on_click=button_clicked,
+                        icon_color="#59226b",
+                        icon_size=36,
+                        alignment=ft.alignment.center_right,
+                    ),
+                ],
+                spacing=45,
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),       
+            ],
+        ),
+        height=500,
+        width=450,
+        alignment=ft.alignment.center,
+        border_radius=35,
+        padding=5,
+        border=ft.border.all(2, "#59226b"),
+        bgcolor="#ffffff",
+        # Get Calendar dates
+        # Days of the Week
+        # Dates (loads current day w/ white tile) 
+        # User clicks date = Selected date has white tile  
+        # Prompt User to add event ('Add Event' button)
     )
     
     # Events Summary
@@ -62,6 +105,7 @@ def main(page: ft.Page):
     content = ft.Column (
         [
             title,
+            calendar,
         ],
         alignment="center",
         horizontal_alignment="center",
