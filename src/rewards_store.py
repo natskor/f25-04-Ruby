@@ -105,6 +105,7 @@ def main(page: ft.Page):
                             color="#000000", 
                             weight=ft.FontWeight.BOLD, 
                             text_align="center",
+                            font_family="LibreBaskerville",
                         ),
                         width=200, 
                         height=25, 
@@ -117,14 +118,21 @@ def main(page: ft.Page):
                 ], 
                 alignment=ft.alignment.center, width=225, spacing=5,),
                 ft.Column ([
-                    ft.Text(
+                    ft.Text (
                         "100 XP", 
                         size=25, 
                         color="#3aeb05", 
                         weight=ft.FontWeight.BOLD, 
                         text_align="center", 
                         font_family="LibreBaskerville",
-                    ),
+                        style=ft.TextStyle (
+                            shadow=ft.BoxShadow (
+                                blur_radius=2.5, 
+                                color="#000000", 
+                                blur_style=ft.ShadowBlurStyle.SOLID,
+                                ),
+                            ),
+                        ),
                     ft.ElevatedButton("Claim!", bgcolor="#00bf63", color="#ffffff", width=200,),
                 ], 
                 alignment=ft.alignment.center, 
@@ -155,6 +163,7 @@ def main(page: ft.Page):
                             color="#000000", 
                             weight=ft.FontWeight.BOLD, 
                             text_align="center",
+                            font_family="LibreBaskerville",
                             ),
                         width=200, 
                         height=25, 
@@ -172,10 +181,18 @@ def main(page: ft.Page):
                     ft.Text(
                         "500 XP", 
                         size=25, 
-                        color="#df0000", 
+                        color="#f72a2a", 
                         weight=ft.FontWeight.BOLD, 
                         text_align="center", 
-                        font_family="LibreBaskerville",),
+                        font_family="LibreBaskerville",
+                        style=ft.TextStyle (
+                            shadow=ft.BoxShadow (
+                                blur_radius=2.5, 
+                                color="#000000", 
+                                blur_style=ft.ShadowBlurStyle.SOLID,
+                                ),
+                            ),
+                    ),
                     ft.ElevatedButton(
                         "Claim!", 
                         bgcolor="#8f8e8e", 
