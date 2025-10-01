@@ -31,8 +31,8 @@ def main(page: ft.Page):
     page.navigation_bar = ft.NavigationBar(
         bgcolor="#C2B280",
         destinations=[
+            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
             ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-            ft.NavigationBarDestination(icon=ft.Icons.PERSON, label="Profile"),
             ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
         ]
     )
@@ -78,6 +78,8 @@ def main(page: ft.Page):
             alignment="center",
             vertical_alignment="center",
         ),
+        #placeholder for on_click for specific specifc child progress
+        on_click=lambda e: page.go("/child_progress"), 
         padding=20,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
@@ -158,7 +160,7 @@ def main(page: ft.Page):
             alignment="spaceBetween",
             vertical_alignment="center",
         ),
-        #placeholder for on_click 
+        #placeholder for on_click for specific task description
         on_click=lambda e: page.go("/task_description"), 
         padding=20,
         border_radius=20,
