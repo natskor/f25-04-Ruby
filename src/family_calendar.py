@@ -1,14 +1,14 @@
 import calendar
-import datetime
+from datetime import datetime
 import pytz
 
 import flet as ft
 
 # Functionality to Implement:
-# -> Set Timezone 
+# -> Set Timezone (may not need?)
 # -> Arrow Buttons: Change Month/Year
 # -> Add Event Button: Add a Task to User's Calendar
-# -> Clickable Dates: Show User's Tasks for Day
+# -> Clickable Dates: Tile turns BLUE + Show User's Tasks for Day
 # -> Schedule Updates to Current Events
 
 def main(page: ft.Page):
@@ -47,23 +47,68 @@ def main(page: ft.Page):
     )
     
     # Calendar
+
+    # -> Text formatting for text held in calendar
+    def schedule_text_format(day):
+        return ft.Text (
+            value=day, 
+            size=10, 
+            color="#ffffff", 
+            font_family="LibreBaskerville", 
+            weight=ft.FontWeight.BOLD,
+            )
+    
+    # -> Container formatting for days of the week
+    def day_container_format(day_text):
+        return ft.Container (
+            content=day_text, 
+            width=62, 
+            height=50, 
+            alignment=ft.alignment.center, 
+            border=ft.border.all(2.5, "#000000"),
+            bgcolor="#59226b",
+        )
+    
+    # -> Container formatting for dates of the month
+    def date_container_format(date):
+        return ft.Container (
+            content=ft.TextButton(content=date), 
+            width=62, 
+            height=50, 
+            alignment=ft.alignment.center, 
+            border=ft.border.all(2.5, "#000000"), 
+            bgcolor="#b97ccb",
+        )
+    
+    # -> Button action (future implementation)
     def button_clicked(yes):
         page.update()
-        
+    
+    # -! BELONGS IN CONTROLLER
     cal = calendar.Calendar(6)
+    currently = datetime.now()
+    current_month = currently.month
+    current_year = currently.year
     
-    # -> Get Month/Days data
+    # -! BELONGS IN CONTROLLER
+    # -> Iterate over a list of days in a month and encapsulate in a container
     def get_dates(year, month):
-        return cal.monthdays2calendar(year, month)
+        dates = []
+        for day in cal.itermonthdays(year, month):
+            if (day == 0): 
+                dates.append(date_container_format(schedule_text_format(" ")))
+            else:
+                dates.append(date_container_format(schedule_text_format(day)))
+        return dates
     
-    dates = ft.Text(get_dates(2025, 9))
-
-    # -> Construct Weekday Formatting
-    def day_text_format(day):
-        return ft.Text(value=day, size=10, color="#ffffff", font_family="LibreBaskerville", weight=ft.FontWeight.BOLD,)
-    
-    def day_container_format(day_text):
-        return ft.Container(content=day_text, width=50, height=50, alignment=ft.alignment.center, border=ft.border.all(2, "#000000"), bgcolor="#59226b",)
+    # -> Row wraps when (indice == 7)
+    week = ft.Row (
+        wrap=True,
+        controls=get_dates(current_year, current_month),
+        spacing=0,
+        alignment=ft.MainAxisAlignment.START,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+    )
     
     # Build Calendar
     family_calendar = ft.Container (
@@ -79,7 +124,7 @@ def main(page: ft.Page):
                         alignment=ft.alignment.center_left,
                         ),
                     ft.Text (
-                        "September 2025",
+                        "October 2025",
                         color="#000000",
                         size=28,
                         font_family="LibreBaskerville",
@@ -96,30 +141,30 @@ def main(page: ft.Page):
                 ],
                 spacing=45,
                 alignment=ft.MainAxisAlignment.CENTER,
-            ),     
-            ft.Row ([ # Days of the Week
-                day_container_format(day_text_format("Sun")),
-                day_container_format(day_text_format("Mon")),
-                day_container_format(day_text_format("Tue")),
-                day_container_format(day_text_format("Wed")),
-                day_container_format(day_text_format("Thu")),
-                day_container_format(day_text_format("Fri")),
-                day_container_format(day_text_format("Sat")),
-            ],
-            spacing=0,
-            alignment=ft.MainAxisAlignment.CENTER,
-            ),  
-            ft.Row ( # Scheduled Dates
+            ), 
+            ft.Row ( # Days of the Week
                 [
-                    ft.Text("This is placeholder text.", color="#000000"),
+                    day_container_format(schedule_text_format("Sun")),
+                    day_container_format(schedule_text_format("Mon")),
+                    day_container_format(schedule_text_format("Tue")),
+                    day_container_format(schedule_text_format("Wed")),
+                    day_container_format(schedule_text_format("Thu")),
+                    day_container_format(schedule_text_format("Fri")),
+                    day_container_format(schedule_text_format("Sat")),
                 ],
-                spacing=45,
+                spacing=0,
                 alignment=ft.MainAxisAlignment.CENTER,
-            ),
-            ft.Row ( # Add Event button
+            ),   
+            week,
+            ft.Row ( # 'Add Event' button
                 [
                     ft.ElevatedButton (
-                        "Add Task",
+                        content=ft.Text (
+                            "Add Task", 
+                            size=12, 
+                            color="#ffffff", 
+                            font_family="LibreBaskerville", 
+                        ),
                         on_click=button_clicked,
                         color="#ffffff",
                         bgcolor="#59226b",
@@ -130,7 +175,7 @@ def main(page: ft.Page):
             )
             ],
         ),
-        height=500,
+        height=475,
         width=450,
         alignment=ft.alignment.center,
         border_radius=35,
@@ -149,7 +194,7 @@ def main(page: ft.Page):
             color="#000000",
             weight=ft.FontWeight.BOLD, 
             font_family="LibreBaskerville", 
-            size=16,
+            size=18,
             text_align="center",
         ),
         alignment=ft.alignment.top_center,
