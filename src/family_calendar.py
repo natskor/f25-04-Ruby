@@ -7,9 +7,8 @@ import flet as ft
 # Functionality to Implement:
 # -> Set Timezone (may not need?)
 # -> Arrow Buttons: Change Month/Year
-# -> Add Event Button: Add a Task to User's Calendar
-# -> Clickable Dates: Tile turns BLUE + Show User's Tasks for Day
-# -> Schedule Updates to Current Events
+# -> 'Add Event' Button: Add a Task to User's Calendar
+# -> Date Tiles: Current = Blue, Clicked = White + Updates 'Today's Schedule'
 
 def main(page: ft.Page):
     page.title="Family Calendar"
@@ -181,10 +180,7 @@ def main(page: ft.Page):
         border_radius=35,
         padding=5,
         border=ft.border.all(2, "#59226b"),
-        bgcolor="#ffffff",
-        # Load ALL current month date tiles
-        # Dates (loads current day w/ fitted blue tile) 
-        # User clicks date = Selected date has fitted white tile  
+        bgcolor="#ffffff", 
     )
     
     # Events Summary
