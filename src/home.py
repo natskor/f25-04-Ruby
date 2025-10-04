@@ -1,10 +1,14 @@
 import flet as ft
+from signup_page import SignUp
+from login_page import Login
 
 def main(page: ft.Page):
     page.title = "QuestNest"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     #page.theme_mode = "light"
+    page.padding= 0
+    page.spacing= 0
     
     page.fonts = {
         "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
@@ -12,55 +16,15 @@ def main(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
     
-    def create_account(route):
+    def create_account(e):
         page.go("/create_account")
         
-    def login(route):
+    def login(e):
         page.go("/login")
         
-    def home(route):
-        page.views.pop()
-        page.update()
-
-    def route_change(route):
-        if page.route == "/create_account":
-            page.views.append(
-                ft.View(
-                    "/create_account",
-                    [
-                        ft.Text(
-                            "Placeholder Create Account Page GUI Navigation",
-                            size=30,
-                            weight=ft.FontWeight.BOLD,
-                            font_family="LibreBaskerville",
-                        ),
-                        ft.ElevatedButton("Back", on_click=home),
-                    ],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                )
-            )
+    def home(e=None):
+        page.go("/")
         
-        elif page.route == "/login":
-            page.views.append(
-                ft.View(
-                    "/login",
-                    [
-                        ft.Text(
-                            "Placeholder Login Page GUI Navigation",
-                            size=30,
-                            weight=ft.FontWeight.BOLD,
-                            font_family="LibreBaskerville",
-                        ),
-                        ft.ElevatedButton("Back", on_click=home),
-                    ],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                )
-            )
-        page.update()
-    
-    page.on_route_change = route_change
 
     # Title
     title = ft.Text(
@@ -80,10 +44,7 @@ def main(page: ft.Page):
             height=500,
             fit=ft.ImageFit.CONTAIN,
         ),
-        # expand=True,
-        # alignment=ft.alignment.center,
     )
-
 
     # Buttons
     create_account_btn = ft.ElevatedButton(
@@ -102,30 +63,66 @@ def main(page: ft.Page):
         on_click=login,
     )
 
-
-    content = ft.Column(
+    home_page = ft.View(
+        "/",
         [
-            title,
-            logo,
-            ft.Container(height=20),
-            create_account_btn,
-            login_btn,
-        ],
-        alignment="center",
-        horizontal_alignment="center",
-    )
-
-    # Gradient Background
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            gradient=ft.LinearGradient(
+            ft.Container(
+                content = ft.Column(
+                    [
+                        title,
+                        logo,
+                        ft.Container(height=20),
+                        create_account_btn,
+                        login_btn,
+                    ],
+                    alignment="center",
+                    horizontal_alignment="center",
+                    spacing=20,
+                ),
+                expand=True,
+                gradient=ft.LinearGradient(
                 begin=ft.alignment.top_left,
                 end=ft.alignment.bottom_right,
                 colors=["#cdffd8", "#94b9ff"],
-            ),
-        )
+            ),    
+            )
+        ],
+        horizontal_alignment="center",
+        vertical_alignment="center",
     )
+    
+    def route_change(e):
+        page.views.clear()
+        
+        if page.route == "/":
+            page.views.append(home_page)
+            
+        elif page.route == "/create_account":
+            page.views.append(   
+                ft.View(
+                    "/create_account",
+                    [SignUp(page)],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+        
+        elif page.route == "/login":
+            page.views.append(
+                ft.View(
+                    "/login",
+                    [Login(page)],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+        page.update()
+    
+    page.on_route_change = route_change
+    page.go("/")
 
 ft.app(target=main, assets_dir="assets")

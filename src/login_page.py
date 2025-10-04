@@ -1,6 +1,6 @@
 import flet as ft 
 
-def main(page: ft.Page):
+def Login(page: ft.Page):
     #------------Page chrome----------
     page.title = "QuestNest Login"
     page.horizontal_alignment = "center"
@@ -16,17 +16,6 @@ def main(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    # page.appbar = ft.AppBar(
-    #     leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff"),
-    #     center_title = True,
-    #     bgcolor="#404040",
-    #     actions=[
-    #         ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="ffffff"),
-    #         ft.IconButton(ft.Icons.SETTINGS, icon_color="ffffff"),
-    #         ft.IconButton(ft.Icons.SEARCH, icon_color="ffffff"),
-    #     ],
-    #     title=ft.Text("QuestNest", color="white", font_family= "LibreBaskerville-Bold")
-    # )
        # ---------- Card contents ----------
     title = ft.Text(
         "Welcome Back!",
@@ -114,19 +103,33 @@ def main(page: ft.Page):
         spacing=25,
         expand=True,
     )
-
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-            alignment=ft.alignment.center,
-        )
+    
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+        alignment=ft.alignment.center,
     )
+
+    # page.add(
+    #     ft.Container(
+    #         content=content,
+    #         expand=True,
+    #         gradient=ft.LinearGradient(
+    #             begin=ft.alignment.top_left,
+    #             end=ft.alignment.bottom_right,
+    #             colors=["#cdffd8", "#94b9ff"],
+    #         ),
+    #         alignment=ft.alignment.center,
+    #     )
+    # )
+
+def main(page: ft.Page):
+    page.add(Login(page))
 
 if __name__ == "__main__":
     # Make sure you run with assets available:
