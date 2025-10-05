@@ -26,6 +26,17 @@ def main(page: ft.Page):
         ],
     )
     
+    # Title at the top of the page
+    title = ft.Text (
+        "Create New Task",
+        size=40,
+        weight=ft.FontWeight.BOLD,
+        color="indigo",
+        text_align="center",
+        font_family="LibreBaskerville",
+    )
+
+    
     # Input fields for chore creation
     chore_name = ft.TextField(
         label="Chore Name",
@@ -52,7 +63,7 @@ def main(page: ft.Page):
 
     reward_points = ft.TextField(
         label="Reward Points (XP)",
-        width=200,
+        width=350,
         border_radius=10,
         bgcolor="white",
         color="black",
@@ -69,13 +80,13 @@ def main(page: ft.Page):
             ft.dropdown.Option("Alice"),
             ft.dropdown.Option("Bob"),
         ],
-        width=200,
+        width=350,
         border_radius=10,
     )
 
     due_date = ft.TextField(
         label="Due Date (YYYY-MM-DD)",
-        width=200,
+        width=350,
         border_radius=10,
         bgcolor="white",
         color="black",
@@ -89,7 +100,7 @@ def main(page: ft.Page):
             ft.dropdown.Option("Individual Task"),
             ft.dropdown.Option("Family Task"),
         ],
-        width=200,
+        width=350,
         border_radius=10,
     )
 
