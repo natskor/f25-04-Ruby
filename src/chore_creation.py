@@ -63,7 +63,7 @@ def main(page: ft.Page):
 
     reward_points = ft.TextField(
         label="Reward Points (XP)",
-        width=350,
+        width=150,
         border_radius=10,
         bgcolor="white",
         color="black",
@@ -80,13 +80,13 @@ def main(page: ft.Page):
             ft.dropdown.Option("Alice"),
             ft.dropdown.Option("Bob"),
         ],
-        width=350,
+        width=150,
         border_radius=10,
     )
 
     due_date = ft.TextField(
         label="Due Date (YYYY-MM-DD)",
-        width=350,
+        width=150,
         border_radius=10,
         bgcolor="white",
         color="black",
@@ -100,7 +100,7 @@ def main(page: ft.Page):
             ft.dropdown.Option("Individual Task"),
             ft.dropdown.Option("Family Task"),
         ],
-        width=350,
+        width=150,
         border_radius=10,
     )
 
@@ -159,6 +159,7 @@ def main(page: ft.Page):
     # Layout
     content = ft.Column(
         [
+            title,
             chore_card,
         ],
         alignment="center",
