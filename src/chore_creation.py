@@ -14,17 +14,56 @@ def main(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    # Menu bar with icons
+    def go_dashboard(e):
+        page.go("/dashboard")
+
+    def go_store(e):
+        page.go("/store")
+
+    def go_calendar(e):
+        page.go("/calendar")
+    
+    def go_settings(e):
+        page.go("/settings")
+
+    def logout(e):
+        page.go("/")
+
+    def on_nav_change(e: ft.ControlEvent):
+        selected_index = e.control.selected_index
+        
+        if selected_index == 0:
+            go_dashboard(e)
+        elif selected_index == 1:
+            go_store(e)
+        elif selected_index == 2:
+            go_calendar(e)
+
     page.appbar = ft.AppBar(
-        leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff",),
+        leading=ft.PopupMenuButton(
+            icon=ft.Icons.MENU,
+            icon_color="#ffffff",
+            items=[
+                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                ft.PopupMenuItem(),
+                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+            ],
+        ),
         center_title=True,
         bgcolor="#404040",
-        actions=[
-            ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="#ffffff",),
-            ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
-            ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
-        ],
     )
+    
+    # Navigation bar
+    page.navigation_bar = ft.NavigationBar(
+        bgcolor="#C2B280",
+        destinations=[
+            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+        ],
+        on_change=on_nav_change,
+    )
+    page.navigation_bar.selected_index = -1
     
     # Title at the top of the page
     title = ft.Text (
