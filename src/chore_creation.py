@@ -25,34 +25,6 @@ def main(page: ft.Page):
             ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
         ],
     )
-
-    # Card-style container for form
-    chore_card = ft.Container(
-        content=ft.Column(
-            [
-                chore_name,
-                chore_desc,
-                ft.Row([reward_points, assignee], alignment="center"),
-                ft.Row([task_type, due_date], alignment="center"),
-                require_proof,
-                ft.ElevatedButton(
-                    "Submit",
-                    width=200,
-                    bgcolor="#6562DF",
-                    color="white",
-                    on_click=lambda e: submit_chore(),
-                )
-            ],
-            alignment="center",
-            horizontal_alignment="center",
-            spacing=20,
-        ),
-        padding=25,
-        width=400,
-        bgcolor=ft.Colors.WHITE,
-        border_radius=20,
-        shadow=ft.BoxShadow(blur_radius=12, spread_radius=2, color="#888888"),
-    )
     
     # Input fields for chore creation
     chore_name = ft.TextField(
@@ -140,25 +112,43 @@ def main(page: ft.Page):
         - Task Type: {task_type.value}
         - Require Photo Proof: {require_proof.value}
         """)
-        page.snack_bar = ft.SnackBar(ft.Text("Chore Submited Successfully!"))
+        page.snack_bar = ft.SnackBar(ft.Text("Submitted Successfully!"))
         page.snack_bar.open = True
         page.update()
+
+
+    # Card-style container for form
+    chore_card = ft.Container(
+        content=ft.Column(
+            [
+                chore_name,
+                chore_desc,
+                ft.Row([reward_points, assignee], alignment="center"),
+                ft.Row([task_type, due_date], alignment="center"),
+                require_proof,
+                ft.ElevatedButton(
+                    "Submit",
+                    width=200,
+                    bgcolor="#6562DF",
+                    color="white",
+                    on_click=lambda e: submit_chore(),
+                )
+            ],
+            alignment="center",
+            horizontal_alignment="center",
+            spacing=20,
+        ),
+        padding=25,
+        width=400,
+        bgcolor=ft.Colors.WHITE,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=12, spread_radius=2, color="#888888"),
+    )
 
     # Layout
     content = ft.Column(
         [
             chore_card,
-            chore_name,
-            chore_desc,
-            ft.Row([reward_points, assignee], alignment="center"),
-            due_date,
-            ft.ElevatedButton(
-                "Submit",
-                width=200,
-                bgcolor="#6562DF",
-                color="white",
-                on_click=lambda e: submit_chore(),
-            )
         ],
         alignment="center",
         horizontal_alignment="center",
