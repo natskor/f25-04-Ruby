@@ -1,6 +1,3 @@
-
-
-
 import flet as ft
 
 AVATARS = [
@@ -12,8 +9,19 @@ AVATARS = [
     "images/avatars/fairy.png",
 ]
 
-def main(page: ft.Page):
+def AvatarSelection(page: ft.Page):
     page.title = "QuestNest – Avatar"
+    page.horizontal_alignment = "center"
+    page.vertical_alignment = "center"
+    page.padding = 0
+    page.spacing = 0
+    
+    page.fonts = {
+        "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
+        "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
+        "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
+    }
+
 
     selected_idx = {"value": None}
     tiles: list[ft.Container] = []
@@ -29,17 +37,20 @@ def main(page: ft.Page):
             border_radius=45,                     
             alignment=ft.alignment.center,
             clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-            bgcolor="#E0F0FF",                    
+            border=ft.border.all(2, "#8ba7ff"),               
             content=ft.Image(
                 src=path,
-                fit=ft.ImageFit.CONTAIN,         
+                width=80,
+                height=65,
+                fit=ft.ImageFit.COVER,         
             ),
         )
 
         label = ft.Text(
             path.split("/")[-1].split(".")[0].title(),
-            size=12,
+            size=16,
             color="#4A4F5A",
+            font_family="LibreBaskerville",
         )
 
         c = ft.Container(
@@ -86,8 +97,7 @@ def main(page: ft.Page):
 
     content = ft.Column(
         [
-            ft.Text("Choose your avatar", size=26, weight=ft.FontWeight.BOLD),
-            ft.Text("Pick one you like (you can upload later).", size=12, color="#6B7280"),
+            ft.Text("Choose Your Avatar!", size=40, color="#423c36", font_family="LibreBaskerville-Bold", weight=ft.FontWeight.BOLD),
             ft.Column(rows, spacing=12, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
             ft.Container(height=10),
             ft.Row([continue_btn], alignment=ft.MainAxisAlignment.CENTER),
@@ -97,18 +107,22 @@ def main(page: ft.Page):
         horizontal_alignment="center",
     )
 
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            padding=20,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],  # page background
-            ),
-        )
+    
+    return ft.Container(
+        content=content,
+        expand=True,
+        padding=20,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],  # page background
+        ),
     )
+
+    
+
+def main(page: ft.Page):
+    page.add(AvatarSelection(page))
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
