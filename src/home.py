@@ -2,7 +2,7 @@ import flet as ft
 from signup_page import SignUp
 from login_page import Login
 
-def main(page: ft.Page):
+def HomePage(page: ft.Page):
     page.title = "QuestNest"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
@@ -21,10 +21,6 @@ def main(page: ft.Page):
         
     def login(e):
         page.go("/login")
-        
-    def home(e=None):
-        page.go("/")
-        
 
     # Title
     title = ft.Text(
@@ -62,34 +58,6 @@ def main(page: ft.Page):
         color="white",
         on_click=login,
     )
-
-    home_page = ft.View(
-        "/",
-        [
-            ft.Container(
-                content = ft.Column(
-                    [
-                        title,
-                        logo,
-                        ft.Container(height=20),
-                        create_account_btn,
-                        login_btn,
-                    ],
-                    alignment="center",
-                    horizontal_alignment="center",
-                    spacing=20,
-                ),
-                expand=True,
-                gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),    
-            )
-        ],
-        horizontal_alignment="center",
-        vertical_alignment="center",
-    )
     
     def route_change(e):
         page.views.clear()
@@ -97,7 +65,7 @@ def main(page: ft.Page):
         if page.route == "/":
             page.views.append(home_page)
             
-        elif page.route == "/create_account":
+        if page.route == "/create_account":
             page.views.append(   
                 ft.View(
                     "/create_account",
@@ -125,4 +93,61 @@ def main(page: ft.Page):
     page.on_route_change = route_change
     page.go("/")
 
-ft.app(target=main, assets_dir="assets")
+    # home_page = ft.View(
+    #     "/",
+    #     [
+    #         ft.Container(
+    #             content = ft.Column(
+    #                 [
+    #                     title,
+    #                     logo,
+    #                     ft.Container(height=20),
+    #                     create_account_btn,
+    #                     login_btn,
+    #                 ],
+    #                 alignment="center",
+    #                 horizontal_alignment="center",
+    #                 spacing=20,
+    #             ),
+    #             expand=True,
+    #             gradient=ft.LinearGradient(
+    #             begin=ft.alignment.top_left,
+    #             end=ft.alignment.bottom_right,
+    #             colors=["#cdffd8", "#94b9ff"],
+    #         ),    
+    #         )
+    #     ],
+    #     horizontal_alignment="center",
+    #     vertical_alignment="center",
+    # )
+    
+    content = ft.Column(
+        [
+            title,
+            logo,
+            ft.Container(height=20),
+            create_account_btn,
+            login_btn,
+        ],
+        alignment="center",
+        horizontal_alignment="center",
+        spacing=20,
+    )
+
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+        alignment=ft.alignment.center,
+    )
+    
+    
+def main(page: ft.Page):
+    page.add(HomePage(page))
+
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")

@@ -1,6 +1,9 @@
 import flet as ft
+from settings import SettingsPage
+from home import HomePage
 
-def main(page: ft.Page):
+
+def CollabRewards(page: ft.Page):
     page.title = "Family Reward"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
@@ -15,7 +18,153 @@ def main(page: ft.Page):
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
-     
+    
+    def go_dashboard(e):
+        page.go("/dashboard")
+
+    def go_store(e):
+        page.go("/store")
+
+    def go_calendar(e):
+        page.go("/calendar")
+
+    def go_settings(e):
+        page.go("/settings")
+
+    def logout(e):
+        page.go("/")
+    
+    def on_nav_change(e: ft.ControlEvent):
+        selected_index = e.control.selected_index
+        
+        if selected_index == 0:
+            page.go("/dashboard")
+        elif selected_index == 1:
+            page.go("/store")
+        elif selected_index == 2:
+            page.go("/calendar")
+            
+    def route_change(e):
+        page.views.clear()
+
+        if page.route == "/dashboard":
+            page.navigation_bar.selected_index = 0
+        elif page.route == "/store":
+            page.navigation_bar.selected_index = 1
+        elif page.route == "/calendar":
+            page.navigation_bar.selected_index = 2
+        else:
+            page.navigation_bar.selected_index = -1  # No highlight on other pages
+
+        if page.route == "/dashboard":
+            page.views.append(
+                ft.View(
+                    "/dashboard",
+                    [ft.Text("🏠 Dashboard Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+
+        elif page.route == "/store":
+            page.views.append(
+                ft.View(
+                    "/store",
+                    [ft.Text("🛍 Store Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+
+        elif page.route == "/calendar":
+            page.views.append(
+                ft.View(
+                    "/calendar",
+                    [ft.Text("📅 Calendar Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+
+        elif page.route == "/settings":
+            page.views.append(
+                ft.View(
+                    "/settings",
+                    [SettingsPage(page)],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+        # elif page.route == "/home":
+        #     page.views.append(
+        #         ft.View(
+        #             "/home",
+        #             [ft.Text("🏠 Home Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
+        #             horizontal_alignment="center",
+        #             vertical_alignment="center",
+        #         )
+        #     )
+            
+        else:
+            page.views.append(
+                ft.View(
+                    "/",
+                    [
+                        ft.Container(
+                            content=content,
+                            expand=True,
+                            gradient=ft.LinearGradient(
+                                begin=ft.alignment.top_left,
+                                end=ft.alignment.bottom_right,
+                                colors=["#cdffd8", "#94b9ff"],
+                            ),
+                            alignment=ft.alignment.center,
+                        )
+                    ],
+                    horizontal_alignment="center",
+                    vertical_alignment="center",
+                    padding=0,
+                    spacing=0,
+                )
+            )
+
+        page.update()    
+
+    page.appbar = ft.AppBar(
+        leading=ft.PopupMenuButton(
+            icon=ft.Icons.MENU,
+            icon_color="#ffffff",
+            items=[
+                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                ft.PopupMenuItem(),
+                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+            ],
+        ),
+        center_title=True,
+        bgcolor="#404040",
+    )
+    
+    # Navigation bar
+    page.navigation_bar = ft.NavigationBar(
+        bgcolor="#C2B280",
+        destinations=[
+            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+        ],
+        on_change=on_nav_change,
+    )
+    page.navigation_bar.selected_index = -1
+    
+    # Title
     title = ft.Text(
         "Family Reward",
         size=40,
@@ -25,17 +174,6 @@ def main(page: ft.Page):
         font_family="LibreBaskerville",
         )
 
-    # Menu bar with icons
-    page.appbar = ft.AppBar(
-        leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff",),
-        center_title=True,
-        bgcolor="#404040",
-        actions=[
-            ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="#ffffff",),
-            ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
-            ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
-        ],
-    )
 
     # Reward container
     reward_card = ft.Container(
@@ -174,18 +312,21 @@ def main(page: ft.Page):
         spacing=25,
         expand=True,
     )
-
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-            alignment=ft.alignment.center,
-        )
+    page.on_route_change = route_change
+    
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+        alignment=ft.alignment.center,
     )
+    
+def main(page: ft.Page):
+    page.add(CollabRewards(page))
 
-ft.app(target=main, assets_dir="assets")
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")
