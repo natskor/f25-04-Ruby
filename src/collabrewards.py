@@ -1,6 +1,7 @@
 import flet as ft
-from settings import SettingsPage
-from home import HomePage
+# from settings import SettingsPage
+# from home import HomePage
+# from rewards_store import StorePage
 
 
 def CollabRewards(page: ft.Page):
@@ -38,105 +39,11 @@ def CollabRewards(page: ft.Page):
         selected_index = e.control.selected_index
         
         if selected_index == 0:
-            page.go("/dashboard")
+            go_dashboard(e)
         elif selected_index == 1:
-            page.go("/store")
+            go_store(e)
         elif selected_index == 2:
-            page.go("/calendar")
-            
-    def route_change(e):
-        page.views.clear()
-
-        if page.route == "/dashboard":
-            page.navigation_bar.selected_index = 0
-        elif page.route == "/store":
-            page.navigation_bar.selected_index = 1
-        elif page.route == "/calendar":
-            page.navigation_bar.selected_index = 2
-        else:
-            page.navigation_bar.selected_index = -1  # No highlight on other pages
-
-        if page.route == "/dashboard":
-            page.views.append(
-                ft.View(
-                    "/dashboard",
-                    [ft.Text("🏠 Dashboard Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-
-        elif page.route == "/store":
-            page.views.append(
-                ft.View(
-                    "/store",
-                    [ft.Text("🛍 Store Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-
-        elif page.route == "/calendar":
-            page.views.append(
-                ft.View(
-                    "/calendar",
-                    [ft.Text("📅 Calendar Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-
-        elif page.route == "/settings":
-            page.views.append(
-                ft.View(
-                    "/settings",
-                    [SettingsPage(page)],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-        # elif page.route == "/home":
-        #     page.views.append(
-        #         ft.View(
-        #             "/home",
-        #             [ft.Text("🏠 Home Page Placeholder", size=28, weight=ft.FontWeight.BOLD)],
-        #             horizontal_alignment="center",
-        #             vertical_alignment="center",
-        #         )
-        #     )
-            
-        else:
-            page.views.append(
-                ft.View(
-                    "/",
-                    [
-                        ft.Container(
-                            content=content,
-                            expand=True,
-                            gradient=ft.LinearGradient(
-                                begin=ft.alignment.top_left,
-                                end=ft.alignment.bottom_right,
-                                colors=["#cdffd8", "#94b9ff"],
-                            ),
-                            alignment=ft.alignment.center,
-                        )
-                    ],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-
-        page.update()    
+            go_calendar(e)
 
     page.appbar = ft.AppBar(
         leading=ft.PopupMenuButton(
@@ -312,7 +219,7 @@ def CollabRewards(page: ft.Page):
         spacing=25,
         expand=True,
     )
-    page.on_route_change = route_change
+    # page.on_route_change = route_change
     
     return ft.Container(
         content=content,
