@@ -12,7 +12,7 @@ import flet as ft
 # -? Reward Image Upload
 # -? Flesh out Logic More Clearly.
 
-def main(page: ft.Page):
+def StorePage(page: ft.Page):
     page.title = "Rewards Store"
     page.vertical_alignment="center"
     page.horizontal_alignment="center"
@@ -25,17 +25,65 @@ def main(page: ft.Page):
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
     }
     
-    # Menu bar with icons
-    page.appbar = ft.AppBar(
-        leading=ft.IconButton(ft.Icons.MENU, icon_color="#ffffff",),
-        center_title=True,
+    def go_dashboard(e):
+        page.go("/dashboard")
+
+    def go_store(e):
+        page.go("/store")
+
+    def go_calendar(e):
+        page.go("/calendar")
+    
+    def go_settings(e):
+        page.go("/settings")
+
+    def logout(e):
+        page.go("/")
+
+    def on_nav_change(e: ft.ControlEvent):
+        selected_index = e.control.selected_index
+        
+        if selected_index == 0:
+            go_dashboard(e)
+        elif selected_index == 1:
+            go_store(e)
+        elif selected_index == 2:
+            go_calendar(e)
+
+    app_bar = ft.Container(
         bgcolor="#404040",
-        actions=[
-            ft.IconButton(ft.Icons.NOTIFICATIONS_OUTLINED, icon_color="#ffffff",),
-            ft.IconButton(ft.Icons.SETTINGS, icon_color="#ffffff"),
-            ft.IconButton(ft.Icons.SEARCH, icon_color="#ffffff"),
-        ],
+        padding=ft.padding.symmetric(horizontal=15, vertical=10),
+        content=ft.Row(
+            [
+                ft.PopupMenuButton(
+                    icon=ft.Icons.MENU,
+                    icon_color="#ffffff",
+                    items=[
+                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                        ft.PopupMenuItem(),
+                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+                    ],
+                ),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
     )
+    
+    # Navigation bar
+    nav_bar = ft.Container(
+        content=ft.NavigationBar(
+            bgcolor="#C2B280",
+            destinations=[
+                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+            ],
+            on_change=on_nav_change,
+        ),
+        expand=False,
+    )
+    nav_bar.selected_index = -1
 
     # Title at the top of the page
     title = ft.Text (
@@ -246,38 +294,80 @@ def main(page: ft.Page):
     )
     
     # Content for page
-    content = ft.Column (
+    content = ft.Column(
         [
-            title,
-            user_summary,
-            ft.Divider (
-                height=5, 
-                thickness=2, 
-                color="#59226b", 
-                leading_indent=150, 
-                trailing_indent=150,
+            app_bar,
+            ft.Column(
+                [
+                    title, 
+                    user_summary, 
+                    ft.Divider (
+                    height=5, 
+                    thickness=2, 
+                    color="#59226b", 
+                    leading_indent=150, 
+                    trailing_indent=150,
+                    ), 
+                   rewards_table,
+                   reminder,
+                   ],
+                alignment="center",
+                horizontal_alignment="center",
+                spacing=25,
+                expand=True,
             ),
-            rewards_table,
-            reminder
+            nav_bar,
         ],
-        alignment="center",
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=25,
         expand=True,
     )
     
     # Add the items to the page
-    page.add (
-        ft.Container (
-            content=content,
-            gradient=ft.LinearGradient (
+   
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
                 begin=ft.alignment.top_left,
                 end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-            alignment=ft.alignment.center,
-            expand=True,
-        )
+                rotation=45,
+                colors=["#ffd27f", "#4ca2b5", "#003f82", "#000b21"],
+        ),
+        image=ft.DecorationImage(
+                src="images/chest.png",
+                fit=ft.ImageFit.FIT_WIDTH,
+                alignment=ft.alignment.bottom_center,
+                opacity=.8,
+        ),
+        alignment=ft.alignment.center,
     )
+    
 
-ft.app(target=main, assets_dir="assets")
+    
+    # # Add the items to the page
+    # page.add (
+    #     ft.Container (
+    #         content=content,
+    #         gradient=ft.LinearGradient (
+    #             begin=ft.alignment.top_left,
+    #             end=ft.alignment.bottom_right,
+    #             colors=["#cdffd8", "#94b9ff"],
+    #         ),
+    #         image=ft.DecorationImage(
+    #             src="images/chest.png",
+    #             fit=ft.ImageFit.FIT_WIDTH,
+    #             alignment=ft.alignment.bottom_center,
+    #             opacity=.8,
+    #         ),
+    #         alignment=ft.alignment.center,
+    #         expand=True,
+    #     )
+    # )
+    
+    
+def main(page: ft.Page):
+    page.add(StorePage(page))
+
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")
