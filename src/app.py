@@ -9,7 +9,7 @@ from rewards_store import StorePage
 
 
 def main(page: ft.Page):
-    page.title = "QuestNest"
+    #page.title = "QuestNest"
     #page.theme_mode = "light"
     page.padding = 0
     page.spacing = 0
@@ -54,7 +54,7 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/store")  # Default to home page
+    page.go("/")  # Default to home page
 
 
 # Run the app

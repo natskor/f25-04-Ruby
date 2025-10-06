@@ -59,68 +59,6 @@ def HomePage(page: ft.Page):
         on_click=login,
     )
     
-    def route_change(e):
-        page.views.clear()
-        
-        if page.route == "/":
-            page.views.append(home_page)
-            
-        if page.route == "/create_account":
-            page.views.append(   
-                ft.View(
-                    "/create_account",
-                    [SignUp(page)],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-        
-        elif page.route == "/login":
-            page.views.append(
-                ft.View(
-                    "/login",
-                    [Login(page)],
-                    horizontal_alignment="center",
-                    vertical_alignment="center",
-                    padding=0,
-                    spacing=0,
-                )
-            )
-        page.update()
-    
-    page.on_route_change = route_change
-    page.go("/")
-
-    # home_page = ft.View(
-    #     "/",
-    #     [
-    #         ft.Container(
-    #             content = ft.Column(
-    #                 [
-    #                     title,
-    #                     logo,
-    #                     ft.Container(height=20),
-    #                     create_account_btn,
-    #                     login_btn,
-    #                 ],
-    #                 alignment="center",
-    #                 horizontal_alignment="center",
-    #                 spacing=20,
-    #             ),
-    #             expand=True,
-    #             gradient=ft.LinearGradient(
-    #             begin=ft.alignment.top_left,
-    #             end=ft.alignment.bottom_right,
-    #             colors=["#cdffd8", "#94b9ff"],
-    #         ),    
-    #         )
-    #     ],
-    #     horizontal_alignment="center",
-    #     vertical_alignment="center",
-    # )
-    
     content = ft.Column(
         [
             title,
@@ -144,8 +82,9 @@ def HomePage(page: ft.Page):
         ),
         alignment=ft.alignment.center,
     )
-    
-    
+
+        
+ 
 def main(page: ft.Page):
     page.add(HomePage(page))
 

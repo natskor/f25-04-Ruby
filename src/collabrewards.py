@@ -45,31 +45,40 @@ def CollabRewards(page: ft.Page):
         elif selected_index == 2:
             go_calendar(e)
 
-    page.appbar = ft.AppBar(
-        leading=ft.PopupMenuButton(
-            icon=ft.Icons.MENU,
-            icon_color="#ffffff",
-            items=[
-                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                ft.PopupMenuItem(),
-                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-            ],
-        ),
-        center_title=True,
+    app_bar = ft.Container(
         bgcolor="#404040",
+        padding=ft.padding.symmetric(horizontal=15, vertical=10),
+        content=ft.Row(
+            [
+                ft.PopupMenuButton(
+                    icon=ft.Icons.MENU,
+                    icon_color="#ffffff",
+                    items=[
+                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                        ft.PopupMenuItem(),
+                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+                    ],
+                ),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
     )
     
     # Navigation bar
-    page.navigation_bar = ft.NavigationBar(
-        bgcolor="#C2B280",
-        destinations=[
-            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-        ],
-        on_change=on_nav_change,
+    nav_bar = ft.Container(
+        content=ft.NavigationBar(
+            bgcolor="#C2B280",
+            destinations=[
+                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+            ],
+            on_change=on_nav_change,
+        ),
+        expand=False,
     )
-    page.navigation_bar.selected_index = -1
+    nav_bar.selected_index = -1
     
     # Title
     title = ft.Text(
@@ -209,14 +218,18 @@ def CollabRewards(page: ft.Page):
 
     content = ft.Column(
         [
-            title,
-            reward_card,
-            family_progress,
-            your_progress,
+            app_bar,
+            ft.Column(
+                [title, reward_card, family_progress, your_progress],
+                alignment="center",
+                horizontal_alignment="center",
+                spacing=25,
+                expand=True,
+            ),
+            nav_bar,
         ],
-        alignment="center",
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=25,
         expand=True,
     )
     # page.on_route_change = route_change

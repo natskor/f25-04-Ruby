@@ -14,8 +14,10 @@ def SettingsPage(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
     
+    #this doesnt work yet lol
     def go_back(e):
-        page.go("/dashboard")
+        page.views.pop
+        page.go(page.views[-1].route)
         
     header = ft.Row(
         [
