@@ -324,16 +324,23 @@ def StorePage(page: ft.Page):
     )
     
     # Add the items to the page
-   
-    return ft.Container(
-        content=content,
-        expand=True,
-        gradient=ft.LinearGradient(
-            begin=ft.alignment.top_left,
-            end=ft.alignment.bottom_right,
-            colors=["#cdffd8", "#94b9ff"],
-        ),
-        alignment=ft.alignment.center,
+    page.add (
+        ft.Container (
+            content=content,
+            gradient=ft.LinearGradient (
+                begin=ft.alignment.top_left,
+                end=ft.alignment.bottom_right,
+                colors=["#cdffd8", "#94b9ff"],
+            ),
+            image=ft.DecorationImage(
+                src="images/chest.png",
+                fit=ft.ImageFit.FIT_WIDTH,
+                alignment=ft.alignment.bottom_center,
+                opacity=.8,
+            ),
+            alignment=ft.alignment.center,
+            expand=True,
+        )
     )
     
     
