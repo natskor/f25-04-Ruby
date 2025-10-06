@@ -1,6 +1,6 @@
 import flet as ft
 
-def main(page: ft.Page):
+def ChoreDetails(page: ft.Page):
     page.title = "Chore Details"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
@@ -39,36 +39,51 @@ def main(page: ft.Page):
         elif selected_index == 2:
             go_calendar(e)
 
-    page.appbar = ft.AppBar(
-        leading=ft.PopupMenuButton(
-            icon=ft.Icons.MENU,
-            icon_color="#ffffff",
-            items=[
-                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                ft.PopupMenuItem(),
-                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-            ],
-        ),
-        center_title=True,
-        bgcolor="#404040",
-    )
-    
-    # Navigation bar
-    page.navigation_bar = ft.NavigationBar(
-        bgcolor="#C2B280",
-        destinations=[
-            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-        ],
-        on_change=on_nav_change,
-    )
-    page.navigation_bar.selected_index = -1
-    
     # Navigation back handler
     def go_back(e):
         print("Returning to Individual Dashboard...")
         page.go("/dashboard")
+    
+    def open_camera(e):
+        print("Open camera proof upload...")
+        page.snack_bar = ft.SnackBar(ft.Text("Camera feature coming soon!"))
+        page.snack_bar.open = True
+        page.update()
+
+    # App bar with menu
+    app_bar = ft.Container(
+        bgcolor="#404040",
+        padding=ft.padding.symmetric(horizontal=15, vertical=10),
+        content=ft.Row(
+            [
+                ft.PopupMenuButton(
+                    icon=ft.Icons.MENU,
+                    icon_color="#ffffff",
+                    items=[
+                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                        ft.PopupMenuItem(),
+                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+                    ],
+                ),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
+    )
+    
+    # Navigation bar
+    nav_bar = ft.Container(
+        content=ft.NavigationBar(
+            bgcolor="#C2B280",
+            destinations=[
+                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+            ],
+            on_change=on_nav_change,
+        ),
+        expand=False,
+    )
 
     # Card with details
     chore_card = ft.Container(
@@ -167,28 +182,41 @@ def main(page: ft.Page):
     # Layout
     content = ft.Column(
         [
-            chore_card,
-            ft.Container(height=20),
-            bottom_nav,
+            app_bar,
+            ft.Column(
+                [
+                    chore_card,
+                    ft.Container(height=20),
+                    action_buttons,
+                ],
+                alignment="center",
+                horizontal_alignment="center",
+                spacing=20,
+                expand=True,
+            ),
+            nav_bar,
         ],
-        alignment="center",
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=20,
         expand=True,
     )
 
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-            alignment=ft.alignment.center,
-        )
+    # Return the container
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+        alignment=ft.alignment.center,
     )
 
 
-ft.app(target=main, assets_dir="assets")
+def main(page: ft.Page):
+    page.add(ChoreDetails(page))
+
+
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")
