@@ -275,6 +275,12 @@ def main(page: ft.Page):
                 end=ft.alignment.bottom_right,
                 colors=["#cdffd8", "#94b9ff"],
             ),
+            image=ft.DecorationImage(
+                src="images/chest.png",
+                fit=ft.ImageFit.FIT_WIDTH,
+                alignment=ft.alignment.bottom_center,
+                opacity=.8,
+            ),
             alignment=ft.alignment.center,
             expand=True,
         )
