@@ -63,7 +63,8 @@ def SignUp(page: ft.Page):
             msg.value = "Passwords do not match."
         else:
             # UI demo only
-            page.snack_bar = ft.SnackBar(ft.Text("(Demo) Account created!"), open=True)
+            # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Account created!"), open=True)
+            page.go("/avatars")
         page.update()
 
     signup_btn = ft.ElevatedButton(
@@ -76,7 +77,7 @@ def SignUp(page: ft.Page):
     to_login = ft.TextButton(
         "Back to Login",
         icon=ft.Icons.LOGIN,
-        # on_click=lambda e: page.go("/login")  # wire later
+        on_click=lambda e: page.go("/login")  # wire later
     )
 
     signup_card = ft.Container(
@@ -128,19 +129,6 @@ def SignUp(page: ft.Page):
         ),
         alignment=ft.alignment.center,
     )
-
-    # page.add(
-    #     ft.Container(
-    #         content=content,
-    #         expand=True,
-    #         gradient=ft.LinearGradient(
-    #             begin=ft.alignment.top_left,
-    #             end=ft.alignment.bottom_right,
-    #             colors=["#cdffd8", "#94b9ff"],
-    #         ),
-    #         alignment=ft.alignment.center,
-    #     )
-    # )
     
 def main(page: ft.Page):
     page.add(SignUp(page))

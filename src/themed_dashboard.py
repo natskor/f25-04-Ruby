@@ -1,6 +1,6 @@
 import flet as ft
 
-def main(page: ft.Page):
+def themedDashboard(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.theme_mode = "light"
@@ -29,52 +29,72 @@ def main(page: ft.Page):
 
     def logout(e):
         page.go("/")
+    
+    def go_chore_details(e: ft.ControlEvent):
+        page.go("/details")
+        page.update()
+
+    def go_child_progress(e: ft.ControlEvent):
+        page.go("/child_progress")
+        page.update()
+    
+    def go_collab_reward(e: ft.ControlEvent):
+        page.go("/collab_rewards")
+        page.update()
+    
+    def create_chore(e):
+        page.go("/create_chore")
 
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
-        
-        if selected_index == 0:
-            go_dashboard(e)
-        elif selected_index == 1:
-            go_store(e)
-        elif selected_index == 2:
-            go_calendar(e)
 
-    page.appbar = ft.AppBar(
-        leading=ft.PopupMenuButton(
-            icon=ft.Icons.MENU,
-            icon_color="#ffffff",
-            items=[
-                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                ft.PopupMenuItem(),
-                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-            ],
-        ),
-        center_title=True,
+        routes = ["/themed_dashboard", "/store", "/calendar"]
+        new_route = routes[selected_index]
+
+        if page.route != new_route:
+            page.go(new_route)
+
+   # App Bar
+    app_bar = ft.Container(
         bgcolor="#404040",
+        padding=ft.padding.symmetric(horizontal=15, vertical=10),
+        content=ft.Row(
+            [
+                ft.PopupMenuButton(
+                    icon=ft.Icons.MENU,
+                    icon_color="#ffffff",
+                    items=[
+                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                        ft.PopupMenuItem(),
+                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+                    ],
+                ),
+                ft.IconButton(
+                    icon=ft.Icons.EDIT_DOCUMENT,
+                    icon_color="#ffffff",
+                    tooltip="Create Chore",
+                    on_click=create_chore,
+                ),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
     )
     
     # Navigation bar
-    page.navigation_bar = ft.NavigationBar(
-        bgcolor="#C2B280",
-        destinations=[
-            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-        ],
-        on_change=on_nav_change,
+    nav_bar = ft.Container(
+        content=ft.NavigationBar(
+            selected_index=-1,
+            bgcolor="#C2B280",
+            destinations=[
+                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+            ],
+            on_change=on_nav_change,
+        ),
+        expand=False,
     )
-    page.navigation_bar.selected_index = -1
-
-    # # Navigation bar
-    # page.navigation_bar = ft.NavigationBar(
-    #     bgcolor="#C2B280",
-    #     destinations=[
-    #         ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-    #         ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-    #         ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-    #     ]
-    # )
 
     # Individual Progress Bar 
     progress_card = ft.Container(
@@ -117,8 +137,7 @@ def main(page: ft.Page):
             alignment="center",
             vertical_alignment="center",
         ),
-        #placeholder for on_click for specific specifc child progress
-        on_click=lambda e: page.go("/child_progress"), 
+        on_click=go_child_progress, 
         padding=20,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
@@ -199,8 +218,7 @@ def main(page: ft.Page):
             alignment="spaceBetween",
             vertical_alignment="center",
         ),
-        #placeholder for on_click for specific task description
-        on_click=lambda e: page.go("/task_description"), 
+        on_click=go_chore_details,
         padding=20,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
@@ -211,22 +229,83 @@ def main(page: ft.Page):
         ),
     )   
 
+    # Collab Reward Progress Bar 
+    collab_progress_card = ft.Container(
+        content=ft.Row(
+            [
+                ft.Column(
+                    [
+                        ft.Icon(ft.Icons.FAMILY_RESTROOM, 
+                            color="#473c9c", 
+                            size=60,
+                            opacity=.8,),
+                        ft.Text(
+                            "3000 XP / 5000 XP",
+                            size=14,
+                            color="#473c9c",
+                            font_family="LibreBaskerville",
+                            text_align="center",
+                            ),
+                        ft.Container(
+                            content=ft.ProgressBar(
+                                value=0.6,
+                                height=22,
+                                width=200,
+                                bar_height=40,
+                                border_radius=ft.border_radius.all(20),
+                                color="#8c52ff",
+                                bgcolor="#ffffff",
+                            ),
+                            height=50,
+                            alignment=ft.alignment.center,   
+                        ),
+                    ],
+                    alignment="center",
+                    horizontal_alignment="center",
+                    spacing=5,
+                ),
+            ],
+            alignment="center",
+            vertical_alignment="center",
+        ),
+        on_click=go_collab_reward,
+        padding=20,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=350,
+        gradient=ft.LinearGradient(
+            rotation=135,
+            colors=["#94b9ff", "#cdffd8"],
+        ),
+    )
+
     content = ft.Column(
         [
-            progress_card,
-            ft.Text("~ Adventure Awaits ~",
+            app_bar,
+            ft.Column(
+                [
+                    progress_card,
+                    ft.Text("~ Adventure Awaits ~",
+                            font_family="LibreBaskerville", 
+                            color="#ffffff"),
+                    task_card,
+                    ft.Text("~ Family Reward ~",
                     font_family="LibreBaskerville", 
                     color="#ffffff"),
-            task_card,
+                    collab_progress_card,
+                ],
+                horizontal_alignment="center",
+                spacing=25,
+                expand=True,
+            ),
+            nav_bar,
         ],
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=25,
         expand=True,
     )
 
-    page.add(
-        ft.Container(
-            padding=25,
+    return ft.Container(
             content=content,
             expand=True,
             gradient=ft.LinearGradient(
@@ -243,6 +322,9 @@ def main(page: ft.Page):
             ),
             alignment=ft.alignment.center,
         )
-    )
 
-ft.app(target=main, assets_dir="assets")
+def main(page: ft.Page):
+    page.add(themedDashboard(page))
+
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")

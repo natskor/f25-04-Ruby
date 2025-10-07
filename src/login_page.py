@@ -48,7 +48,8 @@ def Login(page: ft.Page):
             error_msg.value = "Please enter your email and password."
         else:
             # UI demo only
-            page.snack_bar = ft.SnackBar(ft.Text("(Demo) Logged in!"), open=True)
+            # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Logged in!"), open=True)
+            page.go("/avatars")
         page.update()
 
     login_btn = ft.ElevatedButton(
@@ -62,7 +63,7 @@ def Login(page: ft.Page):
     to_signup = ft.TextButton(
         "Create an account",
         icon=ft.Icons.PERSON_ADD_OUTLINED,
-        # on_click=lambda e: page.go("/signup")  # wire later
+        on_click=lambda e: page.go("/create_account")  # wire later
     )
 
     login_card = ft.Container(
@@ -114,19 +115,6 @@ def Login(page: ft.Page):
         ),
         alignment=ft.alignment.center,
     )
-
-    # page.add(
-    #     ft.Container(
-    #         content=content,
-    #         expand=True,
-    #         gradient=ft.LinearGradient(
-    #             begin=ft.alignment.top_left,
-    #             end=ft.alignment.bottom_right,
-    #             colors=["#cdffd8", "#94b9ff"],
-    #         ),
-    #         alignment=ft.alignment.center,
-    #     )
-    # )
 
 def main(page: ft.Page):
     page.add(Login(page))
