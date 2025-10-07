@@ -38,7 +38,7 @@ def themedDashboard(page: ft.Page):
         page.go("/child_progress")
         page.update()
     
-    def go_collab_reward():
+    def go_collab_reward(e: ft.ControlEvent):
         page.go("/collab_rewards")
         page.update()
 
@@ -220,6 +220,56 @@ def themedDashboard(page: ft.Page):
         ),
     )   
 
+    # Collab Reward Progress Bar 
+    collab_progress_card = ft.Container(
+        content=ft.Row(
+            [
+                ft.Column(
+                    [
+                        ft.Icon(ft.Icons.FAMILY_RESTROOM, 
+                            color="#473c9c", 
+                            size=60,
+                            opacity=.8,),
+                        ft.Text(
+                            "3000 XP / 5000 XP",
+                            size=14,
+                            color="#473c9c",
+                            font_family="LibreBaskerville",
+                            text_align="center",
+                            ),
+                        ft.Container(
+                            content=ft.ProgressBar(
+                                value=0.6,
+                                height=22,
+                                width=200,
+                                bar_height=40,
+                                border_radius=ft.border_radius.all(20),
+                                color="#8c52ff",
+                                bgcolor="#ffffff",
+                            ),
+                            height=50,
+                            alignment=ft.alignment.center,   
+                        ),
+                    ],
+                    alignment="center",
+                    horizontal_alignment="center",
+                    spacing=5,
+                ),
+            ],
+            alignment="center",
+            vertical_alignment="center",
+        ),
+        on_click=go_collab_reward,
+        padding=20,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=350,
+        gradient=ft.LinearGradient(
+            rotation=135,
+            colors=["#94b9ff", "#cdffd8"],
+        ),
+    )
+
     content = ft.Column(
         [
             app_bar,
@@ -230,6 +280,10 @@ def themedDashboard(page: ft.Page):
                             font_family="LibreBaskerville", 
                             color="#ffffff"),
                     task_card,
+                    ft.Text("~ Family Reward ~",
+                    font_family="LibreBaskerville", 
+                    color="#ffffff"),
+                    collab_progress_card,
                 ],
                 horizontal_alignment="center",
                 spacing=25,

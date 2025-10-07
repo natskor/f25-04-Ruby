@@ -34,9 +34,10 @@ def parentDashboard(page: ft.Page):
         page.go("/verification")
         page.update()
     
-    def go_collab_reward():
+    def go_collab_reward(e: ft.ControlEvent):
         page.go("/collab_rewards")
         page.update()
+
 
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
