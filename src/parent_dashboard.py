@@ -30,15 +30,22 @@ def parentDashboard(page: ft.Page):
     def logout(e):
         page.go("/")
 
+    def go_verification(e: ft.ControlEvent):
+        page.go("/verification")
+        page.update()
+    
+    def go_collab_reward():
+        page.go("/collab_rewards")
+        page.update()
+
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
-        
-        if selected_index == 0:
-            go_dashboard(e)
-        elif selected_index == 1:
-            go_store(e)
-        elif selected_index == 2:
-            go_calendar(e)
+
+        routes = ["/themed_dashboard", "/store", "/calendar"]
+        new_route = routes[selected_index]
+
+        if page.route != new_route:
+            page.go(new_route)
 
     # App Bar
     app_bar = ft.Container(
@@ -64,6 +71,7 @@ def parentDashboard(page: ft.Page):
     # Navigation bar
     nav_bar = ft.Container(
         content=ft.NavigationBar(
+            selected_index=-1,
             bgcolor="#C2B280",
             destinations=[
                 ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
@@ -74,7 +82,6 @@ def parentDashboard(page: ft.Page):
         ),
         expand=False,
     )
-    nav_bar.selected_index = -1
 
 
     # Collab Reward Progress Bar 
@@ -116,8 +123,7 @@ def parentDashboard(page: ft.Page):
             alignment="center",
             vertical_alignment="center",
         ),
-        #placeholder for on_click for specific specifc child progress
-        on_click=lambda e: page.go("/child_progress"), 
+        on_click=go_collab_reward,
         padding=20,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
@@ -191,9 +197,7 @@ def parentDashboard(page: ft.Page):
             alignment="spaceBetween",
             vertical_alignment="center"
         ),
-
-        #placeholder for on_click for specific verification
-        on_click=lambda e: page.go("/verification"), 
+        on_click=go_verification, 
         padding=10,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),

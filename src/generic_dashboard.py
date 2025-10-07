@@ -29,16 +29,27 @@ def genericDashboard(page: ft.Page):
 
     def logout(e):
         page.go("/")
+    
+    def go_chore_details(e: ft.ControlEvent):
+        page.go("/details")
+        page.update()
+
+    def go_child_progress(e: ft.ControlEvent):
+        page.go("/child_progress")
+        page.update()
+    
+    def go_collab_reward():
+        page.go("/collab_rewards")
+        page.update()
 
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
-        
-        if selected_index == 0:
-            go_dashboard(e)
-        elif selected_index == 1:
-            go_store(e)
-        elif selected_index == 2:
-            go_calendar(e)
+
+        routes = ["/themed_dashboard", "/store", "/calendar"]
+        new_route = routes[selected_index]
+
+        if page.route != new_route:
+            page.go(new_route)
 
     # App Bar
     app_bar = ft.Container(
@@ -64,6 +75,7 @@ def genericDashboard(page: ft.Page):
     # Navigation bar
     nav_bar = ft.Container(
         content=ft.NavigationBar(
+            selected_index=-1,
             bgcolor="#C2B280",
             destinations=[
                 ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
@@ -74,7 +86,6 @@ def genericDashboard(page: ft.Page):
         ),
         expand=False,
     )
-    nav_bar.selected_index = -1
 
     # Individual Progress Bar 
     progress_card = ft.Container(
@@ -111,8 +122,7 @@ def genericDashboard(page: ft.Page):
             alignment="center",
             vertical_alignment="center",
         ),
-        #placeholder for on_click for specific specifc child progress
-        on_click=lambda e: page.go("/child_progress"), 
+        on_click=go_child_progress, 
         padding=20,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
@@ -193,8 +203,7 @@ def genericDashboard(page: ft.Page):
             alignment="spaceBetween",
             vertical_alignment="center"
         ),
-        #placeholder for on_click for specific task description
-        on_click=lambda e: page.go("/task_description"), 
+        on_click=go_chore_details, 
         padding=20,
         border_radius=20,
         shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
