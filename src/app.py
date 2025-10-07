@@ -6,6 +6,9 @@ from collabrewards import CollabRewards
 from settings import SettingsPage
 from Avatar_page import AvatarSelection
 from rewards_store import StorePage
+from themed_dashboard import themedDashboard
+from chore_details import ChoreDetails
+from chore_creation import ChoreCreation
 
 
 def main(page: ft.Page):
@@ -25,7 +28,7 @@ def main(page: ft.Page):
     
     def route_change(e):
         page.views.clear()
-
+        
         if page.route in ["/", "/home"]:
             page.views.append(ft.View("/", [HomePage(page)]))
         elif page.route == "/create_account":
@@ -38,13 +41,19 @@ def main(page: ft.Page):
             page.views.append(ft.View("/settings", [SettingsPage(page)]))
         elif page.route == "/avatars":
             page.views.append(ft.View("/avatars", [AvatarSelection(page)]))
-        # elif page.route == "/dashboard":
-        #     page.views.append(ft.View("/child_dashboard", [ChildDashboard(page)]))
+        elif page.route == "/themed_dashboard":
+            page.views.append(ft.View("/themed_dashboard", [themedDashboard(page)]))
         elif page.route == "/store":
             page.views.append(ft.View("/store", [StorePage(page)]))
-        # elif page.route == "/calendar":
-        #     page.views.append(ft.View("/calendar", [Calendar(page)]))
-
+        elif page.route == "/calendar":
+            page.views.append(ft.View("/calendar", [Calendar(page)]))
+        elif page.route == "/pin":
+            page.views.append(ft.View("/pin", [PinEntry(page)]))
+        elif page.route == "/details":
+            page.views.append(ft.View("/details", [ChoreDetails(page)]))
+        elif page.route == "/create_chore":
+            page.views.append(ft.View("/create_chore", [ChoreCreation(page)]))
+        
         page.update()
     
     def view_pop(e):
