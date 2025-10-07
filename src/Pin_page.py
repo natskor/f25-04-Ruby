@@ -52,7 +52,8 @@ def PinPage(page: ft.Page):
         #page.update()
         # later, replace with page.go("/previous") or page.clean() etc.
     
-        page.go("/avatars")  # Navigate to login page on back
+        page.go("/avatars")  # Navigate to avatars page on back
+        
     # ---- header ----
     header = ft.Row(
     [
@@ -135,11 +136,11 @@ def PinPage(page: ft.Page):
     # ---- footer / continue ----
     def on_continue(e):
         # demo feedback (no real auth)
-       # page.snack_bar = ft.SnackBar(ft.Text(f"PIN entered: {pin['value']}"))
-       # page.snack_bar.open = True
-       # page.update()
-    
-        page.go("/themed_dashboard")  # Navigate to home page after PIN entry
+        # page.snack_bar = ft.SnackBar(ft.Text(f"PIN entered: {pin['value']}"))
+        # page.snack_bar.open = True
+        # page.update()
+        page.go("/themed_dashboard")  # Navigate to dash after PIN entry
+        
     continue_btn = ft.ElevatedButton("Continue", width=220, disabled=True, 
                                      on_click=on_continue,  )
 
@@ -169,17 +170,18 @@ def PinPage(page: ft.Page):
     
     return ft.Container(
         content=content,
-            expand=True,
-            padding=20,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-        )
+        expand=True,
+        padding=20,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+    )
     
 
 def main(page: ft.Page):
     page.add(PinPage(page))
+    
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
