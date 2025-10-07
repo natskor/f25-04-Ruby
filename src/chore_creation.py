@@ -182,7 +182,8 @@ def ChoreCreation(page: ft.Page):
         page.update()
         
         # Pop back to previous page
-        view_pop(None)
+        # view_pop(None)
+        page.go("/themed_dashboard")
 
 
     # Card-style container for form
