@@ -1,6 +1,6 @@
 import flet as ft
 
-def main(page: ft.Page):
+def themedDashboard(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.theme_mode = "light"
@@ -40,31 +40,41 @@ def main(page: ft.Page):
         elif selected_index == 2:
             go_calendar(e)
 
-    page.appbar = ft.AppBar(
-        leading=ft.PopupMenuButton(
-            icon=ft.Icons.MENU,
-            icon_color="#ffffff",
-            items=[
-                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                ft.PopupMenuItem(),
-                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-            ],
-        ),
-        center_title=True,
+   # App Bar
+    app_bar = ft.Container(
         bgcolor="#404040",
+        padding=ft.padding.symmetric(horizontal=15, vertical=10),
+        content=ft.Row(
+            [
+                ft.PopupMenuButton(
+                    icon=ft.Icons.MENU,
+                    icon_color="#ffffff",
+                    items=[
+                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                        ft.PopupMenuItem(),
+                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
+                    ],
+                ),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
     )
     
     # Navigation bar
-    page.navigation_bar = ft.NavigationBar(
-        bgcolor="#C2B280",
-        destinations=[
-            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-        ],
-        on_change=on_nav_change,
+    nav_bar = ft.Container(
+        content=ft.NavigationBar(
+            bgcolor="#C2B280",
+            destinations=[
+                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
+                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
+                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
+            ],
+            on_change=on_nav_change,
+        ),
+        expand=False,
     )
-    page.navigation_bar.selected_index = -1
+    nav_bar.selected_index = -1
 
     # # Navigation bar
     # page.navigation_bar = ft.NavigationBar(
@@ -213,20 +223,27 @@ def main(page: ft.Page):
 
     content = ft.Column(
         [
-            progress_card,
-            ft.Text("~ Adventure Awaits ~",
-                    font_family="LibreBaskerville", 
-                    color="#ffffff"),
-            task_card,
+            app_bar,
+            ft.Column(
+                [
+                    progress_card,
+                    ft.Text("~ Adventure Awaits ~",
+                            font_family="LibreBaskerville", 
+                            color="#ffffff"),
+                    task_card,
+                ],
+                horizontal_alignment="center",
+                spacing=25,
+                expand=True,
+            ),
+            nav_bar,
         ],
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=25,
         expand=True,
     )
 
-    page.add(
-        ft.Container(
-            padding=25,
+    return ft.Container(
             content=content,
             expand=True,
             gradient=ft.LinearGradient(
@@ -243,6 +260,9 @@ def main(page: ft.Page):
             ),
             alignment=ft.alignment.center,
         )
-    )
 
-ft.app(target=main, assets_dir="assets")
+def main(page: ft.Page):
+    page.add(themedDashboard(page))
+
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets")
