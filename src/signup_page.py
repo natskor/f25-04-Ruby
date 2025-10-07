@@ -64,7 +64,7 @@ def SignUp(page: ft.Page):
         else:
             # UI demo only
             # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Account created!"), open=True)
-            page.go("/themed_dashboard")
+            page.go("/avatars")
         page.update()
 
     signup_btn = ft.ElevatedButton(

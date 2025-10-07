@@ -49,7 +49,7 @@ def Login(page: ft.Page):
         else:
             # UI demo only
             # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Logged in!"), open=True)
-            page.go("/themed_dashboard")
+            page.go("/avatars")
         page.update()
 
     login_btn = ft.ElevatedButton(
