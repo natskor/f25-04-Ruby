@@ -1,6 +1,6 @@
 import flet as ft
 
-def main(page: ft.Page):
+def childProgress(page: ft.Page):
     # ---------- page chrome ----------
     page.title = "QuestNest • Child Progress"
     page.horizontal_alignment = "center"
@@ -195,25 +195,35 @@ def main(page: ft.Page):
 
     # ---------- page layout ----------
     content = ft.Column(
-        [progress_card],
-        alignment="center",
+        [
+            app_bar,
+            ft.Column(
+                [progress_card],
+                alignment="center",
+                horizontal_alignment="center",
+                spacing=25,
+                expand=True,
+            ),
+            nav_bar,
+        ],
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=25,
         expand=True,
     )
-
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_center,
-                end=ft.alignment.bottom_center,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-            alignment=ft.alignment.center,
-        )
+    
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+        alignment=ft.alignment.center,
     )
+
+def main(page: ft.Page):
+    page.add(childProgress(page))
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")

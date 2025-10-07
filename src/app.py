@@ -10,7 +10,9 @@ from Pin_page import PinPage
 from themed_dashboard import themedDashboard
 from chore_details import ChoreDetails
 from chore_creation import ChoreCreation
-
+from verification import verification
+from parent_dashboard import parentDashboard
+from child_progress import childProgress
 
 def main(page: ft.Page):
     page.title = "QuestNest"
@@ -54,7 +56,12 @@ def main(page: ft.Page):
             page.views.append(ft.View("/details", [ChoreDetails(page)], padding=0, spacing=0))
         elif page.route == "/create_chore":
             page.views.append(ft.View("/create_chore", [ChoreCreation(page)], padding=0, spacing=0)) 
-            
+        elif page.route == "/verification":
+            page.views.append(ft.View("/verification", [verification(page)], padding=0, spacing=0))
+        elif page.route == "/parentDashboard":
+            page.views.append(ft.View("/parentDashboard", [parentDashboard(page)], padding=0, spacing=0))
+        elif page.route == "/child_progress":
+            page.views.append(ft.View("/child_progress", [childProgress(page)], padding=0, spacing=0))            
             
         page.update()
     
@@ -65,7 +72,7 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/")  # Default to home page
+    page.go("/themed_dashboard")  # Default to home page
 
 
 # Run the app

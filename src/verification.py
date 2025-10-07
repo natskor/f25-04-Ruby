@@ -1,6 +1,6 @@
 import flet as ft
 
-def main(page: ft.Page):
+def verification(page: ft.Page):
     # ---------- page chrome ----------
     page.title = "QuestNest • Task Verification"
     page.horizontal_alignment = "center"
@@ -121,10 +121,12 @@ def main(page: ft.Page):
 
     def verify(e: ft.ControlEvent):
         page.snack_bar = ft.SnackBar(ft.Text("(Demo) Task verified! "), open=True)
+        page.go("/parentDashboard")
         page.update()
 
     def reject(e: ft.ControlEvent):
         page.snack_bar = ft.SnackBar(ft.Text("(Demo) Task rejected "), open=True)
+        page.go("/parentDashboard")
         page.update()
 
     buttons = ft.Row(
@@ -168,25 +170,35 @@ def main(page: ft.Page):
 
     # ---------- page layout ----------
     content = ft.Column(
-        [verification_card],
-        alignment="center",
+        [
+            app_bar,
+            ft.Column(
+                [verification_card],
+                alignment="center",
+                horizontal_alignment="center",
+                spacing=25,
+                expand=True,
+            ),
+            nav_bar,
+        ],
+        alignment="spaceBetween",
         horizontal_alignment="center",
-        spacing=25,
         expand=True,
     )
-
-    page.add(
-        ft.Container(
-            content=content,
-            expand=True,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#cdffd8", "#94b9ff"],
-            ),
-            alignment=ft.alignment.center,
-        )
+    
+    return ft.Container(
+        content=content,
+        expand=True,
+        gradient=ft.LinearGradient(
+            begin=ft.alignment.top_left,
+            end=ft.alignment.bottom_right,
+            colors=["#cdffd8", "#94b9ff"],
+        ),
+        alignment=ft.alignment.center,
     )
+
+def main(page: ft.Page):
+    page.add(verification(page))
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
