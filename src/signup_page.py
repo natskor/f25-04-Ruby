@@ -63,7 +63,8 @@ def SignUp(page: ft.Page):
             msg.value = "Passwords do not match."
         else:
             # UI demo only
-            page.snack_bar = ft.SnackBar(ft.Text("(Demo) Account created!"), open=True)
+            # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Account created!"), open=True)
+            page.go("/themed_dashboard")
         page.update()
 
     signup_btn = ft.ElevatedButton(

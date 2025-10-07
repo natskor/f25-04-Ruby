@@ -48,7 +48,8 @@ def Login(page: ft.Page):
             error_msg.value = "Please enter your email and password."
         else:
             # UI demo only
-            page.snack_bar = ft.SnackBar(ft.Text("(Demo) Logged in!"), open=True)
+            # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Logged in!"), open=True)
+            page.go("/themed_dashboard")
         page.update()
 
     login_btn = ft.ElevatedButton(
