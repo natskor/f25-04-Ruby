@@ -41,6 +41,9 @@ def genericDashboard(page: ft.Page):
     def go_collab_reward(e: ft.ControlEvent):
         page.go("/collab_rewards")
         page.update()
+        
+    def create_chore(e):
+        page.go("/create_chore")
 
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
@@ -65,6 +68,12 @@ def genericDashboard(page: ft.Page):
                         ft.PopupMenuItem(),
                         ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
                     ],
+                ),
+                ft.IconButton(
+                    icon=ft.Icons.EDIT_DOCUMENT,
+                    icon_color="#ffffff",
+                    tooltip="Create Chore",
+                    on_click=create_chore,
                 ),
             ],
             alignment="spaceBetween",
