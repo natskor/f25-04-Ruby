@@ -4,7 +4,7 @@ def CollabRewards(page: ft.Page):
     page.title = "Family Reward"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
-    #page.theme_mode = "light"
+    page.theme_mode = "light"
     
     # To remove the white space border around the gradient background
     page.padding=0
@@ -31,6 +31,9 @@ def CollabRewards(page: ft.Page):
     def logout(e):
         page.go("/")
     
+    def create_chore(e):
+        page.go("/create_chore")
+    
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
         
@@ -54,6 +57,12 @@ def CollabRewards(page: ft.Page):
                         ft.PopupMenuItem(),
                         ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
                     ],
+                ),
+                ft.IconButton(
+                    icon=ft.Icons.EDIT_DOCUMENT,
+                    icon_color="#ffffff",
+                    tooltip="Create Chore",
+                    on_click=create_chore,
                 ),
             ],
             alignment="spaceBetween",
