@@ -5,10 +5,9 @@ import pytz
 import flet as ft
 
 # Functionality to Implement:
-# -> Set Timezone (may not need?)
-# -> Arrow Buttons: Change Month/Year
-# -> 'Add Event' Button: Add a Task to User's Calendar
-# -> Date Tiles: Current = Blue, Clicked = White + Updates 'Today's Schedule'
+# -> ARROW Buttons: Change Month/Year
+# -> ADD EVENT Button: Add a Task to User's Calendar
+# -> DATE Tiles: Current = Blue, Clicked = White + Updates 'Today's Schedule'
 
 def main(page: ft.Page):
     page.title="Family Calendar"
@@ -73,6 +72,7 @@ def main(page: ft.Page):
         on_change=on_nav_change,
     )
     page.navigation_bar.selected_index = -1
+    
     # Title
     title = ft.Text (
         "Family Calendar",
@@ -93,7 +93,7 @@ def main(page: ft.Page):
             color="#ffffff", 
             font_family="LibreBaskerville", 
             weight=ft.FontWeight.BOLD,
-            )
+        )
     
     # -> Container formatting for days of the week
     def day_container_format(day_text):
@@ -102,7 +102,7 @@ def main(page: ft.Page):
             width=62, 
             height=50, 
             alignment=ft.alignment.center, 
-            border=ft.border.all(2.5, "#000000"),
+            border=ft.border.all(1, "#000000"),
             bgcolor="#59226b",
         )
     
@@ -113,13 +113,9 @@ def main(page: ft.Page):
             width=62, 
             height=50, 
             alignment=ft.alignment.center, 
-            border=ft.border.all(2.5, "#000000"), 
+            border=ft.border.all(1, "#000000"), 
             bgcolor="#b97ccb",
         )
-    
-    # -> Button action (future implementation)
-    def button_clicked(yes):
-        page.update()
     
     # -! BELONGS IN CONTROLLER
     cal = calendar.Calendar(6)
@@ -138,13 +134,60 @@ def main(page: ft.Page):
                 dates.append(date_container_format(schedule_text_format(day)))
         return dates
     
-    # -> Row wraps when (indice == 7)
-    week = ft.Row (
+    # -> Days of the week
+    weekdays = ft.Row (
+        [
+            day_container_format(schedule_text_format("Sun")),
+            day_container_format(schedule_text_format("Mon")),
+            day_container_format(schedule_text_format("Tue")),
+            day_container_format(schedule_text_format("Wed")),
+            day_container_format(schedule_text_format("Thu")),
+            day_container_format(schedule_text_format("Fri")),
+            day_container_format(schedule_text_format("Sat")),
+        ],
+        spacing=0,
+        alignment=ft.MainAxisAlignment.CENTER,
+    )
+    
+    # -> Weeks of the month
+    week_dates = ft.Row (
         wrap=True,
         controls=get_dates(current_year, current_month),
         spacing=0,
+        run_spacing=0,
         alignment=ft.MainAxisAlignment.START,
         vertical_alignment=ft.CrossAxisAlignment.CENTER,
+    )
+    
+    # -> Button action (future implementation)
+    def button_clicked(yes):
+        page.update()
+    
+    # -> Container prompting user for text inputs
+    #add_event_container = ft.Container (
+    #    content=ft.TextField(label="Event",),
+    #    blur=10,
+    #    height=300,
+    #    width=300,
+    #    alignment=ft.MainAxisAlignment.CENTER,
+    #    visible=False,
+    #)
+        
+    # -> Adding action to 'Add Event' button
+    #def show_add_event(e):
+    #    add_event_container.visible = not add_event_container.visible
+    #    page.update()
+        
+    
+    # -> Month's Schedule
+    schedule = ft.Column (
+        [
+            weekdays,
+            week_dates,    
+        ],
+        spacing=0,
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
     
     # Build Calendar
@@ -178,21 +221,8 @@ def main(page: ft.Page):
                 ],
                 spacing=45,
                 alignment=ft.MainAxisAlignment.CENTER,
-            ), 
-            ft.Row ( # Days of the Week
-                [
-                    day_container_format(schedule_text_format("Sun")),
-                    day_container_format(schedule_text_format("Mon")),
-                    day_container_format(schedule_text_format("Tue")),
-                    day_container_format(schedule_text_format("Wed")),
-                    day_container_format(schedule_text_format("Thu")),
-                    day_container_format(schedule_text_format("Fri")),
-                    day_container_format(schedule_text_format("Sat")),
-                ],
-                spacing=0,
-                alignment=ft.MainAxisAlignment.CENTER,
             ),   
-            week,
+            schedule,
             ft.Row ( # 'Add Event' button
                 [
                     ft.ElevatedButton (
@@ -202,17 +232,16 @@ def main(page: ft.Page):
                             color="#ffffff", 
                             font_family="LibreBaskerville", 
                         ),
-                        on_click=button_clicked,
                         color="#ffffff",
                         bgcolor="#59226b",
+                        #on_click=show_add_event,
                     ),
                 ],
-                spacing=45,
                 alignment=ft.MainAxisAlignment.CENTER,
             )
             ],
         ),
-        height=475,
+        height=450,
         width=450,
         alignment=ft.alignment.center,
         border_radius=35,
