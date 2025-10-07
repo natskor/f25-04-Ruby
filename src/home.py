@@ -81,9 +81,7 @@ def HomePage(page: ft.Page):
             colors=["#cdffd8", "#94b9ff"],
         ),
         alignment=ft.alignment.center,
-    )
-
-        
+    )       
  
 def main(page: ft.Page):
     page.add(HomePage(page))

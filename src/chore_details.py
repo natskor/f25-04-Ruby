@@ -15,7 +15,7 @@ def ChoreDetails(page: ft.Page):
     }
 
     def go_dashboard(e):
-        page.go("/dashboard")
+        page.go("/themed_dashboard")
 
     def go_store(e):
         page.go("/store")
@@ -32,17 +32,16 @@ def ChoreDetails(page: ft.Page):
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
         
-        if selected_index == 0:
-            go_dashboard(e)
-        elif selected_index == 1:
-            go_store(e)
-        elif selected_index == 2:
-            go_calendar(e)
+        routes = ["/themed_dashboard", "/store", "/calendar"]
+        new_route = routes[selected_index]
+        
+        if page.route != new_route:
+            page.go(new_route)
 
     # Navigation back handler
     def go_back(e):
         print("Returning to Individual Dashboard...")
-        page.go("/dashboard")
+        page.go("/themed_dashboard")
     
     def open_camera(e):
         print("Open camera proof upload...")
@@ -74,6 +73,7 @@ def ChoreDetails(page: ft.Page):
     # Navigation bar
     nav_bar = ft.Container(
         content=ft.NavigationBar(
+            selected_index=-1,
             bgcolor="#C2B280",
             destinations=[
                 ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
@@ -187,7 +187,7 @@ def ChoreDetails(page: ft.Page):
                 [
                     chore_card,
                     ft.Container(height=20),
-                    action_buttons,
+                    bottom_nav,
                 ],
                 alignment="center",
                 horizontal_alignment="center",

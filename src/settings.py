@@ -4,7 +4,7 @@ def SettingsPage(page: ft.Page):
     page.title = "QuestNest • Settings"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
-    page.theme_mode = "light"
+    #page.theme_mode = "light"
     page.padding = 0
     page.spacing = 0
     

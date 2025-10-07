@@ -26,7 +26,7 @@ def StorePage(page: ft.Page):
     }
     
     def go_dashboard(e):
-        page.go("/dashboard")
+        page.go("/themed_dashboard")
 
     def go_store(e):
         page.go("/store")
@@ -43,12 +43,11 @@ def StorePage(page: ft.Page):
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
         
-        if selected_index == 0:
-            go_dashboard(e)
-        elif selected_index == 1:
-            go_store(e)
-        elif selected_index == 2:
-            go_calendar(e)
+        routes = ["/themed_dashboard", "/store", "/calendar"]
+        new_route = routes[selected_index]
+        
+        if page.route != new_route:
+            page.go(new_route)
 
     app_bar = ft.Container(
         bgcolor="#404040",
@@ -73,6 +72,7 @@ def StorePage(page: ft.Page):
     # Navigation bar
     nav_bar = ft.Container(
         content=ft.NavigationBar(
+            selected_index=-1,
             bgcolor="#C2B280",
             destinations=[
                 ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
@@ -83,7 +83,6 @@ def StorePage(page: ft.Page):
         ),
         expand=False,
     )
-    nav_bar.selected_index = -1
 
     # Title at the top of the page
     title = ft.Text (
@@ -324,7 +323,6 @@ def StorePage(page: ft.Page):
     )
     
     # Add the items to the page
-   
     return ft.Container(
         content=content,
         expand=True,
@@ -342,29 +340,6 @@ def StorePage(page: ft.Page):
         ),
         alignment=ft.alignment.center,
     )
-    
-
-    
-    # # Add the items to the page
-    # page.add (
-    #     ft.Container (
-    #         content=content,
-    #         gradient=ft.LinearGradient (
-    #             begin=ft.alignment.top_left,
-    #             end=ft.alignment.bottom_right,
-    #             colors=["#cdffd8", "#94b9ff"],
-    #         ),
-    #         image=ft.DecorationImage(
-    #             src="images/chest.png",
-    #             fit=ft.ImageFit.FIT_WIDTH,
-    #             alignment=ft.alignment.bottom_center,
-    #             opacity=.8,
-    #         ),
-    #         alignment=ft.alignment.center,
-    #         expand=True,
-    #     )
-    # )
-    
     
 def main(page: ft.Page):
     page.add(StorePage(page))
