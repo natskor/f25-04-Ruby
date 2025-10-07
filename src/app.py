@@ -6,6 +6,7 @@ from collabrewards import CollabRewards
 from settings import SettingsPage
 from Avatar_page import AvatarSelection
 from rewards_store import StorePage
+from Pin_page import PinPage
 from themed_dashboard import themedDashboard
 from chore_details import ChoreDetails
 from chore_creation import ChoreCreation
@@ -45,15 +46,16 @@ def main(page: ft.Page):
             page.views.append(ft.View("/themed_dashboard", [themedDashboard(page)]))
         elif page.route == "/store":
             page.views.append(ft.View("/store", [StorePage(page)]))
+        elif page.route == "/pin":
+            page.views.append(ft.View("/pin", [PinPage(page)]))
         elif page.route == "/calendar":
             page.views.append(ft.View("/calendar", [Calendar(page)]))
-        elif page.route == "/pin":
-            page.views.append(ft.View("/pin", [PinEntry(page)]))
         elif page.route == "/details":
             page.views.append(ft.View("/details", [ChoreDetails(page)]))
         elif page.route == "/create_chore":
-            page.views.append(ft.View("/create_chore", [ChoreCreation(page)]))
-        
+            page.views.append(ft.View("/create_chore", [ChoreCreation(page)])) 
+            
+            
         page.update()
     
     def view_pop(e):
@@ -63,7 +65,7 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/")  # Default to home page
+    page.go("/pin")  # Default to home page
 
 
 # Run the app
