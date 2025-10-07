@@ -23,11 +23,7 @@ def StorePage(page: ft.Page):
     }
     
     def go_dashboard(e):
-<<<<<<< HEAD
-        page.go("/dashboard")
-=======
         page.go("/themed_dashboard")
->>>>>>> refs/remotes/origin/main
 
     def go_store(e):
         page.go("/store")
@@ -44,27 +40,6 @@ def StorePage(page: ft.Page):
     def on_nav_change(e: ft.ControlEvent):
         selected_index = e.control.selected_index
         
-<<<<<<< HEAD
-        if selected_index == 0:
-            go_dashboard(e)
-        elif selected_index == 1:
-            go_store(e)
-        elif selected_index == 2:
-            go_calendar(e)
-
-    page.appbar = ft.AppBar(
-        leading=ft.PopupMenuButton(
-            icon=ft.Icons.MENU,
-            icon_color="#ffffff",
-            items=[
-                ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                ft.PopupMenuItem(),
-                ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-            ],
-        ),
-        center_title=True,
-        bgcolor="#404040",
-=======
         routes = ["/themed_dashboard", "/store", "/calendar"]
         new_route = routes[selected_index]
         
@@ -104,7 +79,6 @@ def StorePage(page: ft.Page):
             on_change=on_nav_change,
         ),
         expand=False,
->>>>>>> refs/remotes/origin/main
     )
     
     # Navigation bar
