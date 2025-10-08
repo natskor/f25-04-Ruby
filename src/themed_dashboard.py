@@ -279,6 +279,155 @@ def themedDashboard(page: ft.Page):
         ),
     )
 
+
+    # --------------temporary----------------------
+        # Clickable chore that will lead to the verification page
+
+    def go_verification(e: ft.ControlEvent):
+        page.go("/verification")
+        page.update()
+    child_chore = ft.Container(
+        content=ft.Row(
+            [
+                ft.Column(
+                    [
+                        ft.Text(
+                            "Wash Dishes",
+                            size=12,
+                            color="#473c9c",
+                            font_family="LibreBaskerville",
+                            text_align="left",
+                            ),
+                    ],
+                    alignment="center",
+                    horizontal_alignment="left",
+                    spacing=5,
+                ),
+                ft.Column(
+                    [
+                        ft.Stack(
+                            [
+                                ft.Text(
+                                    spans=[
+                                        ft.TextSpan(
+                                            "View",
+                                            ft.TextStyle(
+                                                size=12,
+                                                weight=ft.FontWeight.BOLD,
+                                                font_family="LibreBaskerville",
+                                                foreground=ft.Paint(
+                                                    color="#ffffff",
+                                                    stroke_width=6,
+                                                    style=ft.PaintingStyle.STROKE,
+                                                ),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                                ft.Text(
+                                    spans=[
+                                        ft.TextSpan(
+                                            "View",
+                                            ft.TextStyle(
+                                                size=12,
+                                                weight=ft.FontWeight.BOLD,
+                                                color="#b8b8b8",
+                                                font_family="LibreBaskerville",
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ],
+                        ),
+                    ],
+                    alignment="center",
+                    horizontal_alignment="end",
+                    spacing=5
+                ),
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center"
+        ),
+        on_click=go_verification, 
+        padding=10,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=300,
+        gradient=ft.LinearGradient(
+            rotation=135,
+            colors=["#94b9ff", "#cdffd8"],
+        ),
+        visible=False,
+        opacity=0,
+    )
+
+    def toggle(_):
+        expanded = not child_chore.visible
+        child_chore.visible = expanded
+        child_chore.opacity = 1.0 if expanded else 0.0
+        child_chore.update()
+
+
+    # Child's Info
+    child_info = ft.Container(
+        content=ft.Row(
+            [
+                ft.Column(
+                    [
+                        ft.Text(
+                            "Kaleb",
+                            size=14,
+                            color="#473c9c",
+                            font_family="LibreBaskerville",
+                            text_align="left",
+                            ),
+                            ft.Row([
+                                    ft.Text(
+                                    "Progress",
+                                    size=14,
+                                    color="#8f8e8e",
+                                    font_family="LibreBaskerville",
+                                    text_align="left",
+                                ),
+                            ])
+                    ],
+                    spacing=2,
+                ),
+                ft.Row(
+                    [
+                    ft.Image(
+                        src="images/dragon.png",
+                        width=100,
+                        height=100,
+                        ),
+                    ],
+                    spacing=5,
+                    vertical_alignment="center"
+                )
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
+        on_click=toggle,
+        padding=0,
+    )
+
+    # View of Child Info and chores
+    child_progress_card=ft.Container(
+        padding=20,
+        border_radius=20,
+        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+        width=300,
+        gradient=ft.LinearGradient(
+            rotation=135,
+            colors=["#94b9ff", "#cdffd8"],
+        ),
+        content=ft.Column([child_info, child_chore], spacing=5)
+    )
+
+     # --------------temporary----------------------
+
+
     content = ft.Column(
         [
             app_bar,
@@ -293,6 +442,12 @@ def themedDashboard(page: ft.Page):
                     font_family="LibreBaskerville", 
                     color="#ffffff"),
                     collab_progress_card,
+                    # temporary ----------------------------
+                    ft.Text("~ Family Progress ~",
+                            font_family="LibreBaskerville", 
+                            color="#ffffff"),
+                    child_progress_card,
+                    # temporary ----------------------------
                 ],
                 horizontal_alignment="center",
                 spacing=25,
