@@ -3,7 +3,7 @@ import flet as ft
 # Navigation Bar
 def navigation_bar(page: ft.Page):
     def go_dashboard(e):
-        page.go("/dashboard")
+        page.go("/themed_dashboard")
 
     def go_store(e):
         page.go("/store")

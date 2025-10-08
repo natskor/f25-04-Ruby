@@ -17,7 +17,7 @@ def verification(page: ft.Page):
     }
 
     def go_dashboard(e):
-        page.go("/dashboard")
+        page.go("/themed_dashboard")
 
     def go_store(e):
         page.go("/store")
@@ -121,12 +121,12 @@ def verification(page: ft.Page):
 
     def verify(e: ft.ControlEvent):
         page.snack_bar = ft.SnackBar(ft.Text("(Demo) Task verified! "), open=True)
-        page.go("/parentDashboard")
+        page.go("/themed_dashboard")
         page.update()
 
     def reject(e: ft.ControlEvent):
         page.snack_bar = ft.SnackBar(ft.Text("(Demo) Task rejected "), open=True)
-        page.go("/parentDashboard")
+        page.go("/themed_dashboard")
         page.update()
 
     buttons = ft.Row(
