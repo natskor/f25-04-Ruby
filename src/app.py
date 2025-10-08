@@ -73,7 +73,7 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/themed_dashboard")  # Default to home page
+    page.go("/")  # Default to home page
 
 
 # Run the app
