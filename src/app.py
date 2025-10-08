@@ -13,6 +13,7 @@ from chore_creation import ChoreCreation
 from verification import verification
 from parent_dashboard import parentDashboard
 from child_progress import childProgress
+from family_calendar import FamilyCalendar
 
 def main(page: ft.Page):
     page.title = "QuestNest"
@@ -51,7 +52,7 @@ def main(page: ft.Page):
         elif page.route == "/pin":
             page.views.append(ft.View("/pin", [PinPage(page)], padding=0, spacing=0))
         elif page.route == "/calendar":
-            page.views.append(ft.View("/calendar", [Calendar(page)], padding=0, spacing=0))
+            page.views.append(ft.View("/calendar", [FamilyCalendar(page)], padding=0, spacing=0))
         elif page.route == "/details":
             page.views.append(ft.View("/details", [ChoreDetails(page)], padding=0, spacing=0))
         elif page.route == "/create_chore":
