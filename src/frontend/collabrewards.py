@@ -1,5 +1,8 @@
 import flet as ft
 import utils as u
+import requests
+
+API_URL = "http://127.0.0.1:8000"
 
 def CollabRewards(page: ft.Page):
     page.title = "Family Reward"
@@ -31,7 +34,25 @@ def CollabRewards(page: ft.Page):
         text_align="center",
         font_family="LibreBaskerville",
         )
-
+    
+    # Send GET request to backend
+    response = requests.get(f"{API_URL}/collabrewards/progress")
+    
+    # Converts it to JSON format
+    data = response.json()
+    
+    current_xp = data.get("current_xp")
+    goal_xp = data.get("goal_xp")
+    
+    # Calculate progress
+    total = current_xp / goal_xp if goal_xp > 0 else 0
+    
+    progress_text = ft.Text(
+        f"{current_xp} XP / {goal_xp} XP",
+        size=14,
+        color="#473c9c",
+        font_family="LibreBaskerville",
+    )
 
     # Reward container
     reward_card = ft.Container(
@@ -63,17 +84,18 @@ def CollabRewards(page: ft.Page):
             colors=["#f6f6f6", "#d8d5d5"],
         ),
     )
-
+    
     # Family Progress Ring
     family_progress = ft.Container(
         content=ft.Column(
             [
-                ft.ProgressRing(value=0.6, 
-                                color="#8c52ff", 
-                                width=125, 
-                                height=125,
-                                stroke_width=25, 
-                                bgcolor="#74a8ce",),            
+                ft.ProgressRing(
+                        value=total,
+                        color="#8c52ff",
+                        width=125,
+                        height=125,
+                        stroke_width=25,
+                        bgcolor="#74a8ce"),            
                 ft.Icon(ft.Icons.FAMILY_RESTROOM, 
                         color="#473c9c", 
                         size=60),
@@ -81,10 +103,7 @@ def CollabRewards(page: ft.Page):
                         size=18, 
                         weight=ft.FontWeight.BOLD, 
                         font_family="LibreBaskerville"),
-                ft.Text("9000 XP / 15000 XP", 
-                        size=14, 
-                        color="#473c9c", 
-                        font_family="LibreBaskerville"),
+                progress_text,
             ],
             alignment="center",
             horizontal_alignment="center",
@@ -185,6 +204,7 @@ def CollabRewards(page: ft.Page):
         ),
         alignment=ft.alignment.center,
     )
+    
     
 def main(page: ft.Page):
     page.add(CollabRewards(page))
