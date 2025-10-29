@@ -33,36 +33,39 @@ def main(page: ft.Page):
     def route_change(e):
         page.views.clear()
         
-        if page.route in ["/", "/home"]:
-            page.views.append(ft.View("/", [HomePage(page)], padding=0, spacing=0))
-        elif page.route == "/create_account":
-            page.views.append(ft.View("/create_account", [SignUp(page)], padding=0, spacing=0))
-        elif page.route == "/login":
-            page.views.append(ft.View("/login", [Login(page)], padding=0, spacing=0))
-        elif page.route == "/collab_rewards":
-            page.views.append(ft.View("/collab_rewards", [CollabRewards(page)], padding=0, spacing=0))
-        elif page.route == "/settings":
-            page.views.append(ft.View("/settings", [SettingsPage(page)], padding=0, spacing=0))
-        elif page.route == "/avatars":
-            page.views.append(ft.View("/avatars", [AvatarSelection(page)], padding=0, spacing=0))
-        elif page.route == "/themed_dashboard":
-            page.views.append(ft.View("/themed_dashboard", [themedDashboard(page)], padding=0, spacing=0))
-        elif page.route == "/store":
-            page.views.append(ft.View("/store", [StorePage(page)], padding=0, spacing=0))
-        elif page.route == "/pin":
-            page.views.append(ft.View("/pin", [PinPage(page)], padding=0, spacing=0))
-        elif page.route == "/calendar":
-            page.views.append(ft.View("/calendar", [FamilyCalendar(page)], padding=0, spacing=0))
-        elif page.route == "/details":
-            page.views.append(ft.View("/details", [ChoreDetails(page)], padding=0, spacing=0))
-        elif page.route == "/create_chore":
-            page.views.append(ft.View("/create_chore", [ChoreCreation(page)], padding=0, spacing=0)) 
-        elif page.route == "/verification":
-            page.views.append(ft.View("/verification", [verification(page)], padding=0, spacing=0))
-        elif page.route == "/parentDashboard":
-            page.views.append(ft.View("/parentDashboard", [parentDashboard(page)], padding=0, spacing=0))
-        elif page.route == "/child_progress":
-            page.views.append(ft.View("/child_progress", [childProgress(page)], padding=0, spacing=0))            
+        match page.route:
+            case "/" | "/home":
+                page.views.append(ft.View("/", [HomePage(page)], padding=0, spacing=0))
+            case "/create_account":
+                page.views.append(ft.View("/create_account", [SignUp(page)], padding=0, spacing=0))
+            case "/login":
+                page.views.append(ft.View("/login", [Login(page)], padding=0, spacing=0))
+            case "/collab_rewards":
+                page.views.append(ft.View("/collab_rewards", [CollabRewards(page)], padding=0, spacing=0))
+            case "/settings":
+                page.views.append(ft.View("/settings", [SettingsPage(page)], padding=0, spacing=0))
+            case "/avatars":
+                page.views.append(ft.View("/avatars", [AvatarSelection(page)], padding=0, spacing=0))
+            case "/themed_dashboard":
+                page.views.append(ft.View("/themed_dashboard", [themedDashboard(page)], padding=0, spacing=0))
+            case "/store":
+                page.views.append(ft.View("/store", [StorePage(page)], padding=0, spacing=0))
+            case "/pin":
+                page.views.append(ft.View("/pin", [PinPage(page)], padding=0, spacing=0))
+            case "/calendar":
+                page.views.append(ft.View("/calendar", [FamilyCalendar(page)], padding=0, spacing=0))
+            case "/details":
+                page.views.append(ft.View("/details", [ChoreDetails(page)], padding=0, spacing=0))
+            case "/create_chore":
+                page.views.append(ft.View("/create_chore", [ChoreCreation(page)], padding=0, spacing=0)) 
+            case "/verification":
+                page.views.append(ft.View("/verification", [verification(page)], padding=0, spacing=0))
+            case "/parentDashboard":
+                page.views.append(ft.View("/parentDashboard", [parentDashboard(page)], padding=0, spacing=0))
+            case "/child_progress":
+                page.views.append(ft.View("/child_progress", [childProgress(page)], padding=0, spacing=0))
+            case _:
+                page.views.append(ft.View("/", [HomePage(page)], padding=0, spacing=0))
             
         page.update()
     

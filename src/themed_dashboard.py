@@ -1,4 +1,5 @@
 import flet as ft
+import utils as u
 
 def themedDashboard(page: ft.Page):
     page.horizontal_alignment = "center"
@@ -15,21 +16,6 @@ def themedDashboard(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    def go_dashboard(e):
-        page.go("/themed_dashboard")
-
-    def go_store(e):
-        page.go("/store")
-
-    def go_calendar(e):
-        page.go("/calendar")
-    
-    def go_settings(e):
-        page.go("/settings")
-
-    def logout(e):
-        page.go("/")
-    
     def go_chore_details(e: ft.ControlEvent):
         page.go("/details")
         page.update()
@@ -42,59 +28,10 @@ def themedDashboard(page: ft.Page):
         page.go("/collab_rewards")
         page.update()
     
-    def create_chore(e):
-        page.go("/create_chore")
-
-    def on_nav_change(e: ft.ControlEvent):
-        selected_index = e.control.selected_index
-
-        routes = ["/themed_dashboard", "/store", "/calendar"]
-        new_route = routes[selected_index]
-
-        if page.route != new_route:
-            page.go(new_route)
-
-   # App Bar
-    app_bar = ft.Container(
-        bgcolor="#404040",
-        padding=ft.padding.symmetric(horizontal=15, vertical=10),
-        content=ft.Row(
-            [
-                ft.PopupMenuButton(
-                    icon=ft.Icons.MENU,
-                    icon_color="#ffffff",
-                    items=[
-                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                        ft.PopupMenuItem(),
-                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-                    ],
-                ),
-                ft.IconButton(
-                    icon=ft.Icons.EDIT_DOCUMENT,
-                    icon_color="#ffffff",
-                    tooltip="Create Chore",
-                    on_click=create_chore,
-                ),
-            ],
-            alignment="spaceBetween",
-            vertical_alignment="center",
-        ),
-    )
-    
+    # App Bar
+    app_bar = u.application_bar(page)
     # Navigation bar
-    nav_bar = ft.Container(
-        content=ft.NavigationBar(
-            selected_index=-1,
-            bgcolor="#C2B280",
-            destinations=[
-                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-            ],
-            on_change=on_nav_change,
-        ),
-        expand=False,
-    )
+    nav_bar = u.navigation_bar(page)
 
     # Individual Progress Bar 
     progress_card = ft.Container(

@@ -1,4 +1,5 @@
 import flet as ft
+import utils as u
 
 # Functionality to Implement:
 # -> Claim Button: Deducts Points from User's Spendable XP
@@ -22,76 +23,10 @@ def StorePage(page: ft.Page):
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
     }
     
-    def go_dashboard(e):
-        page.go("/themed_dashboard")
-
-    def go_store(e):
-        page.go("/store")
-
-    def go_calendar(e):
-        page.go("/calendar")
-    
-    def go_settings(e):
-        page.go("/settings")
-
-    def logout(e):
-        page.go("/")
-
-    def on_nav_change(e: ft.ControlEvent):
-        selected_index = e.control.selected_index
-        
-        routes = ["/themed_dashboard", "/store", "/calendar"]
-        new_route = routes[selected_index]
-        
-        if page.route != new_route:
-            page.go(new_route)
-
-    app_bar = ft.Container(
-        bgcolor="#404040",
-        padding=ft.padding.symmetric(horizontal=15, vertical=10),
-        content=ft.Row(
-            [
-                ft.PopupMenuButton(
-                    icon=ft.Icons.MENU,
-                    icon_color="#ffffff",
-                    items=[
-                        ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
-                        ft.PopupMenuItem(),
-                        ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
-                    ],
-                ),
-            ],
-            alignment="spaceBetween",
-            vertical_alignment="center",
-        ),
-    )
-    
+    # App Bar
+    app_bar = u.application_bar(page)
     # Navigation bar
-    nav_bar = ft.Container(
-        content=ft.NavigationBar(
-            selected_index=-1,
-            bgcolor="#C2B280",
-            destinations=[
-                ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-                ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-                ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-            ],
-            on_change=on_nav_change,
-        ),
-        expand=False,
-    )
-    
-    # Navigation bar
-    page.navigation_bar = ft.NavigationBar(
-        bgcolor="#C2B280",
-        destinations=[
-            ft.NavigationBarDestination(icon=ft.Icons.HOME_ROUNDED, label="Home"),
-            ft.NavigationBarDestination(icon=ft.Icons.SHOPPING_BAG, label="Store"),
-            ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Calendar"),
-        ],
-        on_change=on_nav_change,
-    )
-    page.navigation_bar.selected_index = -1
+    nav_bar = u.navigation_bar(page)
 
     # Title at the top of the page
     title = ft.Text (
