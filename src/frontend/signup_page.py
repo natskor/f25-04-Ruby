@@ -1,4 +1,5 @@
 import flet as ft
+import requests
 
 def SignUp(page: ft.Page):
     # ---------- Page chrome ----------
@@ -62,9 +63,22 @@ def SignUp(page: ft.Page):
         elif password.value != confirm.value:
             msg.value = "Passwords do not match."
         else:
-            # UI demo only
-            # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Account created!"), open=True)
-            page.go("/avatars")
+            response = requests.post(
+                "http://127.0.0.1:8000/signup_page/",
+                data = {
+                    "username": username.value,
+                    "email": email.value,
+                    "password": password.value,
+                    "confirm": confirm.value
+                }
+            )
+            
+            if response.status_code == 200:
+                page.go("/avatars")
+            else:
+                data = response.json()
+                msg.value = data.get("detail", "Error creating account")
+                
         page.update()
 
     signup_btn = ft.ElevatedButton(
@@ -118,6 +132,8 @@ def SignUp(page: ft.Page):
         spacing=25,
         expand=True,
     )
+    
+    
     
     return ft.Container(
         content=content,

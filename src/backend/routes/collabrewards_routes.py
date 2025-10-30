@@ -6,7 +6,7 @@ router = APIRouter(prefix="/collabrewards", tags=["Collaborative Family Rewards"
 def get_collab_progress():
     return {
         "goal_xp": 20000,
-        "current_xp": 8000,
+        "current_xp": 19000,
         "contributors": ["Kaleb","Alice", "Mom", "Dad"]
     }
     

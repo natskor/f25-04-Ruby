@@ -2,8 +2,6 @@ import flet as ft
 import utils as u
 import requests
 
-API_URL = "http://127.0.0.1:8000"
-
 def CollabRewards(page: ft.Page):
     page.title = "Family Reward"
     page.horizontal_alignment = "center"
@@ -36,7 +34,7 @@ def CollabRewards(page: ft.Page):
         )
     
     # Send GET request to backend
-    response = requests.get(f"{API_URL}/collabrewards/progress")
+    response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
     
     # Converts it to JSON format
     data = response.json()

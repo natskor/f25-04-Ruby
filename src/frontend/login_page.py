@@ -1,4 +1,5 @@
 import flet as ft 
+import requests
 
 def Login(page: ft.Page):
     #------------Page chrome----------
@@ -46,10 +47,19 @@ def Login(page: ft.Page):
         error_msg.value = ""
         if not email.value or not password.value:
             error_msg.value = "Please enter your email and password."
-        else:
-            # UI demo only
-            # page.snack_bar = ft.SnackBar(ft.Text("(Demo) Logged in!"), open=True)
-            page.go("/avatars")
+        else: 
+            response = requests.post(
+                "http://127.0.0.1:8000/login_page/",
+                data = {
+                    "email": email.value,
+                    "password": password.value
+                }
+            )
+            if response.status_code == 200:
+                page.go("/avatars")
+            else: 
+                data = response.json()
+                error_msg.value = data.get("detail", "Login failed.")
         page.update()
 
     login_btn = ft.ElevatedButton(
