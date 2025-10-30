@@ -1,5 +1,6 @@
 import flet as ft
 import utils as u
+import requests
 
 # Functionality to Implement:
 # -> Claim Button: Deducts Points from User's Spendable XP
@@ -27,6 +28,15 @@ def StorePage(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
+    
+    response = requests.get("http://127.0.0.1:8000/rewards_store/rewards")
+    data = response.json()
+    user_xp = 500
+    
+    def claim_reward(reward_id):
+        response = requests.post(f"http://127.0.0.1:8000/rewards_store/claim/{reward_id}")
+        data = response.json()  
+        page.update()
 
     # Title at the top of the page
     title = ft.Text (
@@ -124,7 +134,7 @@ def StorePage(page: ft.Page):
                                 ),
                             ),
                         ),
-                    ft.ElevatedButton("Claim!", bgcolor="#00bf63", color="#ffffff", width=200,),
+                    ft.ElevatedButton("Claim!", bgcolor="#00bf63", color="#ffffff", width=200, on_click=lambda e: claim_reward("icecream")),
                 ], 
                 alignment=ft.alignment.center, 
                 width=225,
@@ -190,6 +200,7 @@ def StorePage(page: ft.Page):
                         color="#535353", 
                         width=200,
                         disabled=True,
+                        on_click=lambda e: claim_reward("movienight"),
                     ),
                 ], 
                 alignment=ft.alignment.center, 

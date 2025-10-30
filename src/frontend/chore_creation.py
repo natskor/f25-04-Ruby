@@ -72,7 +72,7 @@ def ChoreCreation(page: ft.Page):
             ft.dropdown.Option("Mom"),
             ft.dropdown.Option("Dad"),
             ft.dropdown.Option("Alice"),
-            ft.dropdown.Option("Bob"),
+            ft.dropdown.Option("Kaleb"),
         ],
         width=150,
         border_radius=10,

@@ -1,6 +1,6 @@
 import calendar
 from datetime import datetime
-#import pytz
+import requests
 
 import flet as ft
 import utils as u
@@ -27,6 +27,12 @@ def FamilyCalendar(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
+    
+    
+    response = requests.get("http://127.0.0.1:8000/family_calendar/all")
+    data = response.json()
+    all_chores = data.get("chores", [])
+    selected = ft.Text("Select a date to see chores.", size=14, color="#473c9c")
     
     # Title
     title = ft.Text (
@@ -62,9 +68,22 @@ def FamilyCalendar(page: ft.Page):
         )
     
     # -> Container formatting for dates of the month
-    def date_container_format(date):
+    def date_container_format(date):  
+        def show_chores(e):
+            if isinstance(date, ft.Text):
+                return
+            selected_date = f"{current_year}-{current_month:02d}-{int(date):02d}"
+            chores_today = [c for c in all_chores if c["date"] == selected_date]
+            
+            if chores_today:
+                task_list = "\n".join(f"• {c['title']} - {c['assignee']}" for c in chores_today)
+                selected.value = f"Chores for {selected_date}:\n{task_list}"
+            else:
+                selected.value = f"No chores for {selected_date}"
+            page.update()
+        
         return ft.Container (
-            content=ft.TextButton(content=date), 
+            content=ft.TextButton(content=ft.Text(str(date)), on_click=show_chores), 
             width=62, 
             height=50, 
             alignment=ft.alignment.center, 
@@ -83,10 +102,10 @@ def FamilyCalendar(page: ft.Page):
     def get_dates(year, month):
         dates = []
         for day in cal.itermonthdays(year, month):
-            if (day == 0): 
-                dates.append(date_container_format(schedule_text_format(" ")))
+            if day == 0: 
+                dates.append(date_container_format(" "))
             else:
-                dates.append(date_container_format(schedule_text_format(day)))
+                dates.append(date_container_format(day))
         return dates
     
     # -> Days of the week
@@ -207,13 +226,21 @@ def FamilyCalendar(page: ft.Page):
     
     # Events Summary
     events_summary = ft.Container (
-        ft.Text (
-            "Today's Schedule...", 
-            color="#000000",
-            weight=ft.FontWeight.BOLD, 
-            font_family="LibreBaskerville", 
-            size=18,
-            text_align="center",
+        content=ft.Column(
+            [
+                ft.Text (
+                    "Today's Schedule...", 
+                    color="#000000",
+                    weight=ft.FontWeight.BOLD, 
+                    font_family="LibreBaskerville", 
+                    size=18,
+                    text_align="center",
+                ),
+                selected,
+            ],
+            alignment="center",
+            horizontal_alignment="center",
+            spacing=10,
         ),
         alignment=ft.alignment.top_center,
         width=450,
