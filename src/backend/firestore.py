@@ -30,4 +30,4 @@ db = firestore.client()
 #doc_ref.set({"first": "Ada", "last": "Lovelace", "Born": 1815})
 
 # 2) Clean up the data
-db.collection("users").document("alovelace").delete()
+#db.collection("users").document("alovelace").delete()
