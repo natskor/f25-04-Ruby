@@ -16,3 +16,10 @@ def get_all_chores():
     return {
         "chores": chores
     }
+
+
+# Helper function for chore integration(added by JS)   
+def add_event_to_calendar(user: str, title: str, date: str, description: str = ""):
+    """Helper function for chore integration."""
+    # Simulate adding a calendar event for a user
+    print(f"Added calendar event for {user}: {title} on {date}")

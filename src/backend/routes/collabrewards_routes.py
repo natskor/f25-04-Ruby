@@ -17,3 +17,9 @@ def update_collab_progress(member_id: str = "test_user", xp_earned: int = 0):
         "message": f"{member_id} earned {xp_earned} XP!",
         "new_total": new_total
     }
+
+    
+# Helper function for chore integration(added by JS)       
+def award_points(username: str, points: int):
+    """Helper function for chore integration."""
+    print(f"Awarded {points} points to {username} for completing a chore.")
