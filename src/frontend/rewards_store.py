@@ -29,9 +29,15 @@ def StorePage(page: ft.Page):
     # Navigation bar
     nav_bar = u.navigation_bar(page)
     
-    response = requests.get("http://127.0.0.1:8000/rewards_store/rewards")
-    data = response.json()
-    user_xp = 500
+    # response = requests.get("http://127.0.0.1:8000/rewards_store/rewards")
+    # data = response.json()
+    # user_xp = 500
+    
+    def load_rewards():
+        response = requests.get("http://127.0.0.1:8000/rewards_store/rewards")
+        return response.json()
+    
+    data = load_rewards()
     
     def claim_reward(reward_id):
         response = requests.post(f"http://127.0.0.1:8000/rewards_store/claim/{reward_id}")
@@ -86,6 +92,10 @@ def StorePage(page: ft.Page):
             colors=["#0571d3","#f9b3ff"],
         ),
     )
+    
+    # Create a reward button
+    def create_reward(e):
+        page.go("/create_reward")
     
     # Rewards Table
     rewards_table = ft.Container (
@@ -265,6 +275,26 @@ def StorePage(page: ft.Page):
                     trailing_indent=150,
                     ), 
                    rewards_table,
+                   ft.Container(
+                        alignment=ft.alignment.center,
+                        padding=10,
+                        content=ft.Container(
+                            content=ft.Text(
+                                "+ Add Reward",
+                                size=18,
+                                weight=ft.FontWeight.BOLD,
+                                color="#ffffff",
+                                font_family="LibreBaskerville",
+                                text_align="center",
+                            ),
+                            width=200,
+                            height=50,
+                            alignment=ft.alignment.center,
+                            bgcolor="#6562DF",
+                            border_radius=10,
+                            on_click=create_reward,   # navigates on click
+                        ),
+                    ),
                    reminder,
                    ],
                 alignment="center",
