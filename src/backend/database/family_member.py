@@ -1,6 +1,6 @@
 from firestore import db as DB
 
-##### DOCUMENT INITIALIZATION
+### DOCUMENT INITIALIZATION
 def create_member(email: str):
     new_member = DB.collection("FAMILY MEMBER").document(email)
     new_member.set({ 
@@ -11,6 +11,8 @@ def create_member(email: str):
                      "PIN":      0000,
                      "FamilyID": 0 
                     })
+
+### ADD DATA
 
 # Member ID (supplied email)
 def add_member_id(email: str):
@@ -43,6 +45,7 @@ def add_family_id(email: str, family_id: int):
     member.update({"FamilyID": family_id})
 
 ### RETRIEVE DATA
+
 # Member ID (supplied email)
 #def get_member_id(email: str):
 
@@ -57,6 +60,7 @@ def add_family_id(email: str, family_id: int):
 
 # PIN
 #def get_pin(email: str):
+    
 
 # Family ID (N/A right now)
 #def get_family_id(email: str):
