@@ -9,6 +9,7 @@ from routes import (
     rewards_store_routes,
     chore_routes,
     auth_routes,
+    progress_routes,
 )
 
 app = FastAPI(title="QuestNest API")
@@ -20,6 +21,7 @@ app.include_router(calendar_routes.router)
 app.include_router(rewards_store_routes.router)
 app.include_router(chore_routes.router)
 app.include_router(auth_routes.router)
+app.include_router(progress_routes.router)
 
 @app.get("/health")
 def health():
