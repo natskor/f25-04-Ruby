@@ -1,5 +1,6 @@
 import flet as ft
 import utils as u
+import requests
 
 def themedDashboard(page: ft.Page):
     page.horizontal_alignment = "center"
@@ -32,6 +33,14 @@ def themedDashboard(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
+    
+    # Collaborative Progress update
+    collab_response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
+    collab_data = collab_response.json()
+
+    collab_current = collab_data.get("current_xp", 0)
+    collab_goal = collab_data.get("goal_xp", 1)
+    collab_total = collab_current / collab_goal if collab_goal > 0 else 0
 
     # Individual Progress Bar 
     progress_card = ft.Container(
@@ -177,7 +186,7 @@ def themedDashboard(page: ft.Page):
                             size=60,
                             opacity=.8,),
                         ft.Text(
-                            "3000 XP / 5000 XP",
+                            f"{collab_current} XP / {collab_goal} XP",
                             size=14,
                             color="#473c9c",
                             font_family="LibreBaskerville",
@@ -185,7 +194,7 @@ def themedDashboard(page: ft.Page):
                             ),
                         ft.Container(
                             content=ft.ProgressBar(
-                                value=0.6,
+                                value=collab_total,
                                 height=22,
                                 width=200,
                                 bar_height=40,

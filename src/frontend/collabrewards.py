@@ -34,16 +34,25 @@ def CollabRewards(page: ft.Page):
         )
     
     # Send GET request to backend
-    response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
+    collab_response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
     
-    # Converts it to JSON format
-    data = response.json()
+     # Converts it to JSON format
+    collab_data = collab_response.json()
     
-    current_xp = data.get("current_xp")
-    goal_xp = data.get("goal_xp")
+    current_xp = collab_data.get("current_xp", 0)
+    goal_xp = collab_data.get("goal_xp", 1)
     
-    # Calculate progress
-    total = current_xp / goal_xp if goal_xp > 0 else 0
+    # Calculate Progress
+    collab_total = current_xp / goal_xp if goal_xp > 0 else 0
+    
+    # Do the same for individual progress
+    member_id = "Kaleb"  # replace this with logged-in user from db
+    user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
+    user_data = user_response.json()
+    user_current = user_data.get("current_xp", 0)
+    user_goal = user_data.get("goal_xp", 1)
+    user_total = user_current / user_goal if user_goal > 0 else 0
+ 
     
     progress_text = ft.Text(
         f"{current_xp} XP / {goal_xp} XP",
@@ -88,7 +97,7 @@ def CollabRewards(page: ft.Page):
         content=ft.Column(
             [
                 ft.ProgressRing(
-                        value=total,
+                        value=collab_total,
                         color="#8c52ff",
                         width=125,
                         height=125,
@@ -128,7 +137,7 @@ def CollabRewards(page: ft.Page):
                     [
                         ft.Container(
                             content=ft.ProgressBar(
-                                value=0.6,
+                                value=user_total,
                                 width=180,
                                 bar_height=25,
                                 height=30,
@@ -148,7 +157,7 @@ def CollabRewards(page: ft.Page):
                             text_align="center",
                         ),
                         ft.Text(
-                            "3000 XP / 5000 XP",
+                            f"{user_current} XP / {user_goal} XP",
                             size=14,
                             color="#473c9c",
                             font_family="LibreBaskerville",
