@@ -56,7 +56,7 @@ def Login(page: ft.Page):
                 }
             )
             if response.status_code == 200:
-                page.go("/avatars")
+                page.go("/profiles")
             else: 
                 data = response.json()
                 error_msg.value = data.get("detail", "Login failed.")

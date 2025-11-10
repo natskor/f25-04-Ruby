@@ -106,7 +106,7 @@ def AvatarSelection(page: ft.Page):
             pair.append(ft.Container(width=160, height=130, opacity=0))
         rows.append(ft.Row(pair, alignment=ft.MainAxisAlignment.SPACE_EVENLY))
 
-    continue_btn = ft.ElevatedButton("Continue", disabled=True, width=200, on_click=lambda e: page.go("/pin"))
+    continue_btn = ft.ElevatedButton("Continue", disabled=True, width=200, on_click=lambda e: page.go("/create_pin"))
 
     content = ft.Column(
         [
