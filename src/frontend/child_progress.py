@@ -1,5 +1,6 @@
 import flet as ft
 import utils as u
+import requests
 
 def childProgress(page: ft.Page):
     # ---------- page chrome ----------
@@ -22,6 +23,14 @@ def childProgress(page: ft.Page):
     # Navigation bar
     nav_bar = u.navigation_bar(page)
     
+    member_id = "Kaleb"  # update later with db
+    response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
+    data = response.json()
+
+    current_xp = data.get("current_xp", 0)
+    goal_xp = data.get("goal_xp", 1)
+    total = current_xp / goal_xp if goal_xp > 0 else 0
+    
     # ---------- XP progress card ----------
     xp_title = ft.Text(
         "XP Progress",
@@ -43,7 +52,7 @@ def childProgress(page: ft.Page):
     )
 
     progress_ring = ft.ProgressRing(
-        value=0.8,
+        value=total,
         width=120,
         height=120,
         stroke_width=20,
@@ -90,8 +99,8 @@ def childProgress(page: ft.Page):
             ft.Text("Level 5", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
             ft.Text("XP Breakdown", size=16, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
-            ft.Text("Current Total: 3255", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("Level-Up Needs: 745", size=14, color="#333333", font_family="LibreBaskerville"),
+            ft.Text(f"Current Total: {current_xp}", size=14, color="#333333", font_family="LibreBaskerville"),
+            ft.Text(f"Level-Up Needs: {goal_xp - current_xp}", size=14, color="#333333", font_family="LibreBaskerville"),
             ft.Text("All-Time Earnings: 54255", size=14, color="#333333", font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
         ],
