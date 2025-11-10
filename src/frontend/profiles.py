@@ -1,16 +1,15 @@
 import flet as ft
 
-AVATARS = [
-    "images/avatars/dragon.png",
-    "images/avatars/pegasus.png",
-    "images/avatars/unicorn.png",
-    "images/avatars/wizard.png",
-    "images/avatars/mermaid.png",
-    "images/avatars/fairy.png",
+# hardcoded right now until database takes over
+PROFILES = [
+    {"name": "Mom", "avatar": "images/avatars/mermaid.png"},
+    {"name": "Dad", "avatar": "images/avatars/wizard.png"},
+    {"name": "Alice", "avatar": "images/avatars/unicorn.png"},
+    {"name": "Bob", "avatar": "images/avatars/dragon.png"},
 ]
 
-def AvatarSelection(page: ft.Page):
-    page.title = "QuestNest – Avatar"
+def ProfileSelection(page: ft.Page):
+    page.title = "QuestNest – Family Profiles"
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
     page.padding = 0
@@ -21,46 +20,30 @@ def AvatarSelection(page: ft.Page):
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
-    
-    profile_name = ft.TextField(
-        label="Profile Name",
-        hint_text="Enter a name for this profile",
-        width=300,
-        border_radius=10,
-        bgcolor="#ffffff",
-        color="black",
-        border_color="#8c52ff",
-        focused_border_color="#473c9c",
-        text_align=ft.TextAlign.CENTER,
-        text_size=16,
-    )
-
 
     selected_idx = {"value": None}
-    tiles: list[ft.Container] = []
 
-    def make_tile(path: str, idx: int) -> ft.Container:
+    def make_profile_tile(profile: dict, idx: int) -> ft.Container:
         is_selected = selected_idx["value"] == idx
         border_color = "#6B8AF6" if is_selected else "#DADDE6"
 
-       
         img = ft.Container(
             width=90,
             height=90,
-            border_radius=45,                     
+            border_radius=45,
             alignment=ft.alignment.center,
             clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-            border=ft.border.all(2, "#8ba7ff"),               
+            border=ft.border.all(2, "#8ba7ff"),
             content=ft.Image(
-                src=path,
+                src=profile["avatar"],
                 width=80,
                 height=65,
-                fit=ft.ImageFit.COVER,         
+                fit=ft.ImageFit.COVER,
             ),
         )
 
         label = ft.Text(
-            path.split("/")[-1].split(".")[0].title(),
+            profile["name"],
             size=16,
             color="#4A4F5A",
             font_family="LibreBaskerville",
@@ -88,7 +71,7 @@ def AvatarSelection(page: ft.Page):
         c.on_click = on_click
         return c
 
-    tiles = [make_tile(path, i) for i, path in enumerate(AVATARS)]
+    tiles = [make_profile_tile(profile, i) for i, profile in enumerate(PROFILES)]
 
     def refresh_tiles():
         for i, c in enumerate(tiles):
@@ -98,7 +81,7 @@ def AvatarSelection(page: ft.Page):
                 "#6B8AF6" if sel else "#DADDE6",
             )
 
-    # group into rows of 2 
+    # group into rows of 2 for grid layout
     rows: list[ft.Row] = []
     for i in range(0, len(tiles), 2):
         pair = tiles[i:i+2]
@@ -106,22 +89,45 @@ def AvatarSelection(page: ft.Page):
             pair.append(ft.Container(width=160, height=130, opacity=0))
         rows.append(ft.Row(pair, alignment=ft.MainAxisAlignment.SPACE_EVENLY))
 
-    continue_btn = ft.ElevatedButton("Continue", disabled=True, width=200, on_click=lambda e: page.go("/pin"))
+    # Continue button to enter the app
+    continue_btn = ft.ElevatedButton(
+        "Continue",
+        disabled=True,
+        width=200,
+        bgcolor="#6562DF",
+        color="white",
+        on_click=lambda e: page.go("/pin"),
+    )
+
+    # Add Profile button (like Home page style)
+    add_profile_btn = ft.IconButton(
+        icon=ft.Icons.ADD_CIRCLE,
+        icon_color="#6562DF",
+        tooltip="Add New Profile",
+        on_click=lambda e: page.go("/avatars"),
+    )
+
 
     content = ft.Column(
         [
-            ft.Text("Choose Your Avatar!", size=40, color="#423c36", font_family="LibreBaskerville-Bold", weight=ft.FontWeight.BOLD),
-            profile_name,
+            ft.Text(
+                "Select your Profile",
+                size=40,
+                color="#423c36",
+                font_family="LibreBaskerville-Bold",
+                weight=ft.FontWeight.BOLD,
+            ),
+            add_profile_btn,
             ft.Column(rows, spacing=12, horizontal_alignment=ft.CrossAxisAlignment.CENTER),
             ft.Container(height=10),
             ft.Row([continue_btn], alignment=ft.MainAxisAlignment.CENTER),
+            ft.Container(height=30),
         ],
         spacing=16,
         alignment="center",
         horizontal_alignment="center",
     )
 
-    
     return ft.Container(
         content=content,
         expand=True,
@@ -129,14 +135,12 @@ def AvatarSelection(page: ft.Page):
         gradient=ft.LinearGradient(
             begin=ft.alignment.top_left,
             end=ft.alignment.bottom_right,
-            colors=["#cdffd8", "#94b9ff"],  # page background
+            colors=["#cdffd8", "#94b9ff"],
         ),
     )
 
-    
-
 def main(page: ft.Page):
-    page.add(AvatarSelection(page))
+    page.add(ProfileSelection(page))
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")

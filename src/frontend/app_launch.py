@@ -15,6 +15,8 @@ from parent_dashboard import parentDashboard
 from child_progress import childProgress
 from family_calendar import FamilyCalendar
 from reward_creation import CreateReward
+from profiles import ProfileSelection
+from Create_PIN import CreatePIN
 
 def main(page: ft.Page):
     page.title = "QuestNest"
@@ -67,6 +69,10 @@ def main(page: ft.Page):
                 page.views.append(ft.View("/child_progress", [childProgress(page)], padding=0, spacing=0))
             case "/create_reward":
                 page.views.append(ft.View("/create_reward", [CreateReward(page)], padding=0, spacing=0))
+            case "/profiles":
+                page.views.append(ft.View("/profiles", [ProfileSelection(page)], padding=0, spacing=0))
+            case "/create_pin":
+                page.views.append(ft.View("/create_pin", [CreatePIN(page)], padding=0, spacing=0))
             case _:
                 page.views.append(ft.View("/", [HomePage(page)], padding=0, spacing=0))
             
