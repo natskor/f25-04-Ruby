@@ -1,7 +1,6 @@
 import calendar
 from datetime import datetime
 import requests
-
 import flet as ft
 import utils as u
 
@@ -27,7 +26,6 @@ def FamilyCalendar(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
-    
     
     response = requests.get("http://127.0.0.1:8000/family_calendar/all")
     data = response.json()
@@ -96,6 +94,38 @@ def FamilyCalendar(page: ft.Page):
     currently = datetime.now()
     current_month = currently.month
     current_year = currently.year
+    
+    month_label = ft.Text(
+        f"{calendar.month_name[current_month]} {current_year}",
+        color="#000000",
+        size=28,
+        font_family="LibreBaskerville",
+        text_align="center",
+        weight=ft.FontWeight.BOLD,
+    )
+    
+    def update_calendar():
+        month_label.value = f"{calendar.month_name[current_month]} {current_year}"
+        week_dates.controls = get_dates(current_year, current_month)
+        page.update()
+
+    def next_month(e):
+        nonlocal current_month, current_year
+        if current_month == 12:
+            current_month = 1
+            current_year += 1
+        else:
+            current_month += 1
+        update_calendar()
+
+    def prev_month(e):
+        nonlocal current_month, current_year
+        if current_month == 1:
+            current_month = 12
+            current_year -= 1
+        else:
+            current_month -= 1
+        update_calendar()
     
     # -! BELONGS IN CONTROLLER
     # -> Iterate over a list of days in a month and encapsulate in a container
@@ -172,22 +202,15 @@ def FamilyCalendar(page: ft.Page):
                 [
                     ft.IconButton (
                         ft.Icons.ARROW_CIRCLE_LEFT_OUTLINED, 
-                        on_click=button_clicked,
+                        on_click=prev_month,
                         icon_color="#59226b",
                         icon_size=36,
                         alignment=ft.alignment.center_left,
                         ),
-                    ft.Text (
-                        "October 2025",
-                        color="#000000",
-                        size=28,
-                        font_family="LibreBaskerville",
-                        text_align="center",
-                        weight=ft.FontWeight.BOLD,
-                        ),
+                    month_label,
                     ft.IconButton (
                         ft.Icons.ARROW_CIRCLE_RIGHT_OUTLINED,
-                        on_click=button_clicked,
+                        on_click=next_month,
                         icon_color="#59226b",
                         icon_size=36,
                         alignment=ft.alignment.center_right,
@@ -215,6 +238,7 @@ def FamilyCalendar(page: ft.Page):
             )
             ],
         ),
+        expand=True,
         height=450,
         width=450,
         alignment=ft.alignment.center,

@@ -19,13 +19,16 @@ class Chore(BaseModel):
     due_date: Optional[str] = None
     completed: bool = False
     created_at: datetime = datetime.now()
+    task_type: Optional[str] = None
+    reward_points: Optional[int] = 0
 
 class ChoreCreate(BaseModel):
     title: str
     description: Optional[str] = None
     assigned_to: str
     due_date: Optional[str] = None
-
+    task_type: Optional[str] = None
+    reward_points: Optional[int] = 0
 
 #In-memory store
 chore_list = []
@@ -44,8 +47,11 @@ def create_chore(chore: ChoreCreate):
         description=chore.description,
         assigned_to=chore.assigned_to,
         due_date=chore.due_date,
-        completed=False
+        completed=False,
+        task_type=chore.task_type,
+        reward_points=chore.reward_points,
     )
+    
     chore_id_counter += 1
     chore_list.append(new_chore)
 

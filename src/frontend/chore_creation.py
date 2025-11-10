@@ -1,5 +1,6 @@
 import flet as ft
 import utils as u
+import requests
 
 def ChoreCreation(page: ft.Page):
     page.title = "Chore Creation"
@@ -30,7 +31,6 @@ def ChoreCreation(page: ft.Page):
         font_family="LibreBaskerville",
     )
 
-    
     # Input fields for chore creation
     chore_name = ft.TextField(
         label="Chore Name",
@@ -113,22 +113,30 @@ def ChoreCreation(page: ft.Page):
 
     # Submit chore handler
     def submit_chore():
-        print(f"""
-        New chore created:
-        - Name: {chore_name.value}
-        - Description: {chore_desc.value}
-        - Points: {reward_points.value}
-        - Assignee: {assignee.value}
-        - Due Date: {due_date.value}
-        - Task Type: {task_type.value}
-        - Require Photo Proof: {require_proof.value}
-        """)
+        # print(f"""
+        # New chore created:
+        # - Name: {chore_name.value}
+        # - Description: {chore_desc.value}
+        # - Points: {reward_points.value}
+        # - Assignee: {assignee.value}
+        # - Due Date: {due_date.value}
+        # - Task Type: {task_type.value}
+        # - Require Photo Proof: {require_proof.value}
+        # """)
+        response = requests.post("http://127.0.0.1:8000/chores/",json={
+            "title": chore_name.value,
+            "description": chore_desc.value,
+            "assigned_to": assignee.value,
+            "due_date": due_date.value,
+            "task_type": task_type.value,
+            "reward_points": int(reward_points.value or 0)
+        }
+    )
         page.snack_bar = ft.SnackBar(ft.Text("Submitted Successfully!"))
         page.snack_bar.open = True
         page.update()
         
         # Pop back to previous page
-        # view_pop(None)
         page.go("/themed_dashboard")
 
 
