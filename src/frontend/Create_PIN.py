@@ -1,9 +1,13 @@
 import flet as ft
+import requests
+
+BACKEND_URL = "http://127.0.0.1:8000"
+
 
 def CreatePIN(page: ft.Page):
     page.title = "QuestNest – PIN"
-    
-     #Fonts from /assets/fonts
+
+    # Fonts from /assets/fonts
     page.fonts = {
         "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
@@ -12,12 +16,25 @@ def CreatePIN(page: ft.Page):
 
     # ---- state ----
     pin = {"value": ""}
+    error_msg = ft.Text("", color="red", size=12)
 
+    # Try to get username from previous page; fall back to a demo name
+    username = None
+    try:
+        # if your Flet version supports session
+        username = page.session.get("profile_name")
+    except AttributeError:
+        pass
 
+    if not username:
+        # fallback so you can still test even if not coming from avatar page
+        username = "TestUser"
+
+    # ---- dot helper ----
     def pin_dot(filled: bool) -> ft.Control:
-        # empty/filled dot (visual only)
         return ft.Container(
-            width=40, height=40,
+            width=40,
+            height=40,
             border_radius=12,
             bgcolor="#EEF2F7",
             border=ft.border.all(1, "#2D3C68"),
@@ -33,9 +50,11 @@ def CreatePIN(page: ft.Page):
             pin_dot(len(pin["value"]) >= 4),
         ]
 
+    # ---- keypad button ----
     def key_button(label: str, on_click) -> ft.Control:
         return ft.Container(
-            width=64, height=64,
+            width=64,
+            height=64,
             border_radius=32,
             bgcolor="#F4F6FA",
             border=ft.border.all(1, "#2D3C68"),
@@ -44,29 +63,40 @@ def CreatePIN(page: ft.Page):
             on_click=on_click,
         )
 
+    # ---- back button ----
     def go_back(e):
+        page.go("/profiles")
 
-        page.go("/profiles")  # Navigate to profile selection page on back
-        
-    # ---- header ----
     header = ft.Row(
-    [
-        ft.IconButton(
-            icon=ft.Icons.ARROW_BACK,
-            icon_size=20,
-            icon_color="#1a1a1a",
-            style=ft.ButtonStyle(
-                shape=ft.RoundedRectangleBorder(radius=18),
-                bgcolor={ft.ControlState.DEFAULT: "#ECF0FF"},
-            ),
-            on_click=go_back,
-        )
-    ],
-    alignment=ft.MainAxisAlignment.START,
-)
+        [
+            ft.IconButton(
+                icon=ft.Icons.ARROW_BACK,
+                icon_size=20,
+                icon_color="#1a1a1a",
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=18),
+                    bgcolor={ft.ControlState.DEFAULT: "#ECF0FF"},
+                ),
+                on_click=go_back,
+            )
+        ],
+        alignment=ft.MainAxisAlignment.START,
+    )
 
-    title = ft.Text("Create PIN", size=26, color="#425986" ,weight=ft.FontWeight.BOLD, font_family="LibreBaskerville")
-    subtitle = ft.Text("Enter a 4-digit PIN", size=16, color="#6B7280", font_family="LibreBaskerville")
+    # ---- titles ----
+    title = ft.Text(
+        "Create PIN",
+        size=26,
+        color="#425986",
+        weight=ft.FontWeight.BOLD,
+        font_family="LibreBaskerville",
+    )
+    subtitle = ft.Text(
+        "Enter a 4-digit PIN",
+        size=16,
+        color="#6B7280",
+        font_family="LibreBaskerville",
+    )
 
     # ---- PIN dots panel ----
     row = ft.Row(spacing=12, alignment=ft.MainAxisAlignment.CENTER)
@@ -77,7 +107,7 @@ def CreatePIN(page: ft.Page):
         width=300,
         padding=16,
         border_radius=16,
-        bgcolor="#f6f6f6",  # light translucent panel
+        bgcolor="#f6f6f6",
     )
 
     # ---- keypad handlers ----
@@ -86,6 +116,7 @@ def CreatePIN(page: ft.Page):
             pin["value"] += d
             rebuild_dots()
             continue_btn.disabled = len(pin["value"]) != 4
+            error_msg.value = ""
             page.update()
 
     def press_backspace(e=None):
@@ -101,7 +132,7 @@ def CreatePIN(page: ft.Page):
         continue_btn.disabled = True
         page.update()
 
-    # ---- keypad layout (3x4) ----
+    # ---- keypad layout ----
     row1 = ft.Row(
         [key_button("1", lambda e: press_digit("1")),
          key_button("2", lambda e: press_digit("2")),
@@ -127,17 +158,50 @@ def CreatePIN(page: ft.Page):
         alignment=ft.MainAxisAlignment.SPACE_EVENLY,
     )
 
-    # ---- footer / continue ----
+    # ---- Continue handler: send PIN to backend, then go next ----
     def on_continue(e):
+        if len(pin["value"]) != 4:
+            error_msg.value = "Please enter a 4-digit PIN."
+            page.update()
+            return
 
-        page.go("/themed_dashboard")  # Navigate to dash after PIN entry
-        
-    continue_btn = ft.ElevatedButton("Continue", width=220, disabled=True, 
-                                     on_click=on_continue,  )
+        try:
+            resp = requests.post(
+                f"{BACKEND_URL}/pin",
+                json={"username": username, "pin": pin["value"]},
+                timeout=5,
+            )
+        except Exception:
+            # If backend isn't running, still show why
+            error_msg.value = "Could not reach server. Is the backend running?"
+            page.update()
+            return
+
+        if resp.status_code == 200:
+            # Success -> go to next page
+            error_msg.value = ""
+            page.go("/themed_dashboard")
+        else:
+            # Show backend error, but keep UI same
+            detail = ""
+            try:
+                detail = resp.json().get("detail", "")
+            except Exception:
+                pass
+            error_msg.value = f"Failed to save PIN. {detail or f'Status {resp.status_code}'}"
+            page.update()
+
+    continue_btn = ft.ElevatedButton(
+        "Continue",
+        width=220,
+        disabled=True,
+        on_click=on_continue,
+    )
 
     footer_hint = ft.Text(
         "Remember your PIN!",
-        size=12, color="#2D3C68",
+        size=12,
+        color="#2D3C68",
     )
 
     # ---- assemble ----
@@ -145,20 +209,24 @@ def CreatePIN(page: ft.Page):
         [
             header,
             ft.Text("🛡️", size=38),
-            title, subtitle,
+            title,
+            subtitle,
             pin_panel,
             ft.Container(height=8),
-            row1, row2, row3, row4,
+            row1,
+            row2,
+            row3,
+            row4,
             ft.Container(height=10),
             ft.Row([continue_btn], alignment=ft.MainAxisAlignment.CENTER),
             footer_hint,
+            error_msg,  # appears only when there's a problem
         ],
         spacing=12,
         alignment="center",
         horizontal_alignment="center",
     )
 
-    
     return ft.Container(
         content=content,
         expand=True,
@@ -169,10 +237,11 @@ def CreatePIN(page: ft.Page):
             colors=["#cdffd8", "#94b9ff"],
         ),
     )
-    
+
 
 def main(page: ft.Page):
     page.add(CreatePIN(page))
-    
+
+
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
