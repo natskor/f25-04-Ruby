@@ -42,6 +42,14 @@ def themedDashboard(page: ft.Page):
     collab_goal = collab_data.get("goal_xp", 1)
     collab_total = collab_current / collab_goal if collab_goal > 0 else 0
 
+    # Do the same for individual progress
+    member_id = "Kaleb"  # replace this with logged-in user from db
+    user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
+    user_data = user_response.json()
+    user_current = user_data.get("current_xp", 0)
+    user_goal = user_data.get("goal_xp", 1)
+    user_total = user_current / user_goal if user_goal > 0 else 0
+
     # Individual Progress Bar 
     progress_card = ft.Container(
         image=ft.DecorationImage(
@@ -55,7 +63,7 @@ def themedDashboard(page: ft.Page):
                 ft.Column(
                     [
                         ft.Text(
-                            "3000 XP / 5000 XP",
+                            f"{user_current} / {user_goal}",
                             size=14,
                             color="#473c9c",
                             font_family="LibreBaskerville",
@@ -63,7 +71,7 @@ def themedDashboard(page: ft.Page):
                             ),
                         ft.Container(
                             content=ft.ProgressBar(
-                                value=0.6,
+                                value=user_total, #value 0.6
                                 height=22,
                                 width=200,
                                 bar_height=40,
