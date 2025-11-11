@@ -1,4 +1,5 @@
 from firestore import db as DB
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 ### DOCUMENT INITIALIZATION
 def create_member(email: str):
@@ -46,21 +47,21 @@ def add_family_id(email: str, family_id: int):
 
 ### RETRIEVE DATA
 
-# Member ID (supplied email)
-#def get_member_id(email: str):
-
-# First Name
-#def get_first_name(email: str):
-
-# Last Name
-#def get_last_name(email: str):
-
-# Role
-#def get_role(email: str):
-
-# PIN
-#def get_pin(email: str):
+# Provide: the member's email.
+# Returns: formatted information of member information.
+def get_member_info(email: str):
+    search = DB.collection("FAMILY MEMBER")
+    result = search.where(filter=FieldFilter("MemberID", "==", email)).stream()
     
+    for doc in result:
+        print(f"{doc.id} => {doc.to_dict()}")
 
-# Family ID (N/A right now)
-#def get_family_id(email: str):
+# LOGGING OFF, WORK IN PROGRESS!
+# Provide: the member's email & desired "column".
+# Returns: selected member's information.
+#def select_member_info(email: str, column: str):
+#    search = DB.collection("FAMILY MEMBER")
+#    result = search.where(filter=FieldFilter("MemberID", "==", email.stream()))
+#    
+#    for doc in result:
+#        print(f"{doc.to_dict()}")
