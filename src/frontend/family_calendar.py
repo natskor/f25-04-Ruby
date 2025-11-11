@@ -220,25 +220,24 @@ def FamilyCalendar(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER,
             ),   
             schedule,
-            ft.Row ( # 'Add Event' button
-                [
-                    ft.ElevatedButton (
-                        content=ft.Text (
-                            "Add Task", 
-                            size=12, 
-                            color="#ffffff", 
-                            font_family="LibreBaskerville", 
-                        ),
-                        color="#ffffff",
-                        bgcolor="#59226b",
-                        #on_click=show_add_event,
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.CENTER,
-            )
+            # ft.Row ( # 'Add Event' button
+            #     [
+            #         ft.ElevatedButton (
+            #             content=ft.Text (
+            #                 "Add Task", 
+            #                 size=12, 
+            #                 color="#ffffff", 
+            #                 font_family="LibreBaskerville", 
+            #             ),
+            #             color="#ffffff",
+            #             bgcolor="#59226b",
+            #             #on_click=show_add_event,
+            #         ),
+            #     ],
+            #     alignment=ft.MainAxisAlignment.CENTER,
+            # )
             ],
         ),
-        expand=True,
         height=450,
         width=450,
         alignment=ft.alignment.center,
