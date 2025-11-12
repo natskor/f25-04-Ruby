@@ -1,5 +1,6 @@
 import flet as ft
 import utils as u
+import requests 
 
 def verification(page: ft.Page):
     # ---------- page chrome ----------
@@ -66,12 +67,39 @@ def verification(page: ft.Page):
     )
 
     def verify(e: ft.ControlEvent):
-        page.snack_bar = ft.SnackBar(ft.Text("(Demo) Task verified! "), open=True)
+    #replace task_id with a real one later
+        data = {
+            "task_id": "Clean Room",
+            "feedback": feedback.value or ""
+        }
+        try:
+            resp = requests.post("http://127.0.0.1:8000/verification/approve/", data=data, timeout=5)
+            if resp.status_code == 200:
+                msg = resp.json().get("message", "Task approved.")
+            else:
+                msg = f"Error: {resp.status_code} - {resp.text}"
+        except Exception as err:
+            msg = f"Connection error: {err}"
+
+        page.snack_bar = ft.SnackBar(ft.Text(msg), open=True)
         page.go("/themed_dashboard")
         page.update()
 
     def reject(e: ft.ControlEvent):
-        page.snack_bar = ft.SnackBar(ft.Text("(Demo) Task rejected "), open=True)
+        data = {
+            "task_id": "Clean Room",
+            "feedback": feedback.value or ""
+        }
+        try:
+            resp = requests.post("http://127.0.0.1:8000/verification/reject/", data=data, timeout=5)
+            if resp.status_code == 200:
+                msg = resp.json().get("message", "Task rejected.")
+            else:
+                msg = f"Error: {resp.status_code} - {resp.text}"
+        except Exception as err:
+            msg = f"Connection error: {err}"
+
+        page.snack_bar = ft.SnackBar(ft.Text(msg), open=True)
         page.go("/themed_dashboard")
         page.update()
 
