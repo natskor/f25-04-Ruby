@@ -73,9 +73,11 @@ def CreateReward(page: ft.Page):
     )
     
     selected_file_text = ft.Text("No image selected", color="#473c9c", size=12)
+    selected_file = {"path": None}
 
     def on_file_picked(e: ft.FilePickerResultEvent):
         if e.files:
+            selected_file["path"] = e.files[0].path
             selected_file_text.value = e.files[0].name
             page.update()
 
@@ -91,11 +93,22 @@ def CreateReward(page: ft.Page):
     )
     
     def submit_reward(e):
-        requests.post("http://127.0.0.1:8000/rewards_store/rewards", json={
-            "title": reward_title.value,
-            "xp_cost": int(xp_cost.value),
-            "level_unlock": int(level_unlock.value),
-        })
+        
+        if not selected_file["path"]:
+            page.snack_bar = ft.SnackBar(ft.Text("Please upload an image first!"))
+            page.snack_bar.open = True
+            page.update()
+            return
+    
+        requests.post("http://127.0.0.1:8000/rewards_store/rewards",
+                      files={"image": open(selected_file, "rb")},
+                      data={
+                          "id": reward_id.value,
+                          "name": reward_title.value,
+                          "cost": int(xp_cost.value),
+                          "level_unlock": int(level_unlock.value),
+                        },
+                      )
 
         page.snack_bar = ft.SnackBar(ft.Text("Reward Created!"))
         page.snack_bar.open = True
