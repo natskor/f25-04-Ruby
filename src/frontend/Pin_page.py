@@ -1,6 +1,9 @@
 # PIN screen 
 
 import flet as ft
+import requests
+
+BACKEND_URL = "http://127.0.0.1:8000"
 
 def PinPage(page: ft.Page):
     page.title = "QuestNest – PIN"
@@ -14,6 +17,18 @@ def PinPage(page: ft.Page):
 
     # ---- state ----
     pin = {"value": ""}
+    error_msg = ft.Text("", color="red", size=12)
+
+   # Try to get username from previous page
+    username = None
+    try:
+        username = page.session.get("profile_name")
+    except AttributeError:
+        pass
+
+    if not username:
+        # fallback for testing/ensuring app does not break
+        username = "TestUser"
 
 
     def pin_dot(filled: bool) -> ft.Control:
@@ -46,12 +61,7 @@ def PinPage(page: ft.Page):
             on_click=on_click,
         )
 
-    def go_back(e):
-        #page.snack_bar = ft.SnackBar(ft.Text("Back pressed (placeholder)"))
-        #page.snack_bar.open = True
-        #page.update()
-        # later, replace with page.go("/previous") or page.clean() etc.
-    
+    def go_back(e):    
         page.go("/avatars")  # Navigate to avatars page on back
         
     # ---- header ----
@@ -135,11 +145,33 @@ def PinPage(page: ft.Page):
 
     # ---- footer / continue ----
     def on_continue(e):
-        # demo feedback (no real auth)
-        # page.snack_bar = ft.SnackBar(ft.Text(f"PIN entered: {pin['value']}"))
-        # page.snack_bar.open = True
-        # page.update()
-        page.go("/themed_dashboard")  # Navigate to dash after PIN entry
+        if len(pin["value"]) != 4:
+            error_msg.value = "Please enter a 4-digit PIN."
+            page.update()
+            return
+
+        try:
+            resp = requests.post(
+                f"{BACKEND_URL}/pin/verify",
+                json={"username": username, "pin": pin["value"]},
+                timeout=5,
+            )
+        except Exception:
+            error_msg.value = "Could not reach server. Is the backend running?"
+            page.update()
+            return
+
+        if resp.status_code == 200:
+            error_msg.value = ""
+            page.go("/themed_dashboard")
+        else:
+            detail = ""
+            try:
+                detail = resp.json().get("detail", "")
+            except Exception:
+                pass
+            error_msg.value = f"PIN verification failed. {detail or f'Status {resp.status_code}'}"
+            page.update()
         
     continue_btn = ft.ElevatedButton("Continue", width=220, disabled=True, 
                                      on_click=on_continue,  )

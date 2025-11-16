@@ -18,16 +18,15 @@ def CreatePIN(page: ft.Page):
     pin = {"value": ""}
     error_msg = ft.Text("", color="red", size=12)
 
-    # Try to get username from previous page; fall back to a demo name
+    # Try to get username from previous page
     username = None
     try:
-        # if your Flet version supports session
         username = page.session.get("profile_name")
     except AttributeError:
         pass
 
     if not username:
-        # fallback so you can still test even if not coming from avatar page
+        # fallback for testing/ensuring app does not break
         username = "TestUser"
 
     # ---- dot helper ----

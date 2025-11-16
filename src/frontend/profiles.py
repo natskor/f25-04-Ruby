@@ -1,12 +1,7 @@
 import flet as ft
+import requests
 
-# hardcoded right now until database takes over
-PROFILES = [
-    {"name": "Mom", "avatar": "images/avatars/mermaid.png"},
-    {"name": "Dad", "avatar": "images/avatars/wizard.png"},
-    {"name": "Alice", "avatar": "images/avatars/unicorn.png"},
-    {"name": "Bob", "avatar": "images/avatars/dragon.png"},
-]
+BACKEND_URL = "http://127.0.0.1:8000"
 
 def ProfileSelection(page: ft.Page):
     page.title = "QuestNest – Family Profiles"
@@ -20,6 +15,24 @@ def ProfileSelection(page: ft.Page):
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
+    
+    try:
+        resp = requests.get(f"{BACKEND_URL}/avatar/list", timeout=5)
+        if resp.status_code == 200:
+            PROFILES = resp.json()
+        else:
+            PROFILES = []
+    except Exception:
+        PROFILES = []
+
+    # hardcoded fallback if request fails
+    if not PROFILES:
+        PROFILES = [
+            {"name": "Mom", "avatar_id": "images/avatars/mermaid.png"},
+            {"name": "Dad", "avatar_id": "images/avatars/wizard.png"},
+            {"name": "Alice", "avatar_id": "images/avatars/unicorn.png"},
+            {"name": "Bob", "avatar_id": "images/avatars/dragon.png"},
+        ]
 
     selected_idx = {"value": None}
 
@@ -35,7 +48,7 @@ def ProfileSelection(page: ft.Page):
             clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
             border=ft.border.all(2, "#8ba7ff"),
             content=ft.Image(
-                src=profile["avatar"],
+                src=profile.get("avatar_id"),
                 width=80,
                 height=65,
                 fit=ft.ImageFit.COVER,
@@ -43,7 +56,7 @@ def ProfileSelection(page: ft.Page):
         )
 
         label = ft.Text(
-            profile["name"],
+            profile.get("name"),
             size=16,
             color="#4A4F5A",
             font_family="LibreBaskerville",
