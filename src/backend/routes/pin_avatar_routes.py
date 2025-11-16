@@ -161,15 +161,15 @@ async def set_avatar(body: AvatarRequest):
 @router.get("/avatar/list")
 async def list_avatars():
     
-    members = db.collection("FAMILY MEMBER").stream()
-    avatar_list = []
+    profiles = db.collection("FAMILY UNIT").stream()
+    profiles_list = []
 
-    for doc in members:
+    for doc in profiles:
         data = doc.to_dict()
         if "AvatarID" in data and data["AvatarID"]:
-            avatar_list.append({
-                "username": data.get("MemberID"),
+            profiles_list.append({
+                "username": data.get("profile_name"),
                 "avatar_id": data["AvatarID"]
             })
 
-    return avatar_list
+    return profiles_list
