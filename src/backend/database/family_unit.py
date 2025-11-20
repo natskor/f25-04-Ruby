@@ -17,6 +17,7 @@ def create_profile(email: str, user: str):
     new_profile = family_ref.collection("PROFILE").document(user)
     new_profile.set({
                      "User": user,
+                     "Avatar": "",
                      "Role": "",
                      "PIN": 0000
                     })
@@ -36,6 +37,10 @@ def add_role(email: str, user: str, role: str):
 def add_pin(email: str, user: str, pin: int):
     profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
     profile_ref.update({"PIN": pin})
+
+def add_avatar(email: str, user: str, avatar: str):
+    profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
+    profile_ref.update({"Avatar": avatar})
 
 ### Get Data - FAMILY UNIT collection.
 
@@ -73,14 +78,22 @@ def select_profile_info(email: str, user: str, column: str):
 
 ### Testing area...
 
-# Display ALL data from each, respectively.
-#get_family_info("TEST@email")
-#get_profile_info("TEST@email", "Chud")
+## Create FAMILY and PROFILE.
+#create_family("family@icloud.com")
+#add_password("family@icloud.com", "top_secret_password")
+#create_profile("family@icloud.com", "Gobby")
+#add_avatar("family@icloud.com", "Gobby", "path link but not rn")
+#add_role("family@icloud.com", "Gobby", "Parent")
+#add_pin("family@icloud.com", "Gobby", 1415)
 
-# Display SELECTED data from each.
-#select_family_info("TEST@email", "FamilyID")
-#select_family_info("TEST@email", "Password")
+## Display ALL data from each, respectively.
+#get_family_info("family@icloud.com")
+#get_profile_info("family@icloud.com", "Gobby")
 
-#select_profile_info("TEST@email", "Chud", "User")
-#select_profile_info("TEST@email", "Chud", "Role")
-#select_profile_info("TEST@email", "Chud", "PIN")
+## Display SELECTED data from each.
+#select_family_info("family@icloud.com", "FamilyID")
+#select_family_info("family@icloud.com", "Password")
+#select_profile_info("family@icloud.com", "Gobby", "User")
+#select_profile_info("family@icloud.com", "Gobby", "Avatar")
+#select_profile_info("family@icloud.com", "Gobby", "Role")
+#select_profile_info("family@icloud.com", "Gobby", "PIN")
