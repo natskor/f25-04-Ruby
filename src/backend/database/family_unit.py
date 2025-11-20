@@ -75,25 +75,3 @@ def select_profile_info(email: str, user: str, column: str):
     for doc in result:
         val = doc.to_dict()
         print(f"{val[column]}")
-
-### Testing area...
-
-## Create FAMILY and PROFILE.
-#create_family("family@icloud.com")
-#add_password("family@icloud.com", "top_secret_password")
-#create_profile("family@icloud.com", "Gobby")
-#add_avatar("family@icloud.com", "Gobby", "path link but not rn")
-#add_role("family@icloud.com", "Gobby", "Parent")
-#add_pin("family@icloud.com", "Gobby", 1415)
-
-## Display ALL data from each, respectively.
-#get_family_info("family@icloud.com")
-#get_profile_info("family@icloud.com", "Gobby")
-
-## Display SELECTED data from each.
-#select_family_info("family@icloud.com", "FamilyID")
-#select_family_info("family@icloud.com", "Password")
-#select_profile_info("family@icloud.com", "Gobby", "User")
-#select_profile_info("family@icloud.com", "Gobby", "Avatar")
-#select_profile_info("family@icloud.com", "Gobby", "Role")
-#select_profile_info("family@icloud.com", "Gobby", "PIN")

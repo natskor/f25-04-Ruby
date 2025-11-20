@@ -20,14 +20,3 @@ firebase_admin.initialize_app(cred)
 
 ### Database Object
 db = firestore.client()
-
-###########
-# Example #
-###########
-
-# 1) Creating data
-#doc_ref = db.collection("users").document("alovelace")
-#doc_ref.set({"first": "Ada", "last": "Lovelace", "Born": 1815})
-
-# 2) Clean up the data
-#db.collection("users").document("alovelace").delete()
