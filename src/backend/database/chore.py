@@ -1,65 +1,70 @@
-from firestore import db as DB
+from .firestore import db as DB
 from google.cloud.firestore_v1.base_query import FieldFilter
 
-# Create a chore.
+# Create a chore
 def create_chore(title: str, 
                  desc: str, 
                  xp_val: int, 
-                 auth: str, 
-                 recipient: str):
-    chore_ref = DB.collection("CHORE").document(recipient + ", " + title)
-    chore_ref.set({
+                 assigned_to: str, 
+                 due_date: str,
+                 task_type: str):
+    # Use a collection reference to generate an auto-ID
+    chore_ref = DB.collection("CHORE").document()
+    
+    chore_data = {
+        "id": chore_ref.id,
         "Title": title,
         "Description": desc,
         "XP Value": xp_val,
         "Status": "Not Completed!",
-        "Author": auth,
-        "Recipient": recipient
-    })
+        "Completed": False,
+        "AssignedTo": assigned_to,
+        "DueDate": due_date,
+        "TaskType": task_type
+    }
+    
+    chore_ref.set(chore_data)
+    return chore_data
 
-# Chore completion changes.
-def complete_chore(title: str, recipient: str):
-    DB.collection("CHORE").document(
-        recipient + ", " + title
-    ).update({"Status": "Completed!"})
+# Mark chore as complete
+def complete_chore(chore_id: str):
+    doc_ref = DB.collection("CHORE").document(chore_id)
+    doc = doc_ref.get()
+    
+    if doc.exists:
+        doc_ref.update({
+            "Status": "Completed!",
+            "Completed": True
+        })
+        return doc.to_dict()  # Return the chore data so we know how many points to award
+    else:
+        raise Exception("Chore not found")
 
-# Remove chore.
-def remove_chore(title: str, recipient: str):
-    DB.collection("CHORE").document(
-        recipient + ", " + title
-    ).delete()
+# Remove chore
+def remove_chore(chore_id: str):
+    DB.collection("CHORE").document(chore_id).delete()
 
-# Get all data.
-def get_chore(title: str, recipient: str):
+# Get all chores (useful for the dashboard)
+def get_all_chores():
+    docs = DB.collection("CHORE").stream()
+    chores = []
+    for doc in docs:
+        chores.append(doc.to_dict())
+    return chores
+
+# Get chores specific to a user
+def get_chores_by_user(username: str):
     search = DB.collection("CHORE")
-
-    result = search.where(
-        filter = FieldFilter(
-            "Title", "==", title
-        )
-    ).where(
-        filter = FieldFilter(
-            "Recipient", "==", recipient
-        )
-    ).stream()
-
+    result = search.where(filter=FieldFilter("AssignedTo", "==", username)).stream()
+    
+    chores = []
     for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
+        chores.append(doc.to_dict())
+    return chores
 
-# Select data.
-def select_chore(title: str, recipient: str, column: str):
-    search = DB.collection("CHORE")
-
-    result = search.where(
-        filter = FieldFilter(
-            "Title", "==", title
-        )
-    ).where(
-        filter = FieldFilter(
-            "Recipient", "==", recipient
-        )
-    ).stream()
-
-    for doc in result:
-        val = doc.to_dict()
-        print(f"{val[column]}")
+# Get single chore by ID
+def get_chore_by_id(chore_id: str):
+    doc = DB.collection("CHORE").document(chore_id).get()
+    if doc.exists:
+        return doc.to_dict()
+    return None
