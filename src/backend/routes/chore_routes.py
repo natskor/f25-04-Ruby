@@ -1,8 +1,9 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 
+from backend.database import chore as chore_db
 from backend.routes import calendar_routes, collabrewards_routes
 
 router = APIRouter(
@@ -11,99 +12,128 @@ router = APIRouter(
 )
 
 # Models
-class Chore(BaseModel):
-    id: int
-    title: str
-    description: Optional[str] = None
-    assigned_to: str  # username
-    due_date: Optional[str] = None
-    completed: bool = False
-    created_at: datetime = datetime.now()
-    task_type: Optional[str] = None
-    reward_points: Optional[int] = 0
-
 class ChoreCreate(BaseModel):
     title: str
     description: Optional[str] = None
     assigned_to: str
     due_date: Optional[str] = None
     task_type: Optional[str] = None
-    reward_points: Optional[int] = 0
+    reward_points: int = 0
 
-#In-memory store
-chore_list = []
-chore_id_counter = 1
+class ChoreResponse(BaseModel):
+    id: str
+    title: str
+    description: Optional[str]
+    assigned_to: str
+    due_date: Optional[str]
+    completed: bool
+    reward_points: int
+    task_type: Optional[str]
 
+# Endpoints
 
-#Endpoints
-@router.post("/", response_model=Chore)
+@router.post("/", response_model=ChoreResponse)
 def create_chore(chore: ChoreCreate):
-    """Create a new chore and add it to the user's calendar."""
-    global chore_id_counter
-
-    new_chore = Chore(
-        id=chore_id_counter,
-        title=chore.title,
-        description=chore.description,
-        assigned_to=chore.assigned_to,
-        due_date=chore.due_date,
-        completed=False,
-        task_type=chore.task_type,
-        reward_points=chore.reward_points,
-    )
-    
-    chore_id_counter += 1
-    chore_list.append(new_chore)
-
-    #Integration with Calendar
+    """Create a new chore in Firestore and add to calendar."""
     try:
-        calendar_routes.add_event_to_calendar(
-            user=chore.assigned_to,
+        # 1. Save to Database
+        new_chore_data = chore_db.create_chore(
             title=chore.title,
-            date=chore.due_date,
-            description=chore.description
+            desc=chore.description,
+            xp_val=chore.reward_points,
+            assigned_to=chore.assigned_to,
+            due_date=chore.due_date,
+            task_type=chore.task_type
         )
+
+        # 2. Integration with Calendar
+        try:
+            calendar_routes.add_event_to_calendar(
+                user=chore.assigned_to,
+                title=chore.title,
+                date=chore.due_date,
+                description=chore.description
+            )
+        except Exception as e:
+            print(f"Warning: Could not add event to calendar: {e}")
+
+        # Map DB keys to Pydantic model keys
+        return ChoreResponse(
+            id=new_chore_data["id"],
+            title=new_chore_data["Title"],
+            description=new_chore_data["Description"],
+            assigned_to=new_chore_data["AssignedTo"],
+            due_date=new_chore_data["DueDate"],
+            completed=new_chore_data["Completed"],
+            reward_points=new_chore_data["XP Value"],
+            task_type=new_chore_data["TaskType"]
+        )
+
     except Exception as e:
-        print(f"Warning: Could not add event to calendar: {e}")
-
-    return new_chore
+        raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/", response_model=List[Chore])
-def get_all_chores():
-    return chore_list
-
-
-@router.get("/{chore_id}", response_model=Chore)
-def get_chore(chore_id: int):
-    for c in chore_list:
-        if c.id == chore_id:
-            return c
-    raise HTTPException(status_code=404, detail="Chore not found")
+@router.get("/", response_model=List[ChoreResponse])
+def get_all_chores(user: Optional[str] = None):
+    """Get all chores, optionally filtered by assigned user."""
+    try:
+        if user:
+            raw_chores = chore_db.get_chores_by_user(user)
+        else:
+            raw_chores = chore_db.get_all_chores()
+            
+        # Transform DB format to Response format
+        return [
+            ChoreResponse(
+                id=c["id"],
+                title=c["Title"],
+                description=c.get("Description"),
+                assigned_to=c["AssignedTo"],
+                due_date=c.get("DueDate"),
+                completed=c.get("Completed", False),
+                reward_points=c.get("XP Value", 0),
+                task_type=c.get("TaskType")
+            )
+            for c in raw_chores
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/{chore_id}/complete")
-def complete_chore(chore_id: int):
-    """Mark chore complete and award rewards."""
-    for c in chore_list:
-        if c.id == chore_id:
-            if c.completed:
-                raise HTTPException(status_code=400, detail="Chore already completed.")
-            c.completed = True
+def complete_chore(chore_id: str):
+    """Mark chore complete and award the ACTUAL reward points."""
+    try:
+        # 1. Get current chore status to check if already done
+        chore = chore_db.get_chore_by_id(chore_id)
+        if not chore:
+            raise HTTPException(status_code=404, detail="Chore not found")
+        
+        if chore.get("Completed"):
+            raise HTTPException(status_code=400, detail="Chore already completed.")
 
-            # ✅ Integration with CollabRewards or Rewards Store
-            try:
-                collabrewards_routes.award_points(c.assigned_to, points=10)
-            except Exception as e:
-                print(f"Warning: Could not award points: {e}")
+        # 2. Update status in DB
+        updated_chore = chore_db.complete_chore(chore_id)
+        
+        # 3. Award Points (FIXED: Uses actual XP value from chore)
+        points_to_award = chore.get("XP Value", 0)
+        
+        try:
+            collabrewards_routes.award_points(chore["AssignedTo"], points=points_to_award)
+        except Exception as e:
+            print(f"Warning: Could not award points: {e}")
 
-            return {"message": f"Chore '{c.title}' marked complete for {c.assigned_to}!"}
+        return {"message": f"Chore '{chore['Title']}' marked complete! Awarded {points_to_award} points."}
 
-    raise HTTPException(status_code=404, detail="Chore not found")
-
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{chore_id}")
-def delete_chore(chore_id: int):
-    global chore_list
-    chore_list = [c for c in chore_list if c.id != chore_id]
-    return {"message": f"Chore {chore_id} deleted."}
+def delete_chore(chore_id: str):
+    try:
+        chore_db.remove_chore(chore_id)
+        return {"message": f"Chore {chore_id} deleted."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
