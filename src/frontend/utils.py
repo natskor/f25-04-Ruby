@@ -42,6 +42,9 @@ def application_bar(page: ft.Page):
     def logout(e):
         page.go("/")
         
+    def switch_profiles(e):
+        page.go("/profiles")
+        
     def create_chore(e):
         page.go("/create_chore")
         
@@ -55,6 +58,7 @@ def application_bar(page: ft.Page):
                     icon_color="#ffffff",
                     items=[
                         ft.PopupMenuItem(text="Settings", icon=ft.Icons.SETTINGS, on_click=go_settings),
+                        ft.PopupMenuItem(text="Switch Profiles", icon=ft.Icons.SWITCH_ACCOUNT, on_click=switch_profiles),
                         ft.PopupMenuItem(),
                         ft.PopupMenuItem(text="Log Out", icon=ft.Icons.LOGOUT, on_click=logout),
                     ],

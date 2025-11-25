@@ -36,9 +36,10 @@ def ProfileSelection(page: ft.Page):
         if p.get("profile")
     ]
 
-    # empty fallback if request fails
+    # fallback if request fails
     if not PROFILES:
-        PROFILES = []
+        page.go("/avatars")
+        return
 
     selected_idx = {"value": None}
 
@@ -84,6 +85,11 @@ def ProfileSelection(page: ft.Page):
         def on_click(e):
             selected_idx["value"] = idx
             refresh_tiles()
+            try:
+                page.session.set("profile", profile.get("name"))
+                page.session.set("avatar", profile.get("avatar_id"))
+            except AttributeError:
+                pass
             continue_btn.disabled = False
             page.update()
 

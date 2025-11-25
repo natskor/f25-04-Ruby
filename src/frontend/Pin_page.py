@@ -62,7 +62,7 @@ def PinPage(page: ft.Page):
         )
 
     def go_back(e):    
-        page.go("/avatars")  # Navigate to avatars page on back
+        page.go("/profiles")  # Navigate to profiles page on back
         
     # ---- header ----
     header = ft.Row(
