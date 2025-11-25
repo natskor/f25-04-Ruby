@@ -74,6 +74,10 @@ def SignUp(page: ft.Page):
             )
             
             if response.status_code == 200:
+                try:
+                    page.session.set("email", email.value)
+                except AttributeError:
+                    pass
                 page.go("/avatars")
             else:
                 data = response.json()
@@ -150,6 +154,4 @@ def main(page: ft.Page):
     page.add(SignUp(page))
 
 if __name__ == "__main__":
-    # Run with your assets:
-    #   python -m flet src/signup_page.py -w or python -m src.signup_page
     ft.app(target=main, assets_dir="assets")

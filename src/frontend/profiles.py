@@ -17,22 +17,28 @@ def ProfileSelection(page: ft.Page):
     }
     
     try:
-        resp = requests.get(f"{BACKEND_URL}/avatar/list", timeout=5)
+        email = page.session.get("email")
+    except AttributeError:
+        email = None
+    
+    try:
+        resp = requests.get(f"{BACKEND_URL}/avatar/list/{email}", timeout=5)
         if resp.status_code == 200:
-            PROFILES = resp.json()
+            profiles = resp.json()
         else:
-            PROFILES = []
+            profiles = []
     except Exception:
-        PROFILES = []
+        profiles = []
+    
+    PROFILES = [
+        {"name": p.get("profile"), "avatar_id": p.get("avatar")}
+        for p in profiles
+        if p.get("profile")
+    ]
 
-    # hardcoded fallback if request fails
+    # empty fallback if request fails
     if not PROFILES:
-        PROFILES = [
-            {"name": "Mom", "avatar_id": "images/avatars/mermaid.png"},
-            {"name": "Dad", "avatar_id": "images/avatars/wizard.png"},
-            {"name": "Alice", "avatar_id": "images/avatars/unicorn.png"},
-            {"name": "Bob", "avatar_id": "images/avatars/dragon.png"},
-        ]
+        PROFILES = []
 
     selected_idx = {"value": None}
 

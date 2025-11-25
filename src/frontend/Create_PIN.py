@@ -18,16 +18,17 @@ def CreatePIN(page: ft.Page):
     pin = {"value": ""}
     error_msg = ft.Text("", color="red", size=12)
 
-    # Try to get username from previous page
-    username = None
     try:
-        username = page.session.get("profile_name")
+        profile = page.session.get("profile")
+        email = page.session.get("email")
     except AttributeError:
-        pass
+        profile, email = None, None
 
-    if not username:
-        # fallback for testing/ensuring app does not break
-        username = "TestUser"
+    # Fallback
+    if not profile:
+        profile = "UnknownUser"
+    if not email:
+        error_msg.value = "Missing email in session. Please log in again."
 
     # ---- dot helper ----
     def pin_dot(filled: bool) -> ft.Control:
@@ -167,11 +168,11 @@ def CreatePIN(page: ft.Page):
         try:
             resp = requests.post(
                 f"{BACKEND_URL}/pin",
-                json={"username": username, "pin": pin["value"]},
+                json={"email": email, "profile": profile, "pin": pin["value"]},
                 timeout=5,
             )
         except Exception:
-            # If backend isn't running, still show why
+            # If backend isn't running
             error_msg.value = "Could not reach server. Is the backend running?"
             page.update()
             return

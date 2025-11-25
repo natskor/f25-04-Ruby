@@ -19,16 +19,16 @@ def PinPage(page: ft.Page):
     pin = {"value": ""}
     error_msg = ft.Text("", color="red", size=12)
 
-   # Try to get username from previous page
-    username = None
     try:
-        username = page.session.get("profile_name")
+        profile = page.session.get("profile")     
+        email = page.session.get("email")   
     except AttributeError:
-        pass
+        profile, email = None, None
 
-    if not username:
-        # fallback for testing/ensuring app does not break
-        username = "TestUser"
+    if not profile:
+        profile = "UnknownUser"
+    if not email:
+        error_msg.value = "Missing email. Please log in again."
 
 
     def pin_dot(filled: bool) -> ft.Control:
@@ -153,7 +153,7 @@ def PinPage(page: ft.Page):
         try:
             resp = requests.post(
                 f"{BACKEND_URL}/pin/verify",
-                json={"username": username, "pin": pin["value"]},
+                json={"email": email, "profile": profile, "pin": pin["value"]},
                 timeout=5,
             )
         except Exception:

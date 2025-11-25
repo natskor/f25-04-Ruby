@@ -48,6 +48,7 @@ def Login(page: ft.Page):
         if not email.value or not password.value:
             error_msg.value = "Please enter your email and password."
         else: 
+            page.session.set("email", email.value)
             response = requests.post(
                 "http://127.0.0.1:8000/login_page/",
                 data = {
@@ -69,11 +70,11 @@ def Login(page: ft.Page):
         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
     )
 
-    # “Don’t have an account?” row (we’ll link later)
+    # “Don’t have an account?”
     to_signup = ft.TextButton(
         "Create an account",
         icon=ft.Icons.PERSON_ADD_OUTLINED,
-        on_click=lambda e: page.go("/create_account")  # wire later
+        on_click=lambda e: page.go("/create_account")
     )
 
     login_card = ft.Container(
@@ -130,6 +131,4 @@ def main(page: ft.Page):
     page.add(Login(page))
 
 if __name__ == "__main__":
-    # Make sure you run with assets available:
-    #   python -m flet src/login_page.py -w or python -m src.login_page
     ft.app(target=main, assets_dir="assets")

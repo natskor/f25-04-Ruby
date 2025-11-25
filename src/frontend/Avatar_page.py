@@ -47,8 +47,6 @@ def AvatarSelection(page: ft.Page):
     def make_tile(path: str, idx: int) -> ft.Container:
         is_selected = selected_idx["value"] == idx
         border_color = "#6B8AF6" if is_selected else "#DADDE6"
-        
-        
        
         img = ft.Container(
             width=90,
@@ -122,8 +120,8 @@ def AvatarSelection(page: ft.Page):
             return
 
         # must have profile name
-        username = profile_name.value.strip()
-        if not username:
+        profile = profile_name.value.strip()
+        if not profile:
             error_msg.value = "Please enter a profile name."
             page.update()
             return
@@ -131,9 +129,19 @@ def AvatarSelection(page: ft.Page):
         avatar_path = AVATARS[selected_idx["value"]]
 
         try:
+            email = page.session.get("email")
+        except AttributeError:
+            email = None
+
+        if not email:
+            error_msg.value = "Missing family account email. Please log in or sign up again."
+            page.update()
+            return
+
+        try:
             resp = requests.post(
                 f"{BACKEND_URL}/avatar",
-                json={"username": username, "avatar_id": avatar_path},
+                json={"email": email, "profile": profile, "avatar": avatar_path},
                 timeout=5,
             )
         except Exception:
@@ -142,14 +150,10 @@ def AvatarSelection(page: ft.Page):
             return
 
         if resp.status_code == 200:
-            # remember for CreatePIN page
-            # (this assumes you're using page.go routing elsewhere)
             try:
-                page.session.set("profile_name", username)
-                page.session.set("avatar_id", avatar_path)
+                page.session.set("profile", profile)
+                page.session.set("avatar", avatar_path)
             except AttributeError:
-                # if session isn't available in your Flet version, you can
-                # swap this later for your team's shared state approach
                 pass
 
             error_msg.value = ""

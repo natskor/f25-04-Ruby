@@ -9,16 +9,15 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 @router.post("/")
-# Not sure yet if async is needed in front of 'def'
 async def login_user(email: str = Form(), password: str = Form()):
     
     # Hash the password
     pw_hash = hash_password(password)
     
     # Look for a user doc in Firestore
-    users_ref = db.collection("FAMILY UNIT").document(email).get()    
+    users_ref = db.collection("FAMILY UNIT").document(email).get()
+       
     # Get matching document if found
- 
     # If no account is found error
     if not users_ref.exists:
         raise HTTPException(status_code=404, detail="No account found with that email.")
@@ -26,7 +25,7 @@ async def login_user(email: str = Form(), password: str = Form()):
     data = users_ref.to_dict()
     
     # Get stored hashed pw from Firestore
-    stored_hashed_pw = data.get("PasswordHash")
+    stored_hashed_pw = data.get("Password")
     
     # If these don't match, exception
     if pw_hash != stored_hashed_pw:

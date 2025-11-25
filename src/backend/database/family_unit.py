@@ -8,6 +8,7 @@ def create_family(email: str):
     family_ref = DB.collection("FAMILY UNIT").document(email)
     family_ref.set({ 
                      "FamilyID": email,
+                     "Username": "",
                      "Password": "", 
                     })
 
@@ -19,10 +20,13 @@ def create_profile(email: str, user: str):
                      "User": user,
                      "Avatar": "",
                      "Role": "",
-                     "PIN": 0000
+                     "PIN": ""
                     })
 
 ### Add Data - FAMILY UNIT collection.
+def add_username(email: str, username: str):
+    account = DB.collection("FAMILY UNIT").document(email)
+    account.update({"Username": username})
 
 def add_password(email: str, password: str):
     account = DB.collection("FAMILY UNIT").document(email)
@@ -34,7 +38,7 @@ def add_role(email: str, user: str, role: str):
     profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
     profile_ref.update({"Role": role})
 
-def add_pin(email: str, user: str, pin: int):
+def add_pin(email: str, user: str, pin: str):
     profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
     profile_ref.update({"PIN": pin})
 

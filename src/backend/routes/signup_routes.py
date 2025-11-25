@@ -10,7 +10,6 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 @router.post("/")
-# Not sure yet if async is needed in front of 'def'
 async def create_account(
     username: str = Form(),
     email: str = Form(),
@@ -32,16 +31,9 @@ async def create_account(
     try:
         # Create the document and fill fields
         family_unit.create_family(email)
+        family_unit.add_username(email, username)
         family_unit.add_password(email, pw_hash)
-        family_unit.create_profile(email, username)
-        family_unit.add_role(email, username, "Caregiver")
-        # Not sure about PIN yet
-        # family_member.add_pin(email, "0000")
         
-        # Store hashed password in Firestore
-        db.collection("FAMILY UNIT").document(email).update({
-            "PasswordHash": hash_password(password)
-        })
         # Error if making the account doesn't work for whatever reason
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error creating account: {e}")
