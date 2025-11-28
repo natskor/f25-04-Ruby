@@ -72,6 +72,21 @@ def CreateReward(page: ft.Page):
         keyboard_type=ft.KeyboardType.NUMBER,
     )
     
+    reward_type = ft.Dropdown(
+        label="Reward Type",
+        width=350,
+        border_radius=10,
+        bgcolor="white",
+        color="black",
+        border_color="#8c52ff",
+        focused_border_color="#473c9c",
+        options=[
+            ft.dropdown.Option("Individual"),
+            ft.dropdown.Option("Family")
+        ],
+        value="Individual",
+    )
+    
     selected_file_text = ft.Text("No image selected", color="#473c9c", size=12)
     selected_file = {"path": None}
 
@@ -93,36 +108,62 @@ def CreateReward(page: ft.Page):
     )
     
     def submit_reward(e):
-        
+    
+        if reward_type.value == "Family":
+            resp = requests.post(
+                "http://127.0.0.1:8000/collabrewards/create",
+                data={
+                    "title": reward_id.value,
+                    "description": reward_title.value,
+                    "goal_xp": int(xp_cost.value),
+                },
+            )
+
+            if resp.status_code == 200:
+                page.snack_bar = ft.SnackBar(ft.Text("Family Reward Created!"))
+                page.snack_bar.open = True
+                page.go("/collab_rewards")
+                page.update()
+            else:
+                page.snack_bar = ft.SnackBar(ft.Text("Error: " + resp.text))
+                page.snack_bar.open = True
+                page.update()
+            return
+                
         if not selected_file["path"]:
-            page.snack_bar = ft.SnackBar(ft.Text("Please upload an image first!"))
+                page.snack_bar = ft.SnackBar(ft.Text("Please upload an image first!"))
+                page.snack_bar.open = True
+                page.update()
+                return
+            
+        resp = requests.post(
+            "http://127.0.0.1:8000/rewards_store/rewards",
+            files={"image": open(selected_file["path"], "rb")},
+            data={
+                "id": reward_id.value,
+                "name": reward_title.value,
+                "cost": int(xp_cost.value),
+                "level_unlock": int(level_unlock.value),
+            },
+        )
+            
+        if resp.status_code == 200:
+            page.snack_bar = ft.SnackBar(ft.Text("Reward Created!"))
+            page.snack_bar.open = True
+            page.go("/store")
+            page.update()
+        else:
+            page.snack_bar = ft.SnackBar(ft.Text("Error: " + resp.text))
             page.snack_bar.open = True
             page.update()
-            return
-    
-        requests.post("http://127.0.0.1:8000/rewards_store/rewards",
-                      files={"image": open(selected_file, "rb")},
-                      data={
-                          "id": reward_id.value,
-                          "name": reward_title.value,
-                          "cost": int(xp_cost.value),
-                          "level_unlock": int(level_unlock.value),
-                        },
-                      )
-
-        page.snack_bar = ft.SnackBar(ft.Text("Reward Created!"))
-        page.snack_bar.open = True
-        page.update()
-
-        # Return to the store page
-        page.go("/store")
-        
+            
     reward_card = ft.Container(
         content=ft.Column(
             [
                 reward_id,
                 reward_title,
                 ft.Row([xp_cost, level_unlock], alignment="center"),
+                reward_type,
                 ft.Row([upload_button, selected_file_text], alignment="center", spacing=10),
                 ft.ElevatedButton(
                     "Submit Reward",

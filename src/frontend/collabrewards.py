@@ -33,27 +33,34 @@ def CollabRewards(page: ft.Page):
         font_family="LibreBaskerville",
         )
     
-    # Send GET request to backend
-    collab_response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
-    
-     # Converts it to JSON format
-    collab_data = collab_response.json()
-    
-    current_xp = collab_data.get("current_xp", 0)
-    goal_xp = collab_data.get("goal_xp", 1)
-    
-    # Calculate Progress
+    try:
+        resp = requests.get("http://127.0.0.1:8000/collabrewards/progress", timeout=5)
+        if resp.status_code == 200:
+            collab_data = resp.json()
+        else:
+            collab_data = {}
+            
+        family_email = page.session.get("email")
+        fam_resp = requests.get(f"http://127.0.0.1:8000/collabrewards/familysize?email={family_email}", timeout=5)   
+        family_size = fam_resp.json().get("family_size", 1)
+            
+    except:
+        collab_data = {}
+        family_size = 1
+
+    title_text = collab_data.get("Title", "No active family reward")
+    desc_text = collab_data.get("Description", "")
+    current_xp = collab_data.get("Current XP", 0)
+    goal_xp = collab_data.get("XP Goal", 1)
+
+    # Calculate progress
     collab_total = current_xp / goal_xp if goal_xp > 0 else 0
     
-    # Do the same for individual progress
-    member_id = "Kaleb"  # replace this with logged-in user from db
-    user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
-    user_data = user_response.json()
-    user_current = user_data.get("current_xp", 0)
-    user_goal = user_data.get("goal_xp", 1)
-    user_total = user_current / user_goal if user_goal > 0 else 0
- 
-    
+    shared_goal = goal_xp / family_size
+    user_current = current_xp
+    user_goal = shared_goal
+    user_total = min(user_current / user_goal, 1.0)
+   
     progress_text = ft.Text(
         f"{current_xp} XP / {goal_xp} XP",
         size=14,
@@ -65,12 +72,12 @@ def CollabRewards(page: ft.Page):
     reward_card = ft.Container(
         content=ft.Column(
             [
-                ft.Text("Trip to Busch Gardens\nWilliamsburg",
+                ft.Text(title_text,
                         size=18, 
                         weight=ft.FontWeight.BOLD, 
                         text_align="center", 
                         font_family="LibreBaskerville"),
-                ft.Text("Limited Time Reward Expires in:\n14 Days", 
+                ft.Text(desc_text, 
                         text_align="center",
                         size=14, 
                         color="#473c9c", 
@@ -157,7 +164,7 @@ def CollabRewards(page: ft.Page):
                             text_align="center",
                         ),
                         ft.Text(
-                            f"{user_current} XP / {user_goal} XP",
+                            f"{user_current} XP / {int(shared_goal)} XP",
                             size=14,
                             color="#473c9c",
                             font_family="LibreBaskerville",

@@ -38,8 +38,8 @@ def themedDashboard(page: ft.Page):
     collab_response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
     collab_data = collab_response.json()
 
-    collab_current = collab_data.get("current_xp", 0)
-    collab_goal = collab_data.get("goal_xp", 1)
+    collab_current = collab_data.get("Current XP", 0)
+    collab_goal = collab_data.get("XP Goal", 1)
     collab_total = collab_current / collab_goal if collab_goal > 0 else 0
 
     # Do the same for individual progress

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Form, UploadFile, File
 from pydantic import BaseModel
 
 router = APIRouter(prefix="/rewards_store", tags=["Rewards Store"])
@@ -12,24 +12,31 @@ rewards = {
     "movienight": {"cost": 500, "name": "Movie Night"},
 }
 
-class Reward(BaseModel):
-    id: str
-    name: str
-    cost: int
-    level_unlock: int
-
-# This will require changing code in rewards_store.py to have a scrollable empty list that we add rewards to
 @router.get("/rewards")
 async def get_rewards():
     return rewards
 
 @router.post("/rewards")
-async def add_reward(reward: Reward):
-    if reward.id in rewards:
+async def add_reward(
+    id: str = Form(),
+    name: str = Form(),
+    cost: int = Form(),
+    level_unlock: int = Form(),
+    image: UploadFile = File(None),
+):
+    if id in rewards:
         raise HTTPException(status_code=400, detail="Reward ID already exists")
+    if image:
+        file_bytes = await image.read()
     
-    rewards[reward.id] = reward.dict()
-    return {"message": f"Reward '{reward.name}' created successfully!", "reward": reward.dict()}
+    rewards[id] = {
+        "id": id,
+        "name": name,
+        "cost": cost,
+        "level_unlock": level_unlock,
+        "image": ""
+    }
+    return {"message": f"Reward '{name}' created successfully!", "reward": rewards[id]}
     
 @router.post("/claim/{reward_id}")
 async def claim_reward(reward_id: str):
