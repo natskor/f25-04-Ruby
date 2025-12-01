@@ -99,6 +99,28 @@ def get_all_chores(user: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/{chore_id}", response_model=ChoreResponse)
+def get_chore_details(chore_id: str):
+    """Get details of a specific chore."""
+    try:
+        chore = chore_db.get_chore_by_id(chore_id)
+        if not chore:
+            raise HTTPException(status_code=404, detail="Chore not found")
+        
+        return ChoreResponse(
+            id=chore["id"],
+            title=chore["Title"],
+            description=chore.get("Description"),
+            assigned_to=chore["AssignedTo"],
+            due_date=chore.get("DueDate"),
+            completed=chore.get("Completed", False),
+            reward_points=chore.get("XP Value", 0),
+            task_type=chore.get("TaskType")
+        )
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/{chore_id}/complete")
 def complete_chore(chore_id: str):

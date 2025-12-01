@@ -2,6 +2,9 @@ import flet as ft
 import utils as u
 import requests
 
+# Define the backend API address
+API_BASE_URL = "http://127.0.0.1:8000"
+
 def themedDashboard(page: ft.Page):
     page.horizontal_alignment = "center"
     page.vertical_alignment = "center"
@@ -10,6 +13,9 @@ def themedDashboard(page: ft.Page):
     # To remove the white space border around the gradient background
     page.padding=0
     page.spacing=0
+    
+    # A reserved interface for logging user, will be replaced with actual login system
+    current_user_id = page.session.get("user_id") if page.session.get("user_id") else "Kaleb"
     
     page.fonts = {
         "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
@@ -29,27 +35,143 @@ def themedDashboard(page: ft.Page):
         page.go("/collab_rewards")
         page.update()
     
+        # Generate assigned task cards function 
+    def create_task_card(chore_data):
+        """Generate UI cards based on the JSON data returned by the API."""
+        return ft.Container(
+            content=ft.Row(
+                [
+                    ft.Column(
+                        [
+                            ft.Text(
+                                chore_data.get("title", "Unknown Task"), # title
+                                size=14,
+                                color="#473c9c",
+                                font_family="LibreBaskerville",
+                                text_align="left",
+                            ),
+                            ft.Text(
+                                f"Due: {chore_data.get('due_date', 'No Date')}", # due_date
+                                size=10,
+                                color="#404040",
+                                font_family="LibreBaskerville",
+                                text_align="left",
+                            ),
+                        ],
+                        alignment="center",
+                        horizontal_alignment="left",
+                        spacing=5,
+                    ),
+                    ft.Column(
+                        [
+                            ft.Stack(
+                                [
+                                    ft.Text(
+                                        spans=[
+                                            ft.TextSpan(
+                                                f"+{chore_data.get('reward_points', 0)}", # reward_points
+                                                ft.TextStyle(
+                                                    size=20,
+                                                    weight=ft.FontWeight.BOLD,
+                                                    font_family="LibreBaskerville",
+                                                    foreground=ft.Paint(
+                                                        color="#ffffff",
+                                                        stroke_width=6,
+                                                        style=ft.PaintingStyle.STROKE,
+                                                    ),
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                    ft.Text(
+                                        spans=[
+                                            ft.TextSpan(
+                                                f"+{chore_data.get('reward_points', 0)}",
+                                                ft.TextStyle(
+                                                    size=20,
+                                                    weight=ft.FontWeight.BOLD,
+                                                    color="#7ed957",
+                                                    font_family="LibreBaskerville",
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                ],
+                            ),
+                        ],
+                        alignment="center",
+                        horizontal_alignment="right",
+                        spacing=5
+                    ),
+                ],
+                alignment="spaceBetween",
+                vertical_alignment="center",
+            ),
+            # For simplicity, it's temporarily redirected to details so far.
+            # Review or verification page can be implemented later.
+            on_click=lambda e: print(f"Clicked task: {chore_data['id']}"), 
+            padding=20,
+            border_radius=20,
+            shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+            width=300,
+            gradient=ft.LinearGradient(
+                rotation=135,
+                colors=["#94b9ff", "#cdffd8"],
+            ),
+        )
+        
+    # Task list container (initially empty, waiting for data to load)
+    task_list_col = ft.Column(spacing=15, horizontal_alignment="center")
+    
+    # Data loading logic
+    def load_data():
+        try:
+            # 1. Retrieve task list (filtered by current user)
+            res = requests.get(f"{API_BASE_URL}/chores/", params={"user": current_user_id})
+            if res.status_code == 200:
+                chores = res.json()
+                task_list_col.controls.clear()
+                if not chores:
+                     task_list_col.controls.append(ft.Text("No active quests! Relax time.", color="white"))
+                else:
+                    for chore in chores:
+                        # Only show incomplete tasks
+                        if not chore.get("completed", False):
+                            task_list_col.controls.append(create_task_card(chore))
+            else:
+                print("Failed to fetch chores")
+        except Exception as ex:
+            print(f"Error loading data: {ex}")
+            task_list_col.controls.append(ft.Text("Connection Error", color="red"))
+        
+        page.update()   
+    
     # App Bar
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
     
     # Collaborative Progress update
-    collab_response = requests.get("http://127.0.0.1:8000/collabrewards/progress")
-    collab_data = collab_response.json()
-
-    collab_current = collab_data.get("Current XP", 0)
-    collab_goal = collab_data.get("XP Goal", 1)
-    collab_total = collab_current / collab_goal if collab_goal > 0 else 0
-
+    # Progress bar logic(Added try-except)
+    try:
+        collab_response = requests.get(f"{API_BASE_URL}/collabrewards/progress")
+        collab_data = collab_response.json()
+        collab_current = collab_data.get("Current XP", 0)
+        collab_goal = collab_data.get("XP Goal", 1)
+        collab_total = collab_current / collab_goal if collab_goal > 0 else 0
     # Do the same for individual progress
-    member_id = "Kaleb"  # replace this with logged-in user from db
-    user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
-    user_data = user_response.json()
-    user_current = user_data.get("current_xp", 0)
-    user_goal = user_data.get("goal_xp", 1)
-    user_total = user_current / user_goal if user_goal > 0 else 0
-
+        member_id = "Kaleb"  # replace this with logged-in user from db
+        user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
+        user_data = user_response.json()
+        user_current = user_data.get("current_xp", 0)
+        user_goal = user_data.get("goal_xp", 1)
+        user_total = user_current / user_goal if user_goal > 0 else 0
+    except:
+        # Using a default value to prevent errors if the backend is not running.
+        collab_current, collab_goal, collab_total = 0, 100, 0
+        user_current, user_goal, user_total = 0, 100, 0
+        
+        
     # Individual Progress Bar 
     progress_card = ft.Container(
         image=ft.DecorationImage(
@@ -101,87 +223,6 @@ def themedDashboard(page: ft.Page):
             colors=["#94b9ff", "#cdffd8"],
         ),
     )
-    
-    # Assigned Tasks 
-    task_card = ft.Container(
-        content=ft.Row(
-            [
-                ft.Column(
-                    [
-                        ft.Text(
-                            "Wash Dishes",
-                            size=14,
-                            color="#473c9c",
-                            font_family="LibreBaskerville",
-                            text_align="left",
-                            ),
-                        ft.Text(
-                            "Due June 15 at 5:00pm",
-                            size=10,
-                            color="#404040",
-                            font_family="LibreBaskerville",
-                            text_align="left",
-                            ),
-                    ],
-                    alignment="center",
-                    horizontal_alignment="left",
-                    spacing=5,
-                ),
-                ft.Column(
-                    [
-                        ft.Stack(
-                            [
-                                ft.Text(
-                                    spans=[
-                                        ft.TextSpan(
-                                            "+50",
-                                            ft.TextStyle(
-                                                size=20,
-                                                weight=ft.FontWeight.BOLD,
-                                                font_family="LibreBaskerville",
-                                                foreground=ft.Paint(
-                                                    color="#ffffff",
-                                                    stroke_width=6,
-                                                    style=ft.PaintingStyle.STROKE,
-                                                ),
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                                ft.Text(
-                                    spans=[
-                                        ft.TextSpan(
-                                            "+50",
-                                            ft.TextStyle(
-                                                size=20,
-                                                weight=ft.FontWeight.BOLD,
-                                                color="#7ed957",
-                                                font_family="LibreBaskerville",
-                                            ),
-                                        ),
-                                    ],
-                                ),
-                            ],
-                        ),
-                    ],
-                    alignment="center",
-                    horizontal_alignment="right",
-                    spacing=5
-                ),
-            ],
-            alignment="spaceBetween",
-            vertical_alignment="center",
-        ),
-        on_click=go_chore_details,
-        padding=20,
-        border_radius=20,
-        shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
-        width=300,
-        gradient=ft.LinearGradient(
-            rotation=135,
-            colors=["#94b9ff", "#cdffd8"],
-        ),
-    )   
 
     # Collab Reward Progress Bar 
     collab_progress_card = ft.Container(
@@ -382,30 +423,22 @@ def themedDashboard(page: ft.Page):
      # --------------temporary----------------------
 
 
+    # Page Layout
     content = ft.Column(
         [
             app_bar,
             ft.Column(
                 [
                     progress_card,
-                    ft.Text("~ Adventure Awaits ~",
-                            font_family="LibreBaskerville", 
-                            color="#ffffff"),
-                    task_card,
-                    ft.Text("~ Family Reward ~",
-                    font_family="LibreBaskerville", 
-                    color="#ffffff"),
+                    ft.Text("~ Adventure Awaits ~", font_family="LibreBaskerville", color="#ffffff"),
+                    task_list_col, 
+                    ft.Text("~ Family Reward ~", font_family="LibreBaskerville", color="#ffffff"),
                     collab_progress_card,
-                    # temporary ----------------------------
-                    ft.Text("~ Family Progress ~",
-                            font_family="LibreBaskerville", 
-                            color="#ffffff"),
-                    child_progress_card,
-                    # temporary ----------------------------
                 ],
                 horizontal_alignment="center",
                 spacing=25,
                 expand=True,
+                scroll=ft.ScrollMode.AUTO # Allow scrolling
             ),
             nav_bar,
         ],
@@ -413,6 +446,8 @@ def themedDashboard(page: ft.Page):
         horizontal_alignment="center",
         expand=True,
     )
+
+    load_data()
 
     return ft.Container(
             content=content,

@@ -1,5 +1,9 @@
 import flet as ft
 import utils as u
+import requests
+
+# Define API Base URL (probably move to a config file later)
+API_BASE_URL = "http://127.0.0.1:8000"
 
 def ChoreDetails(page: ft.Page):
     page.title = "Chore Details"
@@ -9,24 +13,54 @@ def ChoreDetails(page: ft.Page):
     page.padding = 0
     page.spacing = 0
 
+    # Retrieve the chore_id selected from the previous page
+    chore_id = page.session.get("selected_chore_id")
+    
+    # Default data placeholder
+    chore_data = {
+        "title": "Loading...",
+        "description": "Fetching details...",
+        "reward_points": 0,
+        "due_date": "",
+        "task_type": "Task"
+    }
+
+    # Fetch real data from the Backend API
+    if chore_id:
+        try:
+            resp = requests.get(f"{API_BASE_URL}/chores/{chore_id}")
+            if resp.status_code == 200:
+                chore_data = resp.json()
+            else:
+                print(f"Error fetching chore: {resp.text}")
+                page.snack_bar = ft.SnackBar(ft.Text("Could not load chore details."))
+                page.snack_bar.open = True
+        except Exception as e:
+            print(f"Connection error: {e}")
+            page.snack_bar = ft.SnackBar(ft.Text("Connection error. Check backend."))
+            page.snack_bar.open = True
+    else:
+        # If accessed directly without selecting a chore
+        print("No chore_id found in session.")
+
+    # Fonts
     page.fonts = {
         "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    # App Bar
     app_bar = u.application_bar(page)
-    # Navigation bar
     nav_bar = u.navigation_bar(page)
 
-    # Navigation back handler
+    # Handler to go back to the previous view
     def go_back(e):
         print("Returning to Individual Dashboard...")
         page.go("/themed_dashboard")
         
     uploaded_image_path = {"path": None}
     
+    # Handler for camera/file picker result
     def open_camera(e: ft.FilePickerResultEvent):
         if e.files:
             file = e.files[0]
@@ -56,7 +90,7 @@ def ChoreDetails(page: ft.Page):
         on_click=submit_proof
     )
 
-    # Card with details
+    # Build the UI Card with Dynamic Data
     chore_card = ft.Container(
         content=ft.Column(
             [
@@ -69,6 +103,7 @@ def ChoreDetails(page: ft.Page):
                     color="#473c9c",
                 ),
                 ft.Container(
+                    # Image could be dynamic based on 'task_type' in the future
                     content=ft.Image(
                         src="images/avatars/dragon.png", 
                         width=150,
@@ -78,14 +113,14 @@ def ChoreDetails(page: ft.Page):
                     alignment=ft.alignment.center,
                 ),
                 ft.Text(
-                    "Task",
+                    chore_data.get("task_type", "Task"), # Dynamic Task Type
                     size=18,
                     weight=ft.FontWeight.BOLD,
                     text_align="center",
                     font_family="LibreBaskerville-Bold",
                 ),
                 ft.Text(
-                    "Wash dishes",
+                    chore_data["title"], # Dynamic Title
                     size=20,
                     text_align="center",
                     font_family="LibreBaskerville",
@@ -98,7 +133,7 @@ def ChoreDetails(page: ft.Page):
                     font_family="LibreBaskerville",
                 ),
                 ft.Text(
-                    "+50",
+                    f"+{chore_data['reward_points']}", # Dynamic XP Points
                     size=22,
                     weight=ft.FontWeight.BOLD,
                     text_align="center",
@@ -113,7 +148,8 @@ def ChoreDetails(page: ft.Page):
                     font_family="LibreBaskerville-Bold",
                 ),
                 ft.Text(
-                    "Wash and put away the dishes by June 15 at 5:00 pm",
+                    # Combine Description and Due Date
+                    f"{chore_data['description']}\nDue: {chore_data.get('due_date', 'No date')}",
                     size=14,
                     text_align="center",
                     font_family="LibreBaskerville",
@@ -130,7 +166,7 @@ def ChoreDetails(page: ft.Page):
         shadow=ft.BoxShadow(blur_radius=10, spread_radius=2, color="#888888"),
     )
 
-    # Bottom navigation (Back + Camera)
+    # Bottom Navigation Buttons (Back + Camera)
     bottom_nav = ft.Row(
         [
             ft.IconButton(
@@ -152,7 +188,7 @@ def ChoreDetails(page: ft.Page):
         spacing=40,
     )
 
-    # Layout
+    # Main Layout
     content = ft.Column(
         [
             app_bar,
@@ -175,7 +211,7 @@ def ChoreDetails(page: ft.Page):
         expand=True,
     )
 
-    # Return the container
+    # Return the full container
     return ft.Container(
         content=content,
         expand=True,
@@ -187,10 +223,10 @@ def ChoreDetails(page: ft.Page):
         alignment=ft.alignment.center,
     )
 
-
 def main(page: ft.Page):
+    # For testing: manually set a chore ID here if needed
+    # page.session.set("selected_chore_id", "TEST_ID_123")
     page.add(ChoreDetails(page))
-
 
 if __name__ == "__main__":
     ft.app(target=main, assets_dir="assets")
