@@ -24,18 +24,37 @@ def ChoreDetails(page: ft.Page):
     def go_back(e):
         print("Returning to Individual Dashboard...")
         page.go("/themed_dashboard")
+        
+    uploaded_image_path = {"path": None}
     
     def open_camera(e: ft.FilePickerResultEvent):
         if e.files:
             file = e.files[0]
-            print("Proof image selected:", file.path)
+            uploaded_image_path["path"] = file.path
+            print("Completed Chore Proof Image Uploaded:", file.path)
 
-            page.snack_bar = ft.SnackBar(ft.Text(f"Selected: {file.name}"))
+            submit_btn.visible = True
+            
+            page.snack_bar = ft.SnackBar(ft.Text(f"Uploaded: {file.name}"))
             page.snack_bar.open = True
             page.update()
 
     file_picker = ft.FilePicker(on_result=open_camera)
     page.overlay.append(file_picker)
+    
+    def submit_proof(e):
+        # needs to be stored somewhere (media.py)
+        page.go("/themed_dashboard")
+
+
+    submit_btn = ft.ElevatedButton(
+        "Submit Proof",
+        width=250,
+        bgcolor="#28a745",
+        color="white",
+        visible=False,
+        on_click=submit_proof
+    )
 
     # Card with details
     chore_card = ft.Container(
@@ -142,6 +161,7 @@ def ChoreDetails(page: ft.Page):
                     chore_card,
                     ft.Container(height=20),
                     bottom_nav,
+                    submit_btn,
                 ],
                 alignment="center",
                 horizontal_alignment="center",

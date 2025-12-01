@@ -107,12 +107,15 @@ def CreateReward(page: ft.Page):
         on_click=lambda _: file_picker.pick_files(allow_multiple=False),
     )
     
+    family_email = page.session.get("email")
+    
     def submit_reward(e):
     
         if reward_type.value == "Family":
             resp = requests.post(
                 "http://127.0.0.1:8000/collabrewards/create",
                 data={
+                    "email": family_email,
                     "title": reward_id.value,
                     "description": reward_title.value,
                     "goal_xp": int(xp_cost.value),

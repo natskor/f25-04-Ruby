@@ -33,25 +33,29 @@ def CollabRewards(page: ft.Page):
         font_family="LibreBaskerville",
         )
     
+    family_email = page.session.get("email")
+    
     try:
-        resp = requests.get("http://127.0.0.1:8000/collabrewards/progress", timeout=5)
+        resp = requests.get(f"http://127.0.0.1:8000/collabrewards/progress?email={family_email}", timeout=5)
         if resp.status_code == 200:
             collab_data = resp.json()
         else:
             collab_data = {}
-            
-        family_email = page.session.get("email")
+    except:
+        collab_data = {}
+        
+    try:    
         fam_resp = requests.get(f"http://127.0.0.1:8000/collabrewards/familysize?email={family_email}", timeout=5)   
         family_size = fam_resp.json().get("family_size", 1)
             
     except:
-        collab_data = {}
         family_size = 1
 
-    title_text = collab_data.get("Title", "No active family reward")
-    desc_text = collab_data.get("Description", "")
-    current_xp = collab_data.get("Current XP", 0)
-    goal_xp = collab_data.get("XP Goal", 1)
+    # If no active reward:
+    title_text = collab_data.get("Title") or "No active family reward"
+    desc_text = collab_data.get("Description") or ""
+    current_xp = collab_data.get("Current XP") or 0
+    goal_xp = collab_data.get("XP Goal") or 1
 
     # Calculate progress
     collab_total = current_xp / goal_xp if goal_xp > 0 else 0
