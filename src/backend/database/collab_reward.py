@@ -1,3 +1,4 @@
+# from firestore import db as DB
 from backend.database.firestore import db as DB
 
 def get_family_reward(email: str):
