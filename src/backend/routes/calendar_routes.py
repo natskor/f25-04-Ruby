@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from datetime import datetime
-from backend.routes import chore_routes
+from backend.database.chore import get_all_chores as db_get_all_chores
 
 router = APIRouter(prefix="/family_calendar", tags=["Family Calendar"])
 chores = []
@@ -8,14 +8,16 @@ chores = []
 @router.get("/all")
 def get_all_chores():
     
+    chores = db_get_all_chores()
+    
     calendar_events = []
     
-    for c in chore_routes.chore_list:
+    for c in chores:
         calendar_events.append({
-            "title": c.title,
-            "assignee": c.assigned_to,
-            "date": c.due_date,
-            "completed": c.completed,
+            "title": c.get("Title"),
+            "assignee": c.get("AssignedTo"),
+            "date": c.get("DueDate"),
+            "completed": c.get("Completed"),
         })
     
     return {
