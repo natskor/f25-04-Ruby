@@ -25,11 +25,17 @@ def ChoreDetails(page: ft.Page):
         print("Returning to Individual Dashboard...")
         page.go("/themed_dashboard")
     
-    def open_camera(e):
-        print("Open camera proof upload...")
-        page.snack_bar = ft.SnackBar(ft.Text("Camera feature coming soon!"))
-        page.snack_bar.open = True
-        page.update()
+    def open_camera(e: ft.FilePickerResultEvent):
+        if e.files:
+            file = e.files[0]
+            print("Proof image selected:", file.path)
+
+            page.snack_bar = ft.SnackBar(ft.Text(f"Selected: {file.name}"))
+            page.snack_bar.open = True
+            page.update()
+
+    file_picker = ft.FilePicker(on_result=open_camera)
+    page.overlay.append(file_picker)
 
     # Card with details
     chore_card = ft.Container(
@@ -118,7 +124,9 @@ def ChoreDetails(page: ft.Page):
                 icon=ft.Icons.CAMERA_ALT,
                 icon_color="white",
                 bgcolor="#6562DF",
-                on_click=lambda e: print("Open camera proof upload..."),
+                on_click=lambda e: file_picker.pick_files(
+                    allow_multiple=False,
+                    file_type=ft.FilePickerFileType.IMAGE),
             ),
         ],
         alignment="center",

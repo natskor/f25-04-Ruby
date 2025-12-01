@@ -96,8 +96,7 @@ async def set_avatar(body: AvatarRequest):
         "avatar": body.avatar,
     }
 
-# This will list all avatars associated with that family account (profiles)
-# Does not show names associated with those profiles yet
+# This will list all avatars and names associated with that family account (profiles)
 @router.get("/avatar/list/{email}")
 async def list_avatars(email: str):
     
@@ -112,3 +111,6 @@ async def list_avatars(email: str):
         })
 
     return profiles_list
+
+    
+    

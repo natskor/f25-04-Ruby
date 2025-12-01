@@ -21,6 +21,14 @@ def ChoreCreation(page: ft.Page):
     # Navigation bar
     nav_bar = u.navigation_bar(page)
     
+    family_email = page.session.get("email")
+    profile_options = []
+    
+    resp = requests.get(f"http://127.0.0.1:8000/avatar/list/{family_email}")
+    if resp.status_code == 200:
+        profiles = resp.json()
+        profile_options = [ft.dropdown.Option(p["profile"]) for p in profiles]
+    
     # Title at the top of the page
     title = ft.Text (
         "Create New Task",
@@ -68,12 +76,7 @@ def ChoreCreation(page: ft.Page):
 
     assignee = ft.Dropdown(
         label="Assign to",
-        options=[
-            ft.dropdown.Option("Mom"),
-            ft.dropdown.Option("Dad"),
-            ft.dropdown.Option("Alice"),
-            ft.dropdown.Option("Kaleb"),
-        ],
+        options=profile_options,
         width=150,
         border_radius=10,
     )
