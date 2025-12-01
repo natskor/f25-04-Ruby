@@ -41,39 +41,78 @@ def create_profile_progress(email: str, user: str):
         "Current XP": 0
     })
 
-##### Add Data - FAMILY UNIT collection.
+### "FAMILY" collection.
 
 def add_username(email: str, username: str):
     account = DB.collection("FAMILY UNIT").document(email)
     account.update({"Username": username})
 
+
 def add_password(email: str, password: str):
     account = DB.collection("FAMILY UNIT").document(email)
     account.update({"Password": password})
 
-##### Add Data - PROFILE subcollection.
 
 def add_role(email: str, user: str, role: str):
     profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
     profile_ref.update({"Role": role})
 
+
+def get_family_info(email: str):
+    search = DB.collection("FAMILY UNIT")
+    result = search.where(filter=FieldFilter("FamilyID", "==", email)).stream()
+    
+    for doc in result:
+        print(f"{doc.id} => {doc.to_dict()}")
+
+       
+def select_family_info(email: str, column: str):
+    search = DB.collection("FAMILY UNIT")
+    result = search.where(filter=FieldFilter("FamilyID", "==", email)).stream()
+    
+    for doc in result:
+        val = doc.to_dict()
+        print(f"{val[column]}")
+
+
+### "PROFILE" sub-collection.
+
 def add_pin(email: str, user: str, pin: str):
     profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
     profile_ref.update({"PIN": pin})
+
 
 def add_avatar(email: str, user: str, avatar: str):
     profile_ref = DB.collection("FAMILY UNIT").document(email).collection("PROFILE").document(user)
     profile_ref.update({"Avatar": avatar})
 
-##### Add Data - PROGRESSION sub-subcollection
 
-# This will be NEEDED when the child reaches the next level.
+def get_profile_info(email: str, user: str):
+    search = DB.collection("FAMILY UNIT").document(email).collection("PROFILE")
+    result = search.where(filter=FieldFilter("User", "==", user)).stream()
+    
+    for doc in result:
+        print(f"{doc.id} => {doc.to_dict()}")
+
+
+def select_profile_info(email: str, user: str, column: str):
+    search = DB.collection("FAMILY UNIT").document(email).collection("PROFILE")
+    result = search.where(filter=FieldFilter("User", "==", user)).stream()
+    
+    for doc in result:
+        val = doc.to_dict()
+        print(f"{val[column]}")
+
+
+### "PROGRESSION" sub-sub-collection.
+
 def set_needed_xp(email: str, user: str, set_amount: int):
     prog_ref = DB.collection(
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection(
                 "PROGRESSION").document(user + " Prog.")
     prog_ref.update({"Needed XP": set_amount})
+
 
 def update_progression(email: str, user: str, amount: int):
     prog_ref = DB.collection(
@@ -85,7 +124,7 @@ def update_progression(email: str, user: str, amount: int):
                      "Needed XP": Increment(-(amount))})
     increment_level(email, user)
 
-# Nested inside of update_progression()... Should not be used.
+
 def increment_level(email:str, user: str):
     prog_ref = DB.collection(
         "FAMILY UNIT").document(email).collection(
@@ -100,42 +139,6 @@ def increment_level(email:str, user: str):
                          "Next Level": Increment(1),
                          "Current XP": 0})
 
-##### Get Data - FAMILY UNIT collection.
-
-def get_family_info(email: str):
-    search = DB.collection("FAMILY UNIT")
-    result = search.where(filter=FieldFilter("FamilyID", "==", email)).stream()
-    
-    for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
-
-def select_family_info(email: str, column: str):
-    search = DB.collection("FAMILY UNIT")
-    result = search.where(filter=FieldFilter("FamilyID", "==", email)).stream()
-    
-    for doc in result:
-        val = doc.to_dict()
-        print(f"{val[column]}")
-
-##### Get Data - PROFILE subcollection.
-
-def get_profile_info(email: str, user: str):
-    search = DB.collection("FAMILY UNIT").document(email).collection("PROFILE")
-    result = search.where(filter=FieldFilter("User", "==", user)).stream()
-    
-    for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
-
-def select_profile_info(email: str, user: str, column: str):
-    search = DB.collection("FAMILY UNIT").document(email).collection("PROFILE")
-    result = search.where(filter=FieldFilter("User", "==", user)).stream()
-    
-    for doc in result:
-        val = doc.to_dict()
-        print(f"{val[column]}")
-
-
-##### Get Data - PROGRESSION sub-subcollection
 
 def get_experience_info(email: str, user: str):
     search = DB.collection(
@@ -147,6 +150,7 @@ def get_experience_info(email: str, user: str):
     for doc in result:
         print(f"{doc.id} => {doc.to_dict()}")
 
+
 def select_progression_info(email: str, user: str, column: str):
     search = DB.collection(
         "FAMILY UNIT").document(email).collection(
@@ -157,6 +161,7 @@ def select_progression_info(email: str, user: str, column: str):
     for doc in result:
         val = doc.to_dict()
         print(f"{val[column]}")
+
 
 ###########################################################
 ### Testing area.
