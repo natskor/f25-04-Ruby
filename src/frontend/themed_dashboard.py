@@ -430,10 +430,7 @@ def themedDashboard(page: ft.Page):
         ),
         content=ft.Column([child_info, child_chore], spacing=5)
     )
-
-     # --------------temporary----------------------
-
-
+    
     # Page Layout
     content = ft.Column(
         [
@@ -445,6 +442,10 @@ def themedDashboard(page: ft.Page):
                     task_list_col, 
                     ft.Text("~ Family Reward ~", font_family="LibreBaskerville", color="#ffffff"),
                     collab_progress_card,
+                    ft.Text("~ Family Progress ~",
+                            font_family="LibreBaskerville", 
+                            color="#ffffff"),
+                    child_progress_card,
                 ],
                 horizontal_alignment="center",
                 spacing=25,
