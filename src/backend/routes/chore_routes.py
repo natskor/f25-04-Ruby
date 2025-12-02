@@ -13,6 +13,7 @@ router = APIRouter(
 
 # Models
 class ChoreCreate(BaseModel):
+    email: str
     title: str
     description: Optional[str] = None
     assigned_to: str
@@ -38,6 +39,7 @@ def create_chore(chore: ChoreCreate):
     try:
         # 1. Save to Database
         new_chore_data = chore_db.create_chore(
+            email=chore.email,
             title=chore.title,
             desc=chore.description,
             xp_val=chore.reward_points,
@@ -74,13 +76,13 @@ def create_chore(chore: ChoreCreate):
 
 
 @router.get("/", response_model=List[ChoreResponse])
-def get_all_chores(user: Optional[str] = None):
+def get_all_chores(email: str, user: Optional[str] = None):
     """Get all chores, optionally filtered by assigned user."""
     try:
         if user:
-            raw_chores = chore_db.get_chores_by_user(user)
+            raw_chores = chore_db.get_chores_by_user(email, user)
         else:
-            raw_chores = chore_db.get_all_chores()
+            raw_chores = chore_db.get_all_chores(email)
             
         # Transform DB format to Response format
         return [
@@ -100,10 +102,10 @@ def get_all_chores(user: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{chore_id}", response_model=ChoreResponse)
-def get_chore_details(chore_id: str):
+def get_chore_details(chore_id: str, email: str):
     """Get details of a specific chore."""
     try:
-        chore = chore_db.get_chore_by_id(chore_id)
+        chore = chore_db.get_chore_by_id(email, chore_id)
         if not chore:
             raise HTTPException(status_code=404, detail="Chore not found")
         
@@ -123,11 +125,11 @@ def get_chore_details(chore_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/{chore_id}/complete")
-def complete_chore(chore_id: str):
+def complete_chore(chore_id: str, email: str):
     """Mark chore complete and award the ACTUAL reward points."""
     try:
         # 1. Get current chore status to check if already done
-        chore = chore_db.get_chore_by_id(chore_id)
+        chore = chore_db.get_chore_by_id(email, chore_id)
         if not chore:
             raise HTTPException(status_code=404, detail="Chore not found")
         
@@ -135,7 +137,7 @@ def complete_chore(chore_id: str):
             raise HTTPException(status_code=400, detail="Chore already completed.")
 
         # 2. Update status in DB
-        updated_chore = chore_db.complete_chore(chore_id)
+        updated_chore = chore_db.complete_chore(email, chore_id)
         
         # 3. Award Points (FIXED: Uses actual XP value from chore)
         points_to_award = chore.get("XP Value", 0)
@@ -153,9 +155,9 @@ def complete_chore(chore_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{chore_id}")
-def delete_chore(chore_id: str):
+def delete_chore(chore_id: str, email: str):
     try:
-        chore_db.remove_chore(chore_id)
+        chore_db.remove_chore(email, chore_id)
         return {"message": f"Chore {chore_id} deleted."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

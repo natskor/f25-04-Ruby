@@ -27,7 +27,9 @@ def FamilyCalendar(page: ft.Page):
     # Navigation bar
     nav_bar = u.navigation_bar(page)
     
-    response = requests.get("http://127.0.0.1:8000/family_calendar/all")
+    family_email = page.session.get("email")
+    
+    response = requests.get("http://127.0.0.1:8000/family_calendar/all", params={"email": family_email})
     data = response.json()
     all_chores = data.get("chores", [])
     selected = ft.Text("Select a date to see chores.", size=14, color="#473c9c")

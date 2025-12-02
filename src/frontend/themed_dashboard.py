@@ -15,7 +15,11 @@ def themedDashboard(page: ft.Page):
     page.spacing=0
     
     # A reserved interface for logging user, will be replaced with actual login system
-    current_user_id = page.session.get("user_id") if page.session.get("user_id") else "Kaleb"
+    # current_user_id = page.session.get("user_id") if page.session.get("user_id") else "Kaleb"
+    email = page.session.get("email")
+    profile_name = page.session.get("profile_name")
+    
+    
     
     page.fonts = {
         "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
@@ -23,7 +27,12 @@ def themedDashboard(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    def go_chore_details(e: ft.ControlEvent):
+    # def go_chore_details(e: ft.ControlEvent):
+    #     page.go("/details")
+    #     page.update()
+
+    def go_chore_details(chore_id: str):
+        page.session.set("selected_chore_id", chore_id)
         page.go("/details")
         page.update()
 
@@ -109,7 +118,7 @@ def themedDashboard(page: ft.Page):
             ),
             # For simplicity, it's temporarily redirected to details so far.
             # Review or verification page can be implemented later.
-            on_click=lambda e: print(f"Clicked task: {chore_data['id']}"), 
+            on_click=lambda e, cid=chore_data["id"]: go_chore_details(cid), 
             padding=20,
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
@@ -125,12 +134,13 @@ def themedDashboard(page: ft.Page):
     
     # Data loading logic
     def load_data():
+        
+        task_list_col.controls.clear()
         try:
             # 1. Retrieve task list (filtered by current user)
-            res = requests.get(f"{API_BASE_URL}/chores/", params={"user": current_user_id})
+            res = requests.get(f"{API_BASE_URL}/chores/", params={"email": email, "user": profile_name})
             if res.status_code == 200:
                 chores = res.json()
-                task_list_col.controls.clear()
                 if not chores:
                      task_list_col.controls.append(ft.Text("No active quests! Relax time.", color="white"))
                 else:
@@ -159,6 +169,7 @@ def themedDashboard(page: ft.Page):
         collab_current = collab_data.get("Current XP", 0)
         collab_goal = collab_data.get("XP Goal", 1)
         collab_total = collab_current / collab_goal if collab_goal > 0 else 0
+        
     # Do the same for individual progress
         member_id = "Kaleb"  # replace this with logged-in user from db
         user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")

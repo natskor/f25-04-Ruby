@@ -116,17 +116,8 @@ def ChoreCreation(page: ft.Page):
 
     # Submit chore handler
     def submit_chore():
-        # print(f"""
-        # New chore created:
-        # - Name: {chore_name.value}
-        # - Description: {chore_desc.value}
-        # - Points: {reward_points.value}
-        # - Assignee: {assignee.value}
-        # - Due Date: {due_date.value}
-        # - Task Type: {task_type.value}
-        # - Require Photo Proof: {require_proof.value}
-        # """)
         response = requests.post("http://127.0.0.1:8000/chores/",json={
+            "email": family_email,
             "title": chore_name.value,
             "description": chore_desc.value,
             "assigned_to": assignee.value,

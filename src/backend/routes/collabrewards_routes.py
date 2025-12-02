@@ -82,7 +82,7 @@ async def get_family_size(email: str):
     count = len(profiles)
     return {"family_size": max(1, count)}
 
-# Helper function for chore integration(added by JS)       
-async def award_points(username: str, points: int):
-    """Helper function for chore integration."""
-    print(f"Awarded {points} points to {username} for completing a chore.")
+# # Helper function for chore integration(added by JS)       
+# async def award_points(username: str, points: int):
+#     """Helper function for chore integration."""
+#     print(f"Awarded {points} points to {username} for completing a chore.")

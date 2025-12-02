@@ -13,6 +13,7 @@ def ChoreDetails(page: ft.Page):
     page.padding = 0
     page.spacing = 0
 
+    email = page.session.get("email")
     # Retrieve the chore_id selected from the previous page
     chore_id = page.session.get("selected_chore_id")
     
@@ -28,7 +29,7 @@ def ChoreDetails(page: ft.Page):
     # Fetch real data from the Backend API
     if chore_id:
         try:
-            resp = requests.get(f"{API_BASE_URL}/chores/{chore_id}")
+            resp = requests.get(f"{API_BASE_URL}/chores/{chore_id}", params={"email": email})
             if resp.status_code == 200:
                 chore_data = resp.json()
             else:
