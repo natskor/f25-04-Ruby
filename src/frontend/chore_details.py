@@ -27,8 +27,8 @@ def ChoreDetails(page: ft.Page):
         "assigned_to": "Unknown"
     }
 
-    # Placeholder for the dynamic avatar
-    assignee_avatar = "images/avatars/dragon.png"
+    # Default avatar path
+    assignee_avatar = "images/Avatars/dragon.png"
 
     # Fetch real data from the Backend API
     if chore_id:
@@ -46,7 +46,21 @@ def ChoreDetails(page: ft.Page):
                         # specific search for the assigned user's avatar
                         for p in profiles:
                             if p["profile"] == chore_data.get("assigned_to"):
-                                assignee_avatar = p["avatar"]
+                                raw_avatar = p.get("avatar")
+                                
+                                # Robust path construction logic
+                                if raw_avatar:
+                                    # If the DB stores "wizard", convert to "images/Avatars/wizard.png"
+                                    # If the DB already stores a path, use it, but fix casing if needed
+                                    
+                                    # Strip extension if present to normalize
+                                    clean_name = raw_avatar.split('.')[0]
+                                    
+                                    # Clean up if it was stored with path prefixes incorrectly
+                                    if "/" in clean_name:
+                                        clean_name = clean_name.split("/")[-1]
+                                        
+                                    assignee_avatar = f"images/Avatars/{clean_name}.png"
                                 break
                 except Exception as ex:
                     print(f"Error fetching avatars: {ex}")
@@ -128,7 +142,7 @@ def ChoreDetails(page: ft.Page):
                         src=assignee_avatar, 
                         width=150,
                         height=150,
-                        fit=ft.ImageFit.COVER,
+                        fit=ft.ImageFit.CONTAIN, # Changed to CONTAIN to prevent cutting off
                     ),
                     alignment=ft.alignment.center,
                 ),
