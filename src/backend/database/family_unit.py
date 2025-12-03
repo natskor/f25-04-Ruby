@@ -1,5 +1,5 @@
-#from firestore import db as DB
-from backend.database.firestore import db as DB
+from firestore import db as DB
+#from backend.database.firestore import db as DB
 from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore import Increment
 
@@ -62,8 +62,11 @@ def get_family_info(email: str):
     search = DB.collection("FAMILY UNIT")
     result = search.where(filter=FieldFilter("FamilyID", "==", email)).stream()
     
+    details = []
     for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
+        details.append(doc.to_dict())
+
+    return details
 
        
 def select_family_info(email: str, column: str):
@@ -72,7 +75,8 @@ def select_family_info(email: str, column: str):
     
     for doc in result:
         val = doc.to_dict()
-        print(f"{val[column]}")
+    
+    return val[column]
 
 
 ### "PROFILE" sub-collection.
@@ -91,8 +95,11 @@ def get_profile_info(email: str, user: str):
     search = DB.collection("FAMILY UNIT").document(email).collection("PROFILE")
     result = search.where(filter=FieldFilter("User", "==", user)).stream()
     
+    details = []
     for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
+        details.append(doc.to_dict())
+
+    return details
 
 
 def select_profile_info(email: str, user: str, column: str):
@@ -101,7 +108,8 @@ def select_profile_info(email: str, user: str, column: str):
     
     for doc in result:
         val = doc.to_dict()
-        print(f"{val[column]}")
+    
+    return val[column]
 
 
 ### "PROGRESSION" sub-sub-collection.
@@ -147,8 +155,11 @@ def get_experience_info(email: str, user: str):
                 "PROGRESSION")
     result = search.where(filter=FieldFilter("User", "==", user)).stream()
     
+    details = []
     for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
+        details.append(doc.to_dict())
+
+    return details
 
 
 def select_progression_info(email: str, user: str, column: str):
@@ -160,52 +171,4 @@ def select_progression_info(email: str, user: str, column: str):
     
     for doc in result:
         val = doc.to_dict()
-        print(f"{val[column]}")
-
-
-###########################################################
-### Testing area.
-###########################################################
-# VARIABLES THAT ARE USED
-email : str = "parent@gmail.com"
-user_name : str = "Metal Eater"
-password : str = "superDopePassword77"
-role : str = "Parent"
-avatar : str = "wizard"
-give_this : int = 200
-set_this : int = 500
-###########################################################
-# FAMILY operations
-#create_family(email)
-#add_username(email, user_name)
-#add_password(email, password)
-
-#get_family_info(email)
-#select_family_info(email, "FamilyID")
-#select_family_info(email, "Username")
-#select_family_info(email, "Password")
-###########################################################
-# PROFILE operations
-#create_profile(email, user_name)
-#add_role(email, user_name, role)
-#add_pin(email, user_name, password)
-#add_avatar(email, user_name, avatar)
-
-#get_profile_info(email, user_name)
-#select_profile_info(email, user_name, "User")
-#select_profile_info(email, user_name, "Avatar")
-#select_profile_info(email, user_name, "Role")
-#select_profile_info(email, user_name, "PIN")
-###########################################################
-# PROGRESSION operations
-#create_profile_progress(email, user_name)
-#set_needed_xp(email, user_name, set_this)
-#update_progression(email, user_name, give_this)
-
-#get_experience_info(email, user_name)
-#select_progression_info(email, user_name, "User")
-#select_progression_info(email, user_name, "Next Level")
-#select_progression_info(email, user_name, "Needed XP")
-#select_progression_info(email, user_name, "Current Level")
-#select_progression_info(email, user_name, "Current XP")
-###########################################################
+    return val[column]

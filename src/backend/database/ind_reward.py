@@ -37,7 +37,6 @@ def remove_ind_reward(name: str, recipient: str):
 # Get all data.
 def get_ind_reward(name: str, recipient: str):
     search = DB.collection("INDIVIDUAL REWARD")
-
     result = search.where(
         filter=FieldFilter(
             "Title", "==", name
@@ -48,13 +47,15 @@ def get_ind_reward(name: str, recipient: str):
         )
     ).stream()
 
+    details = []
     for doc in result:
-        print(f"{doc.id} => {doc.to_dict()}")
+        details.append(doc.to_dict())
+
+    return details
 
 # Select data.
 def select_ind_reward(name: str, recipient: str, column: str):
     search = DB.collection("INDIVIDUAL REWARD")
-
     result = search.where(
         filter=FieldFilter(
             "Title", "==", name
@@ -67,4 +68,4 @@ def select_ind_reward(name: str, recipient: str, column: str):
 
     for doc in result:
         val = doc.to_dict()
-        print(f"{val[column]}")
+    return val[column]
