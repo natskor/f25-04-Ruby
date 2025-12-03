@@ -23,15 +23,34 @@ def ChoreDetails(page: ft.Page):
         "description": "Fetching details...",
         "reward_points": 0,
         "due_date": "",
-        "task_type": "Task"
+        "task_type": "Task",
+        "assigned_to": "Unknown"
     }
+
+    # Placeholder for the dynamic avatar
+    assignee_avatar = "images/avatars/dragon.png"
 
     # Fetch real data from the Backend API
     if chore_id:
         try:
+            # 1. Fetch Chore Details
             resp = requests.get(f"{API_BASE_URL}/chores/{chore_id}", params={"email": email})
             if resp.status_code == 200:
                 chore_data = resp.json()
+                
+                # 2. Fetch Avatar for the Assignee
+                try:
+                    avatar_resp = requests.get(f"{API_BASE_URL}/avatar/list/{email}")
+                    if avatar_resp.status_code == 200:
+                        profiles = avatar_resp.json()
+                        # specific search for the assigned user's avatar
+                        for p in profiles:
+                            if p["profile"] == chore_data.get("assigned_to"):
+                                assignee_avatar = p["avatar"]
+                                break
+                except Exception as ex:
+                    print(f"Error fetching avatars: {ex}")
+
             else:
                 print(f"Error fetching chore: {resp.text}")
                 page.snack_bar = ft.SnackBar(ft.Text("Could not load chore details."))
@@ -104,14 +123,23 @@ def ChoreDetails(page: ft.Page):
                     color="#473c9c",
                 ),
                 ft.Container(
-                    # Image could be dynamic based on 'task_type' in the future
+                    # Use the dynamically fetched avatar path
                     content=ft.Image(
-                        src="images/avatars/dragon.png", 
+                        src=assignee_avatar, 
                         width=150,
                         height=150,
                         fit=ft.ImageFit.COVER,
                     ),
                     alignment=ft.alignment.center,
+                ),
+                # Display the Assignee's Name
+                ft.Text(
+                    f"Hero: {chore_data.get('assigned_to', 'Unknown')}",
+                    size=16,
+                    weight=ft.FontWeight.BOLD,
+                    text_align="center",
+                    color="#4A4F5A",
+                    font_family="LibreBaskerville",
                 ),
                 ft.Text(
                     chore_data.get("task_type", "Task"), # Dynamic Task Type
