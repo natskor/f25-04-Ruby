@@ -1,5 +1,4 @@
-from firestore import db as DB
-#from backend.database.firestore import db as DB
+from backend.database.firestore import db as DB
 from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore import Increment
 
@@ -122,30 +121,51 @@ def set_needed_xp(email: str, user: str, set_amount: int):
     prog_ref.update({"Needed XP": set_amount})
 
 
-def update_progression(email: str, user: str, amount: int):
+def add_current_xp(email: str, user: str, amount: int):
     prog_ref = DB.collection(
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection(
                 "PROGRESSION").document(user + " Prog.")
     
+    need_xp = prog_ref.get().to_dict().get("Needed XP")
+    curr_xp = prog_ref.get().to_dict().get("Current XP")
+    total_xp = need_xp + curr_xp
+
     prog_ref.update({"Current XP": Increment(amount), 
                      "Needed XP": Increment(-(amount))})
-    increment_level(email, user)
+    increment_level(email, user, total_xp)
 
 
-def increment_level(email:str, user: str):
+def increment_level(email:str, user: str, prev_goal: int):
     prog_ref = DB.collection(
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection("PROGRESSION").document(user + " Prog.")
-    
-    user_doc = prog_ref.get()
-    data = user_doc.to_dict()
-    need_xp = data.get("Needed XP")
+
+    need_xp = prog_ref.get().to_dict().get("Needed XP")
+    set_need = prev_goal + 100
     
     if need_xp is not None and need_xp <= 0:
         prog_ref.update({"Current Level": Increment(1),
-                         "Next Level": Increment(1),
-                         "Current XP": 0})
+                         "Next Level": Increment(1)})
+        prog_ref.update({"Current XP": 0})
+        set_needed_xp(email, user, set_need)
+
+def subtract_current_xp(email: str, user: str, reward_cost: int, reward_level: int) -> bool:
+    prog_ref = DB.collection(
+        "FAMILY UNIT").document(email).collection(
+            "PROFILE").document(user).collection(
+                "PROGRESSION").document(user + " Prog.")
+    
+    curr_xp = prog_ref.get().to_dict().get("Current XP")
+    curr_lvl = prog_ref.get().to_dict().get("Current Level")
+
+    if curr_xp >= reward_cost and curr_lvl >= reward_level:
+        prog_ref.update({"Current XP": Increment(-(reward_cost)),
+                         "Needed XP": Increment(reward_cost)})
+        return True
+    else:
+        print("Not enough XP for reward.")
+        return False
 
 
 def get_experience_info(email: str, user: str):
