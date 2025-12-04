@@ -1,5 +1,4 @@
 from backend.database.family_unit import *
-from backend.database.family_unit import *
 from backend.database.firestore import db as DB
 from google.cloud.firestore_v1.base_query import FieldFilter
 
