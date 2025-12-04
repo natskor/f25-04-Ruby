@@ -1,9 +1,6 @@
 import flet as ft
 import utils as u
 
-# Define the backend API address
-API_BASE_URL = "http://127.0.0.1:8000"
-
 def childProgress(page: ft.Page):
     # ---------- page chrome ----------
     page.title = "QuestNest • Child Progress"
@@ -90,7 +87,7 @@ def childProgress(page: ft.Page):
 
     xp_breakdown = ft.Column(
         [
-            ft.Text(f"Level {current_level}", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
+            ft.Text("Level 5", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
             ft.Text("XP Breakdown", size=16, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Text("Current Total: 3255", size=14, color="#333333", font_family="LibreBaskerville"),
