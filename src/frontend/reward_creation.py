@@ -2,10 +2,6 @@ import flet as ft
 import utils as u
 import requests
 
-API_BASE = "http://127.0.0.1:8000"  # use http unless you actually have TLS
-FAMILY_ID = "demo-family"
-
-
 def CreateReward(page: ft.Page):
     page.title = "Reward Creation"
     page.horizontal_alignment = "center"
@@ -24,7 +20,7 @@ def CreateReward(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
-
+    
     title = ft.Text(
         "Create New Reward",
         size=40,
@@ -43,7 +39,7 @@ def CreateReward(page: ft.Page):
         border_color="#8c52ff",
         focused_border_color="#473c9c",
     )
-
+    
     reward_title = ft.TextField(
         label="Reward Title",
         width=350,
@@ -75,7 +71,7 @@ def CreateReward(page: ft.Page):
         focused_border_color="#473c9c",
         keyboard_type=ft.KeyboardType.NUMBER,
     )
-
+    
     reward_type = ft.Dropdown(
         label="Reward Type",
         width=350,
@@ -86,11 +82,11 @@ def CreateReward(page: ft.Page):
         focused_border_color="#473c9c",
         options=[
             ft.dropdown.Option("Individual"),
-            ft.dropdown.Option("Family"),
+            ft.dropdown.Option("Family")
         ],
         value="Individual",
     )
-
+    
     selected_file_text = ft.Text("No image selected", color="#473c9c", size=12)
     selected_file = {"path": None}
 
@@ -110,36 +106,21 @@ def CreateReward(page: ft.Page):
         color="white",
         on_click=lambda _: file_picker.pick_files(allow_multiple=False),
     )
-
+    
     family_email = page.session.get("email")
-
+    
     def submit_reward(e):
-        # --- Family collab reward branch (existing behavior) ---
+    
         if reward_type.value == "Family":
-            if not family_email:
-                page.snack_bar = ft.SnackBar(
-                    ft.Text("No family email in session."), open=True
-                )
-                page.update()
-                return
-
-            try:
-                resp = requests.post(
-                    f"{API_BASE}/collabrewards/create",
-                    data={
-                        "email": family_email,
-                        "title": reward_id.value,
-                        "description": reward_title.value,
-                        "goal_xp": int(xp_cost.value or 0),
-                    },
-                )
-            except Exception as ex:
-                print("Error creating family reward:", ex)
-                page.snack_bar = ft.SnackBar(
-                    ft.Text("Network error creating family reward."), open=True
-                )
-                page.update()
-                return
+            resp = requests.post(
+                "http://127.0.0.1:8000/collabrewards/create",
+                data={
+                    "email": family_email,
+                    "title": reward_id.value,
+                    "description": reward_title.value,
+                    "goal_xp": int(xp_cost.value),
+                },
+            )
 
             if resp.status_code == 200:
                 page.snack_bar = ft.SnackBar(ft.Text("Family Reward Created!"))
@@ -151,65 +132,34 @@ def CreateReward(page: ft.Page):
                 page.snack_bar.open = True
                 page.update()
             return
-
-        # --- Individual reward branch → goes to /families/{family_id}/rewards ---
-
-        # basic validation
-        if not reward_id.value.strip() or not reward_title.value.strip():
-            page.snack_bar = ft.SnackBar(
-                ft.Text("Reward ID and Title are required."), open=True
-            )
-            page.update()
-            return
-
-        if not xp_cost.value.strip().isdigit():
-            page.snack_bar = ft.SnackBar(
-                ft.Text("XP Cost must be a number."), open=True
-            )
-            page.update()
-            return
-
-        if not level_unlock.value.strip().isdigit():
-            page.snack_bar = ft.SnackBar(
-                ft.Text("Unlock Level must be a number."), open=True
-            )
-            page.update()
-            return
-
-        # For now we are not wiring the uploaded file into backend yet.
-        # Backend expects image_url string, so we send None or a placeholder.
-        payload = {
-            "id": reward_id.value.strip(),
-            "name": reward_title.value.strip(),
-            "cost": int(xp_cost.value.strip()),
-            "level_unlock": int(level_unlock.value.strip()),
-            "image_url": None,          # could later be a URL from storage
-            "is_family_rewards": False, # this is an individual reward
-        }
-
-        try:
-            resp = requests.post(
-                f"{API_BASE}/families/{FAMILY_ID}/rewards",
-                json=payload,
-            )
-        except Exception as ex:
-            print("Error creating individual reward:", ex)
-            page.snack_bar = ft.SnackBar(
-                ft.Text("Network error creating reward."), open=True
-            )
-            page.update()
-            return
-
+                
+        if not selected_file["path"]:
+                page.snack_bar = ft.SnackBar(ft.Text("Please upload an image first!"))
+                page.snack_bar.open = True
+                page.update()
+                return
+            
+        resp = requests.post(
+            "http://127.0.0.1:8000/rewards_store/rewards",
+            files={"image": open(selected_file["path"], "rb")},
+            data={
+                "id": reward_id.value,
+                "name": reward_title.value,
+                "cost": int(xp_cost.value),
+                "level_unlock": int(level_unlock.value),
+            },
+        )
+            
         if resp.status_code == 200:
             page.snack_bar = ft.SnackBar(ft.Text("Reward Created!"))
             page.snack_bar.open = True
-            page.go("/store")  # matches your StorePage route
+            page.go("/store")
             page.update()
         else:
             page.snack_bar = ft.SnackBar(ft.Text("Error: " + resp.text))
             page.snack_bar.open = True
             page.update()
-
+            
     reward_card = ft.Container(
         content=ft.Column(
             [
@@ -217,11 +167,7 @@ def CreateReward(page: ft.Page):
                 reward_title,
                 ft.Row([xp_cost, level_unlock], alignment="center"),
                 reward_type,
-                ft.Row(
-                    [upload_button, selected_file_text],
-                    alignment="center",
-                    spacing=10,
-                ),
+                ft.Row([upload_button, selected_file_text], alignment="center", spacing=10),
                 ft.ElevatedButton(
                     "Submit Reward",
                     width=200,
@@ -238,11 +184,9 @@ def CreateReward(page: ft.Page):
         width=400,
         bgcolor=ft.Colors.WHITE,
         border_radius=20,
-        shadow=ft.BoxShadow(
-            blur_radius=12, spread_radius=2, color="#888888"
-        ),
+        shadow=ft.BoxShadow(blur_radius=12, spread_radius=2, color="#888888"),
     )
-
+    
     content = ft.Column(
         [
             app_bar,
@@ -260,7 +204,7 @@ def CreateReward(page: ft.Page):
         horizontal_alignment="center",
         expand=True,
     )
-
+    
     return ft.Container(
         content=content,
         expand=True,

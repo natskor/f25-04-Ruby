@@ -21,7 +21,7 @@ def get_all_chores(email: str):
         })
     
     return {
-        "chores": chores
+        "chores": calendar_events
     }
 
 # # Helper function for chore integration(added by JS)   

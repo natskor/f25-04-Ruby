@@ -18,13 +18,6 @@ def verification(page: ft.Page):
         "LibreBaskerville-Italic": "/fonts/LibreBaskerville-Italic.ttf",
     }
 
-    # 🔹 Pull the child name from session (set in AvatarSelection)
-    child_name = (
-        page.session.get("profile")        # AvatarSelection uses this
-        or page.session.get("profile_name")  # fallback key if used elsewhere
-        or "Kaleb"                         # last-resort default
-    )
-
     # App Bar
     app_bar = u.application_bar(page)
     # Navigation bar
@@ -47,7 +40,7 @@ def verification(page: ft.Page):
         font_family="LibreBaskerville",
     )
     subtitle = ft.Text(
-        f"Did {child_name} Complete the Chore?",
+        "Did Kaleb Complete the Chore?",
         size=16,
         italic=True,
         color="#404040",

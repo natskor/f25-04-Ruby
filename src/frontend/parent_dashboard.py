@@ -6,8 +6,6 @@ def parentDashboard(page: ft.Page):
     page.vertical_alignment = "center"
     page.theme_mode = "light"
     
-    profile_name = page.session.get("profile") or "Family Member"
-    avatar_src = page.session.get("avatar") 
     # To remove the white space border around the gradient background
     page.padding=0
     page.spacing=0
@@ -167,47 +165,46 @@ def parentDashboard(page: ft.Page):
     # Child's Info
     child_info = ft.Container(
         content=ft.Row(
-         [
-             ft.Column(
-                [
-                    ft.Text(
-                        profile_name,   # 🔹 dynamic child name
-                        size=14,
-                        color="#473c9c",
-                        font_family="LibreBaskerville",
-                        text_align="left",
-                    ),
-                    ft.Row([
+            [
+                ft.Column(
+                    [
                         ft.Text(
-                            "Progress",
+                            "Kaleb",
                             size=14,
-                            color="#8f8e8e",
+                            color="#473c9c",
                             font_family="LibreBaskerville",
                             text_align="left",
-                        ),
-                    ])
-                ],
-                spacing=2,
-            ),
-            ft.Row(
-                [
+                            ),
+                            ft.Row([
+                                    ft.Text(
+                                    "Progress",
+                                    size=14,
+                                    color="#8f8e8e",
+                                    font_family="LibreBaskerville",
+                                    text_align="left",
+                                ),
+                            ])
+                    ],
+                    spacing=2,
+                ),
+                ft.Row(
+                    [
                     ft.Image(
-                        src=avatar_src,  # 🔹 their chosen avatar
+                        src="images/dragon.png",
                         width=100,
                         height=100,
-                    ),
-                ],
-                spacing=5,
-                vertical_alignment="center"
-            )
-        ],
-        alignment="spaceBetween",
-        vertical_alignment="center",
-    ),
-    on_click=toggle,
-    padding=0,
+                        ),
+                    ],
+                    spacing=5,
+                    vertical_alignment="center"
+                )
+            ],
+            alignment="spaceBetween",
+            vertical_alignment="center",
+        ),
+        on_click=toggle,
+        padding=0,
     )
-
 
     # View of Child Info and chores
     child_progress_card=ft.Container(

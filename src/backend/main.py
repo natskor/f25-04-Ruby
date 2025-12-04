@@ -2,8 +2,8 @@
 
 from fastapi import FastAPI
 from backend.routes import collabrewards_routes, signup_routes, login_routes, calendar_routes
-from backend.routes import rewards_store_routes, chore_routes, pin_avatar_routes, verification_routes
-#progress_routes
+from backend.routes import rewards_store_routes, chore_routes, progress_routes, pin_avatar_routes, verification_routes
+
 app = FastAPI()
 
 app.include_router(collabrewards_routes.router)
@@ -12,7 +12,7 @@ app.include_router(login_routes.router)
 app.include_router(calendar_routes.router)
 app.include_router(rewards_store_routes.router)
 app.include_router(chore_routes.router)
-#app.include_router(progress_routes.router)
+app.include_router(progress_routes.router)
 app.include_router(pin_avatar_routes.router)
 app.include_router(verification_routes.router)
 
