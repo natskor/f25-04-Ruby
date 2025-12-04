@@ -1,8 +1,4 @@
 #python
 .venv/
-<<<<<<< HEAD
 .env
 __pycache__/
-=======
-.env
->>>>>>> parent of fe3139c (system was being weird, but changes to reward store to allow display of custom rewards)
