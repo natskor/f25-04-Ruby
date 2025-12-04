@@ -191,12 +191,10 @@ def themedDashboard(page: ft.Page):
         collab_current = collab_data.get("current_xp", collab_data.get("Current XP", 0))
         collab_goal = collab_data.get("goal_xp", collab_data.get("XP Goal", 1))
         collab_total = collab_current / collab_goal if collab_goal > 0 else 0
-
-        # Individual user progress
-        member_id = profile_name  # use the current profile as member id
-        user_response = requests.get(
-            f"{API_BASE_URL}/progress/xp/{member_id}"
-        )
+        
+    # Do the same for individual progress
+        member_id = profile_name  
+        user_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}")
         user_data = user_response.json()
         user_current = user_data.get("current_xp", 0)
         user_goal = user_data.get("goal_xp", 1)
