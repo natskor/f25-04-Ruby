@@ -175,7 +175,7 @@ def themedDashboard(page: ft.Page):
         user_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}")
         user_data = user_response.json()
         user_current = user_data.get("current_xp", 0)
-        user_goal = user_data.get("goal_xp", 1)
+        user_goal = user_data.get("goal_xp", 100)
         user_total = user_current / user_goal if user_goal > 0 else 0
     except:
         # Using a default value to prevent errors if the backend is not running.

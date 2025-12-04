@@ -2,6 +2,9 @@ import flet as ft
 import utils as u
 import requests
 
+# Define the backend API address
+API_BASE_URL = "http://127.0.0.1:8000"
+
 def childProgress(page: ft.Page):
     # ---------- page chrome ----------
     page.title = "QuestNest • Child Progress"
@@ -22,14 +25,26 @@ def childProgress(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
-    
-    member_id = "Kaleb"  # update later with db
-    response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
-    data = response.json()
 
-    current_xp = data.get("current_xp", 0)
-    goal_xp = data.get("goal_xp", 1)
-    total = current_xp / goal_xp if goal_xp > 0 else 0
+    email = page.session.get("email")
+    member_id = page.session.get("profile_name")
+
+    try:
+        xp_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}", params={"email": email})
+        if xp_response.status_code == 200:
+            data = xp_response.json()
+            current_xp = data.get("current_xp", 0)
+            goal_xp = data.get("goal_xp", 1)
+            total = current_xp / goal_xp if goal_xp > 0 else 0
+
+        level_response = requests.get(f"{API_BASE_URL}/progress/level/{member_id}", params={"email": email})
+        if level_response.status_code == 200:
+            level_data = level_response.json()
+            current_level = level_data.get("level", 0)
+
+    except:
+        # Using a default value to prevent errors if the backend is not running.
+        current_xp, goal_xp, total, current_level = 0, 100, 0, 0
     
     # ---------- XP progress card ----------
     xp_title = ft.Text(
@@ -96,12 +111,12 @@ def childProgress(page: ft.Page):
 
     xp_breakdown = ft.Column(
         [
-            ft.Text("Level 5", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
+            ft.Text(f"Level {current_level}", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
             ft.Text("XP Breakdown", size=16, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Text(f"Current Total: {current_xp}", size=14, color="#333333", font_family="LibreBaskerville"),
             ft.Text(f"Level-Up Needs: {goal_xp - current_xp}", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("All-Time Earnings: 54255", size=14, color="#333333", font_family="LibreBaskerville"),
+            # ft.Text("All-Time Earnings: 54255", size=14, color="#333333", font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
         ],
         spacing=3,
