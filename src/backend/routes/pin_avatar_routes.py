@@ -111,6 +111,7 @@ async def list_avatars(email: str):
         })
 
     return profiles_list
+    
 
     
     

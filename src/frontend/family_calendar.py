@@ -1,6 +1,7 @@
 import calendar
 from datetime import datetime
 import requests
+
 import flet as ft
 import utils as u
 
@@ -97,38 +98,6 @@ def FamilyCalendar(page: ft.Page):
     current_month = currently.month
     current_year = currently.year
     
-    month_label = ft.Text(
-        f"{calendar.month_name[current_month]} {current_year}",
-        color="#000000",
-        size=28,
-        font_family="LibreBaskerville",
-        text_align="center",
-        weight=ft.FontWeight.BOLD,
-    )
-    
-    def update_calendar():
-        month_label.value = f"{calendar.month_name[current_month]} {current_year}"
-        week_dates.controls = get_dates(current_year, current_month)
-        page.update()
-
-    def next_month(e):
-        nonlocal current_month, current_year
-        if current_month == 12:
-            current_month = 1
-            current_year += 1
-        else:
-            current_month += 1
-        update_calendar()
-
-    def prev_month(e):
-        nonlocal current_month, current_year
-        if current_month == 1:
-            current_month = 12
-            current_year -= 1
-        else:
-            current_month -= 1
-        update_calendar()
-    
     # -! BELONGS IN CONTROLLER
     # -> Iterate over a list of days in a month and encapsulate in a container
     def get_dates(year, month):
@@ -204,15 +173,22 @@ def FamilyCalendar(page: ft.Page):
                 [
                     ft.IconButton (
                         ft.Icons.ARROW_CIRCLE_LEFT_OUTLINED, 
-                        on_click=prev_month,
+                        on_click=button_clicked,
                         icon_color="#59226b",
                         icon_size=36,
                         alignment=ft.alignment.center_left,
                         ),
-                    month_label,
+                    ft.Text (
+                        "October 2025",
+                        color="#000000",
+                        size=28,
+                        font_family="LibreBaskerville",
+                        text_align="center",
+                        weight=ft.FontWeight.BOLD,
+                        ),
                     ft.IconButton (
                         ft.Icons.ARROW_CIRCLE_RIGHT_OUTLINED,
-                        on_click=next_month,
+                        on_click=button_clicked,
                         icon_color="#59226b",
                         icon_size=36,
                         alignment=ft.alignment.center_right,
@@ -222,22 +198,22 @@ def FamilyCalendar(page: ft.Page):
                 alignment=ft.MainAxisAlignment.CENTER,
             ),   
             schedule,
-            # ft.Row ( # 'Add Event' button
-            #     [
-            #         ft.ElevatedButton (
-            #             content=ft.Text (
-            #                 "Add Task", 
-            #                 size=12, 
-            #                 color="#ffffff", 
-            #                 font_family="LibreBaskerville", 
-            #             ),
-            #             color="#ffffff",
-            #             bgcolor="#59226b",
-            #             #on_click=show_add_event,
-            #         ),
-            #     ],
-            #     alignment=ft.MainAxisAlignment.CENTER,
-            # )
+            ft.Row ( # 'Add Event' button
+                [
+                    ft.ElevatedButton (
+                        content=ft.Text (
+                            "Add Task", 
+                            size=12, 
+                            color="#ffffff", 
+                            font_family="LibreBaskerville", 
+                        ),
+                        color="#ffffff",
+                        bgcolor="#59226b",
+                        #on_click=show_add_event,
+                    ),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            )
             ],
         ),
         height=450,

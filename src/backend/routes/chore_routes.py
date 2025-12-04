@@ -12,6 +12,17 @@ router = APIRouter(
 )
 
 # Models
+class Chore(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    assigned_to: str  # username
+    due_date: Optional[str] = None
+    completed: bool = False
+    created_at: datetime = datetime.now()
+    task_type: Optional[str] = None
+    reward_points: Optional[int] = 0
+
 class ChoreCreate(BaseModel):
     email: str
     title: str
@@ -19,21 +30,25 @@ class ChoreCreate(BaseModel):
     assigned_to: str
     due_date: Optional[str] = None
     task_type: Optional[str] = None
-    reward_points: int = 0
+    reward_points: Optional[int] = 0
 
 class ChoreResponse(BaseModel):
     id: str
     title: str
-    description: Optional[str]
-    assigned_to: str
-    due_date: Optional[str]
-    completed: bool
+    description: str
+    assigned_to: Optional[str] = None
+    due_date: Optional[str] = None
+    task_type: Optional[str] = None
     reward_points: int
-    task_type: Optional[str]
+    completed: bool = False
 
-# Endpoints
+#In-memory store
+chore_list = []
+chore_id_counter = 1
 
-@router.post("/", response_model=ChoreResponse)
+
+#Endpoints
+@router.post("/", response_model=Chore)
 def create_chore(chore: ChoreCreate):
     """Create a new chore in Firestore and add to calendar."""
     try:

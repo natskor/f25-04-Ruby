@@ -1,6 +1,5 @@
 import flet as ft
 import utils as u
-import requests
 
 def ChoreCreation(page: ft.Page):
     page.title = "Chore Creation"
@@ -39,6 +38,7 @@ def ChoreCreation(page: ft.Page):
         font_family="LibreBaskerville",
     )
 
+    
     # Input fields for chore creation
     chore_name = ft.TextField(
         label="Chore Name",
@@ -131,6 +131,7 @@ def ChoreCreation(page: ft.Page):
         page.update()
         
         # Pop back to previous page
+        # view_pop(None)
         page.go("/themed_dashboard")
 
 

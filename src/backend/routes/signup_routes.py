@@ -39,7 +39,6 @@ async def create_account(
         raise HTTPException(status_code=500, detail=f"Error creating account: {e}")
     
     return {
-        "message": "Account created successfully!",
         "username": username,
         "email": email
     }
