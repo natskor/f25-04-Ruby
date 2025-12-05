@@ -30,15 +30,15 @@ def CreateReward(page: ft.Page):
         font_family="LibreBaskerville-Bold",
     )
 
-    reward_id = ft.TextField(
-        label="Reward ID",
-        width=350,
-        border_radius=10,
-        bgcolor="white",
-        color="black",
-        border_color="#8c52ff",
-        focused_border_color="#473c9c",
-    )
+    # reward_id = ft.TextField(
+    #     label="Reward ID",
+    #     width=350,
+    #     border_radius=10,
+    #     bgcolor="white",
+    #     color="black",
+    #     border_color="#8c52ff",
+    #     focused_border_color="#473c9c",
+    # )
     
     reward_title = ft.TextField(
         label="Reward Title",
@@ -108,6 +108,7 @@ def CreateReward(page: ft.Page):
     )
     
     family_email = page.session.get("email")
+    profile_name = page.session.get("profile_name")
     
     def submit_reward(e):
     
@@ -116,7 +117,7 @@ def CreateReward(page: ft.Page):
                 "http://127.0.0.1:8000/collabrewards/create",
                 data={
                     "email": family_email,
-                    "title": reward_id.value,
+                    "title": reward_title.value,
                     "description": reward_title.value,
                     "goal_xp": int(xp_cost.value),
                 },
@@ -143,8 +144,9 @@ def CreateReward(page: ft.Page):
             "http://127.0.0.1:8000/rewards_store/rewards",
             files={"image": open(selected_file["path"], "rb")},
             data={
-                "id": reward_id.value,
-                "name": reward_title.value,
+                "email": family_email,
+                "profile": profile_name,
+                "title": reward_title.value,
                 "cost": int(xp_cost.value),
                 "level_unlock": int(level_unlock.value),
             },
@@ -163,7 +165,6 @@ def CreateReward(page: ft.Page):
     reward_card = ft.Container(
         content=ft.Column(
             [
-                reward_id,
                 reward_title,
                 ft.Row([xp_cost, level_unlock], alignment="center"),
                 reward_type,

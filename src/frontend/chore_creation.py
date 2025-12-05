@@ -116,13 +116,19 @@ def ChoreCreation(page: ft.Page):
 
     # Submit chore handler
     def submit_chore():
+        normalized_type = None
+        if task_type.value == "Individual Task":
+            normalized_type = "individual"
+        elif task_type.value == "Family Task":
+            normalized_type = "family"
+    
         response = requests.post("http://127.0.0.1:8000/chores/",json={
             "email": family_email,
             "title": chore_name.value,
             "description": chore_desc.value,
             "assigned_to": assignee.value,
             "due_date": due_date.value,
-            "task_type": task_type.value,
+            "task_type": normalized_type,
             "reward_points": int(reward_points.value or 0)
         }
     )

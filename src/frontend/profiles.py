@@ -85,11 +85,17 @@ def ProfileSelection(page: ft.Page):
         def on_click(e):
             selected_idx["value"] = idx
             refresh_tiles()
-            try:
-                page.session.set("profile", profile.get("name"))
-                page.session.set("avatar", profile.get("avatar_id"))
-            except AttributeError:
-                pass
+            chosen_name = profile.get("name")
+            chosen_avatar = profile.get("avatar_id")
+
+            # Store *correct* session keys used by dashboard
+            page.session.set("profile_name", chosen_name)
+            page.session.set("avatar", chosen_avatar)
+
+            # Optional but recommended: persist across refresh/restart
+            page.client_storage.set("profile_name", chosen_name)
+            page.client_storage.set("avatar", chosen_avatar)
+
             continue_btn.disabled = False
             page.update()
 

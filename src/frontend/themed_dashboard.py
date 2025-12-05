@@ -19,8 +19,6 @@ def themedDashboard(page: ft.Page):
     email = page.session.get("email")
     profile_name = page.session.get("profile_name")
     
-    
-    
     page.fonts = {
         "LibreBaskerville": "/fonts/LibreBaskerville-Regular.ttf",
         "LibreBaskerville-Bold": "/fonts/LibreBaskerville-Bold.ttf",
@@ -129,13 +127,59 @@ def themedDashboard(page: ft.Page):
             ),
         )
         
+        # Create a card for submitted chores (Family Progress section)
+    def create_submitted_card(chore):
+        return ft.Container(
+            content=ft.Row(
+                [
+                    ft.Column(
+                        [
+                            ft.Text(
+                                chore.get("assigned_to", "Unknown"),
+                                size=14,
+                                weight=ft.FontWeight.BOLD,
+                                color="#473c9c",
+                                font_family="LibreBaskerville",
+                            ),
+                            ft.Text(
+                                chore.get("title", "Unknown Task"),
+                                size=12,
+                                color="#404040",
+                                font_family="LibreBaskerville",
+                            ),
+                        ],
+                        spacing=2,
+                    ),
+                    ft.ElevatedButton(
+                        "View",
+                        bgcolor="#6562DF",
+                        color="white",
+                        on_click=lambda e, cid=chore["id"]: go_verification(cid)
+                    ),
+                ],
+                alignment="spaceBetween",
+                vertical_alignment="center",
+            ),
+            padding=15,
+            border_radius=20,
+            shadow=ft.BoxShadow(blur_radius=10, color="#999999"),
+            width=300,
+            gradient=ft.LinearGradient(
+                rotation=135,
+                colors=["#94b9ff", "#cdffd8"],
+            ),
+        )
+        
     # Task list container (initially empty, waiting for data to load)
     task_list_col = ft.Column(spacing=15, horizontal_alignment="center")
+    family_progress_col = ft.Column(spacing=15, horizontal_alignment="center")
     
     # Data loading logic
     def load_data():
         
         task_list_col.controls.clear()
+        family_progress_col.controls.clear()
+        
         try:
             # 1. Retrieve task list (filtered by current user)
             res = requests.get(f"{API_BASE_URL}/chores/", params={"email": email, "user": profile_name})
@@ -146,13 +190,32 @@ def themedDashboard(page: ft.Page):
                 else:
                     for chore in chores:
                         # Only show incomplete tasks
-                        if not chore.get("completed", False):
+                        if not chore.get("completed", False) and not chore.get("submitted", False):
                             task_list_col.controls.append(create_task_card(chore))
             else:
                 print("Failed to fetch chores")
         except Exception as ex:
             print(f"Error loading data: {ex}")
             task_list_col.controls.append(ft.Text("Connection Error", color="red"))
+            
+        try:
+            submitted_res = requests.get(f"{API_BASE_URL}/chores/submitted", params={"email": email})
+            if submitted_res.status_code == 200:
+                submitted_list = submitted_res.json()
+                family_progress_col.controls.clear()
+
+                if not submitted_list:
+                    family_progress_col.controls.append(
+                        ft.Text("No submitted chores yet.", color="white")
+                    )
+                else:
+                    for chore in submitted_list:
+                        family_progress_col.controls.append(create_submitted_card(chore))
+
+        except Exception as ex:
+            print(f"Error loading submitted chores: {ex}")
+            family_progress_col.controls.append(ft.Text("Error loading submitted chores", color="red"))   
+        
         
         page.update()   
     
@@ -164,7 +227,7 @@ def themedDashboard(page: ft.Page):
     # Collaborative Progress update
     # Progress bar logic(Added try-except)
     try:
-        collab_response = requests.get(f"{API_BASE_URL}/collabrewards/progress")
+        collab_response = requests.get(f"{API_BASE_URL}/collabrewards/progress", params={"email": email})
         collab_data = collab_response.json()
         collab_current = collab_data.get("Current XP", 0)
         collab_goal = collab_data.get("XP Goal", 1)
@@ -172,15 +235,15 @@ def themedDashboard(page: ft.Page):
         
     # Do the same for individual progress
         member_id = profile_name  
-        user_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}")
+        user_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}", params={"email": email})
         user_data = user_response.json()
         user_current = user_data.get("current_xp", 0)
-        user_goal = user_data.get("goal_xp", 1)
+        user_goal = user_data.get("goal_xp", 1000)
         user_total = user_current / user_goal if user_goal > 0 else 0
     except:
         # Using a default value to prevent errors if the backend is not running.
-        collab_current, collab_goal, collab_total = 0, 100, 0
-        user_current, user_goal, user_total = 0, 100, 0
+        collab_current, collab_goal, collab_total = 0, 1000, 0
+        user_current, user_goal, user_total = 0, 1000, 0
         
         
     # Individual Progress Bar 
@@ -285,13 +348,11 @@ def themedDashboard(page: ft.Page):
         ),
     )
 
-
-    # --------------temporary----------------------
-        # Clickable chore that will lead to the verification page
-
-    def go_verification(e: ft.ControlEvent):
+    def go_verification(chore_id):
+        page.session.set("selected_chore_id", chore_id)
         page.go("/verification")
         page.update()
+        
     child_chore = ft.Container(
         content=ft.Row(
             [
@@ -442,9 +503,9 @@ def themedDashboard(page: ft.Page):
                     task_list_col, 
                     ft.Text("~ Family Reward ~", font_family="LibreBaskerville", color="#ffffff"),
                     collab_progress_card,
-                    ft.Text("~ Family Progress ~", font_family="LibreBaskerville", color="#ffffff"),
-                    child_progress_card,
                     ft.Text("~ Verification ~", font_family="LibreBaskerville", color="#ffffff"),
+                    family_progress_col,
+                
                 ],
                 horizontal_alignment="center",
                 spacing=25,

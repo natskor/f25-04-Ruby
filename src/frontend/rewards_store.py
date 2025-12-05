@@ -2,15 +2,6 @@ import flet as ft
 import utils as u
 import requests
 
-# Functionality to Implement:
-# -> Claim Button: Deducts Points from User's Spendable XP
-# -> Scrollbar: View Longer List of Rewards
-
-# Maybe:
-# -? Parent is Notified when Award is Claimed
-# -? Reward Image Upload
-# -? Flesh out Logic More Clearly.
-
 def StorePage(page: ft.Page):
     page.title = "Rewards Store"
     page.vertical_alignment="center"
@@ -28,21 +19,38 @@ def StorePage(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
+ 
+    email = page.session.get("email")
+    profile = page.session.get("profile_name")
     
-    # response = requests.get("http://127.0.0.1:8000/rewards_store/rewards")
-    # data = response.json()
-    # user_xp = 500
+    def load_user_stats():
+        try:
+            xp_data = requests.get(
+                f"http://127.0.0.1:8000/progress/xp/{profile}",
+                params={"email": email}
+            ).json()
+
+            level_data = requests.get(
+                f"http://127.0.0.1:8000/progress/level/{profile}",
+                params={"email": email}
+            ).json()
+
+            return xp_data["current_xp"], xp_data["goal_xp"], level_data["level"]
+        except:
+            return 0, 1000, 1
+
+    user_current_xp, user_goal_xp, user_level = load_user_stats()
     
     def load_rewards():
-        response = requests.get("http://127.0.0.1:8000/rewards_store/rewards")
+        response = requests.get("http://127.0.0.1:8000/rewards_store/rewards", params={"email": email, "profile": profile})
         return response.json()
     
-    data = load_rewards()
+    rewards = load_rewards()
     
     def claim_reward(reward_id):
-        response = requests.post(f"http://127.0.0.1:8000/rewards_store/claim/{reward_id}")
-        data = response.json()  
-        page.update()
+        response = requests.post(f"http://127.0.0.1:8000/rewards_store/claim/{reward_id}", data={"email": email, "profile": profile})
+        data = response.json()
+        page.go("/themed_dashboard")
 
     # Title at the top of the page
     title = ft.Text (
@@ -59,7 +67,7 @@ def StorePage(page: ft.Page):
         content=ft.Column(
             [
                 ft.Text(
-                    "Level 1",
+                    f"Level {user_level}",
                     size=24,
                     color="#eeca5c",
                     text_align="center",
@@ -71,7 +79,7 @@ def StorePage(page: ft.Page):
                     color="#cccbff",
                     text_align="center",
                     font_family="LibreBaskerville"),
-                ft.Text("500",
+                ft.Text(f"{user_current_xp}",
                     color="#cccbff",
                     size=20,
                     text_align="center",
@@ -96,14 +104,24 @@ def StorePage(page: ft.Page):
     # Create a reward button
     def create_reward(e):
         page.go("/create_reward")
-    
-    # Rewards Table
-    rewards_table = ft.Container (
-        content=ft.Column ([
-            ft.Row ([
+        
+    reward_cards = []
+
+    for reward in rewards:
+        img = reward.get("image")
+        title_text = reward["title"]
+        cost = reward["cost"]
+        level_req = reward["level_unlock"]
+        reward_id = reward["id"]
+
+        enough_xp = user_current_xp >= cost
+        meets_level = user_level >= level_req
+        unlocked = enough_xp and meets_level
+
+        card = ft.Row ([
                 ft.Column ([
                     ft.Image (
-                        src="images/icecream.webp",
+                        src=img,
                         width=300,
                         height=175,
                         border_radius=8,
@@ -111,7 +129,7 @@ def StorePage(page: ft.Page):
                     ),
                     ft.Container (
                         ft.Text(
-                            "Ice Cream", 
+                            title_text, 
                             size=15, 
                             color="#000000", 
                             weight=ft.FontWeight.BOLD, 
@@ -130,9 +148,9 @@ def StorePage(page: ft.Page):
                 alignment=ft.alignment.center, width=225, spacing=5,),
                 ft.Column ([
                     ft.Text (
-                        "100 XP", 
+                        f"{cost} XP", 
                         size=25, 
-                        color="#3aeb05", 
+                        color="#3aeb05" if unlocked else "#f72a2a", 
                         weight=ft.FontWeight.BOLD, 
                         text_align="center", 
                         font_family="LibreBaskerville",
@@ -144,7 +162,7 @@ def StorePage(page: ft.Page):
                                 ),
                             ),
                         ),
-                    ft.ElevatedButton("Claim!", bgcolor="#00bf63", color="#ffffff", width=200, on_click=lambda e: claim_reward("icecream")),
+                    ft.ElevatedButton("Claim!", bgcolor="#00bf63" if unlocked else "#8f8e8e", color="#ffffff", width=200, disabled=not unlocked, on_click=lambda e, rid=reward_id: claim_reward(rid)),
                 ], 
                 alignment=ft.alignment.center, 
                 width=225,
@@ -152,73 +170,12 @@ def StorePage(page: ft.Page):
             ], 
             alignment=ft.alignment.center, 
             width=450,
-            ),
-            ft.Divider(
-                height=5, 
-                thickness=2, 
-                color="#59226b",
-                ),
-            ft.Row ([
-                ft.Column ([
-                    ft.Image (
-                        src="images/movietheater.jpg",
-                        width=300,
-                        height=175,
-                        border_radius=8,
-                        fit=ft.ImageFit.COVER,
-                    ),
-                    ft.Container (
-                        ft.Text(
-                            "Movie Night", 
-                            size=15, 
-                            color="#000000", 
-                            weight=ft.FontWeight.BOLD, 
-                            text_align="center",
-                            font_family="LibreBaskerville",
-                            ),
-                        width=200, 
-                        height=25, 
-                        alignment=ft.alignment.center,
-                        border_radius=10, 
-                        border=ft.border.all(2, "#59226b"), 
-                        bgcolor="#ffffff", 
-                        margin=5,
-                    ),
-                ], 
-                alignment=ft.alignment.center, 
-                width=225, 
-                spacing=5,),
-                ft.Column( [
-                    ft.Text (
-                        "500 XP", 
-                        size=25, 
-                        color="#f72a2a", 
-                        weight=ft.FontWeight.BOLD, 
-                        text_align="center", 
-                        font_family="LibreBaskerville",
-                        style=ft.TextStyle (
-                            shadow=ft.BoxShadow (
-                                blur_radius=2.5, 
-                                color="#000000", 
-                                blur_style=ft.ShadowBlurStyle.SOLID,
-                                ),
-                            ),
-                    ),
-                    ft.ElevatedButton (
-                        "Claim!", 
-                        bgcolor="#8f8e8e", 
-                        color="#535353", 
-                        width=200,
-                        disabled=True,
-                        on_click=lambda e: claim_reward("movienight"),
-                    ),
-                ], 
-                alignment=ft.alignment.center, 
-                width=225,),
-            ], 
-            alignment=ft.alignment.center, 
-            width=450,),
-        ] ),
+        )
+        reward_cards.append(card)
+        reward_cards.append(ft.Divider(height=5, thickness=2, color="#59226b"))
+        
+    rewards_table = ft.Container(
+        content=ft.Column(reward_cards, scroll="auto"),
         height=475,
         width=500,
         alignment=ft.alignment.center,
@@ -230,6 +187,7 @@ def StorePage(page: ft.Page):
             colors=["#0571d3", "#f9b3ff"],
         ),
     )
+    
     # Reminder Message
     reminder = ft.Container (
         ft.Column ([

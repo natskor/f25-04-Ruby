@@ -19,6 +19,7 @@ def create_chore(email: str,
         "XP Value": xp_val,
         "Status": "Not Completed!",
         "Completed": False,
+        "Submitted": False,
         "AssignedTo": assigned_to,
         "DueDate": due_date,
         "TaskType": task_type

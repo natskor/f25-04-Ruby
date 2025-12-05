@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, File, UploadFile
 from pydantic import BaseModel
 from typing import List, Optional
-from datetime import datetime
-
+from google.cloud.firestore_v1.base_query import FieldFilter
+from backend.database.firestore import db as DB, bucket
 from backend.database import chore as chore_db
 from backend.routes import calendar_routes, collabrewards_routes
+import time
 
 router = APIRouter(
     prefix="/chores",
@@ -30,6 +31,9 @@ class ChoreResponse(BaseModel):
     completed: bool
     reward_points: int
     task_type: Optional[str]
+    proof_image_url: Optional[str] = None
+    status: Optional[str] = None
+    submitted: Optional[bool] = None 
 
 # Endpoints
 
@@ -68,7 +72,9 @@ def create_chore(chore: ChoreCreate):
             due_date=new_chore_data["DueDate"],
             completed=new_chore_data["Completed"],
             reward_points=new_chore_data["XP Value"],
-            task_type=new_chore_data["TaskType"]
+            task_type=new_chore_data["TaskType"],
+            status=new_chore_data["Status"],
+            submitted=new_chore_data["Submitted"]
         )
 
     except Exception as e:
@@ -94,12 +100,46 @@ def get_all_chores(email: str, user: Optional[str] = None):
                 due_date=c.get("DueDate"),
                 completed=c.get("Completed", False),
                 reward_points=c.get("XP Value", 0),
-                task_type=c.get("TaskType")
+                task_type=c.get("TaskType"),
+                proof_image_url=c.get("ProofImageURL"),
+                status=c.get("Status"),
+                submitted=c.get("Submitted")
             )
             for c in raw_chores
         ]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.get("/submitted", response_model=List[ChoreResponse])
+def get_submitted_chores(*, email: str):
+    chores_ref = DB.collection("FAMILY UNIT").document(email).collection("CHORE")
+
+    docs = chores_ref.where(
+        filter=FieldFilter("Submitted", "==", True)
+    ).stream()
+
+    submitted = []
+    for d in docs:
+        data = d.to_dict()
+        if data.get("Submitted") == True:
+            submitted.append(data)
+            
+    return [
+        ChoreResponse(
+            id=c["id"],
+            title=c["Title"],
+            description=c.get("Description"),
+            assigned_to=c["AssignedTo"],
+            due_date=c.get("DueDate"),
+            completed=c.get("Completed", False),
+            reward_points=c.get("XP Value", 0),
+            task_type=c.get("TaskType"),
+            proof_image_url=c.get("ProofImageURL"),
+            status=c.get("Status"),
+            submitted=c.get("Submitted")
+        )
+        for c in submitted
+    ]
 
 @router.get("/{chore_id}", response_model=ChoreResponse)
 def get_chore_details(chore_id: str, email: str):
@@ -117,7 +157,10 @@ def get_chore_details(chore_id: str, email: str):
             due_date=chore.get("DueDate"),
             completed=chore.get("Completed", False),
             reward_points=chore.get("XP Value", 0),
-            task_type=chore.get("TaskType")
+            task_type=chore.get("TaskType"),
+            proof_image_url=chore.get("ProofImageURL"),
+            status=chore.get("Status"),
+            submitted=chore.get("Submitted")
         )
     except HTTPException as he:
         raise he
@@ -161,3 +204,22 @@ def delete_chore(chore_id: str, email: str):
         return {"message": f"Chore {chore_id} deleted."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+@router.post("/{chore_id}/proof")
+async def upload_proof(chore_id: str, email: str, file: UploadFile = File(...)):
+    
+    file_bytes = await file.read()
+    extension = file.filename.split(".")[-1]
+    filename = f"proof/{email}/{chore_id}_{int(time.time())}.{extension}"
+    
+    blob = bucket.blob(filename)
+    blob.upload_from_string(file_bytes, content_type=file.content_type)
+    blob.make_public()
+    
+    DB.collection("FAMILY UNIT").document(email).collection("CHORE").document(chore_id).update({"ProofImageURL": blob.public_url, "Status": "Pending Approval", "Completed": False, "Submitted": True})
+    
+    return {
+            "message": "Proof uploaded successfully!",
+            "image_url": blob.public_url,
+        }
+    

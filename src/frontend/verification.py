@@ -22,10 +22,21 @@ def verification(page: ft.Page):
     app_bar = u.application_bar(page)
     # Navigation bar
     nav_bar = u.navigation_bar(page)
+    
+    email = page.session.get("email")
+    chore_id = page.session.get("selected_chore_id")
+
+    resp = requests.get(f"http://127.0.0.1:8000/verification/{email}/{chore_id}")
+    data = resp.json()
+
+    proof_url = data.get("proof_image")
+    task_title_value = data.get("title", "Task")
+    task_name_value = data.get("description", "")
+    assigned_to_value = data.get("assigned_to", "")
   
     # ---------- verification card ----------
     task_title = ft.Text(
-        "Task",
+        task_title_value,
         size=24,
         weight=ft.FontWeight.BOLD,
         color="black",
@@ -33,14 +44,14 @@ def verification(page: ft.Page):
         font_family="LibreBaskerville-Bold",
     )
     task_name = ft.Text(
-        "Clean Room",
+        task_name_value,
         size=20,
         color="#404040",
         text_align="center",
         font_family="LibreBaskerville",
     )
     subtitle = ft.Text(
-        "Did Kaleb Complete the Chore?",
+        f"Did {assigned_to_value} Complete the Chore?",
         size=16,
         italic=True,
         color="#404040",
@@ -49,7 +60,7 @@ def verification(page: ft.Page):
     )
 
     task_image = ft.Image(
-        src="images/room.png",  
+        src=proof_url if proof_url else "images/room.png",  
         width=250,
         height=160,
         fit=ft.ImageFit.COVER,
@@ -69,7 +80,7 @@ def verification(page: ft.Page):
     def verify(e: ft.ControlEvent):
     #replace task_id with a real one later
         data = {
-            "task_id": "Clean Room",
+            "task_id": f"{email}:{chore_id}",
             "feedback": feedback.value or ""
         }
         try:
@@ -87,7 +98,7 @@ def verification(page: ft.Page):
 
     def reject(e: ft.ControlEvent):
         data = {
-            "task_id": "Clean Room",
+            "task_id": f"{email}:{chore_id}",
             "feedback": feedback.value or ""
         }
         try:

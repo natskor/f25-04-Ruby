@@ -2,6 +2,9 @@ import flet as ft
 import utils as u
 import requests
 
+# Define the backend API address
+API_BASE_URL = "http://127.0.0.1:8000"
+
 def childProgress(page: ft.Page):
     # ---------- page chrome ----------
     page.title = "QuestNest • Child Progress"
@@ -23,13 +26,34 @@ def childProgress(page: ft.Page):
     # Navigation bar
     nav_bar = u.navigation_bar(page)
     
-    member_id = "Kaleb"  # update later with db
-    response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
-    data = response.json()
+    email = page.session.get("email")
+    member_id = page.session.get("profile_name")
+    profile_avatar = page.session.get("avatar") or "images/character.png"
 
-    current_xp = data.get("current_xp", 0)
-    goal_xp = data.get("goal_xp", 1)
-    total = current_xp / goal_xp if goal_xp > 0 else 0
+    try:
+        xp_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}", params={"email": email})
+        if xp_response.status_code == 200:
+            data = xp_response.json()
+            current_xp = data.get("current_xp", 0)
+            goal_xp = data.get("goal_xp", 1000)
+            total = current_xp / goal_xp if goal_xp > 0 else 0
+
+        level_response = requests.get(f"{API_BASE_URL}/progress/level/{member_id}", params={"email": email})
+        if level_response.status_code == 200:
+            level_data = level_response.json()
+            current_level = level_data.get("level", 1)
+
+    except:
+        # Using a default value to prevent errors if the backend is not running.
+        current_xp, goal_xp, total, current_level = 0, 1000, 0, 1
+        
+    rankings = []
+    try:
+        r = requests.get(f"{API_BASE_URL}/progress/rankings", params={"email": email})
+        if r.status_code == 200:
+            rankings = r.json()
+    except:
+        rankings = []
     
     # ---------- XP progress card ----------
     xp_title = ft.Text(
@@ -44,7 +68,7 @@ def childProgress(page: ft.Page):
     child_name_with_stars = ft.Row(
         [
             ft.Icon(ft.Icons.STAR, color="#ffd700", size=24),
-            ft.Text("Kaleb", size=18, color="#404040", font_family="LibreBaskerville"),
+            ft.Text(member_id, size=18, color="#404040", font_family="LibreBaskerville"),
             ft.Icon(ft.Icons.STAR, color="#ffd700", size=24),
         ],
         alignment="center",
@@ -62,7 +86,7 @@ def childProgress(page: ft.Page):
 
     avatar = ft.Container(
         content=ft.Image(
-            src="images/character.png",
+            src=profile_avatar,
             width=80,
             height=80,
             fit=ft.ImageFit.CONTAIN,
@@ -96,12 +120,12 @@ def childProgress(page: ft.Page):
 
     xp_breakdown = ft.Column(
         [
-            ft.Text("Level 5", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
+            ft.Text(f"Level {current_level}", size=20, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
             ft.Text("XP Breakdown", size=16, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Text(f"Current Total: {current_xp}", size=14, color="#333333", font_family="LibreBaskerville"),
             ft.Text(f"Level-Up Needs: {goal_xp - current_xp}", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("All-Time Earnings: 54255", size=14, color="#333333", font_family="LibreBaskerville"),
+            # ft.Text("All-Time Earnings: 54255", size=14, color="#333333", font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
         ],
         spacing=3,
@@ -112,15 +136,25 @@ def childProgress(page: ft.Page):
         [
             ft.Text("Household Rankings", size=16, weight=ft.FontWeight.BOLD, font_family="LibreBaskerville"),
             ft.Divider(height=1, thickness=2, color="#555555", opacity=1),
-            ft.Text("1st  Mom", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("2nd  Kaleb", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("3rd  Scarlett", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("4th  Jackson", size=14, color="#333333", font_family="LibreBaskerville"),
-            ft.Text("5th  Dad", size=14, color="#333333", font_family="LibreBaskerville"),
         ],
         spacing=2,
         horizontal_alignment="center",
     )
+    
+    places = ["1st", "2nd", "3rd", "4th", "5th", "6th"]
+
+    for index, item in enumerate(rankings):
+        place = places[index] if index < len(places) else f"{index+1}th"
+
+        household_rankings.controls.append(
+            ft.Row(
+                [
+                    ft.Text(f"{place}  {item['user']}", size=14, font_family="LibreBaskerville"),
+                    ft.Text(f"{item['xp']} XP", size=14, color="#473c9c")
+                ],
+                alignment="spaceBetween"
+            )
+        )
 
     progress_card = ft.Container(
         content=ft.Column(

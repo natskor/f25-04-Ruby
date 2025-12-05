@@ -20,16 +20,19 @@ def PinPage(page: ft.Page):
     error_msg = ft.Text("", color="red", size=12)
 
     try:
-        profile = page.session.get("profile")     
+        profile = page.session.get("profile_name")
+        if not profile:
+            profile = page.client_storage.get("profile_name")
+            if profile:
+                page.session.set("profile_name", profile)    
         email = page.session.get("email")   
     except AttributeError:
         profile, email = None, None
 
-    if not profile:
-        profile = "UnknownUser"
+    # if not profile:
+    #     profile = "UnknownUser"
     if not email:
         error_msg.value = "Missing email. Please log in again."
-
 
     def pin_dot(filled: bool) -> ft.Control:
         # empty/filled dot (visual only)

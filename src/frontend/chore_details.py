@@ -111,9 +111,23 @@ def ChoreDetails(page: ft.Page):
     page.overlay.append(file_picker)
     
     def submit_proof(e):
-        # needs to be stored somewhere (media.py)
+        if not uploaded_image_path["path"]:
+            page.snack_bar = ft.SnackBar(ft.Text("Please upload an image first."))
+            page.snack_bar.open = True
+            page.update()
+            return
+        
+        with open(uploaded_image_path["path"], "rb") as f:
+            resp = requests.post(f"{API_BASE_URL}/chores/{chore_id}/proof", params={"email": email}, files={"file": f})
+            
+        if resp.status_code == 200:
+            page.snack_bar = ft.SnackBar(ft.Text("Proof submitted successfully!"))
+        else:
+            page.snack_bar = ft.SnackBar(ft.Text(f"Upload failed: {resp.text}"))
+        
+        page.snack_bar.open = True
+        page.update()
         page.go("/themed_dashboard")
-
 
     submit_btn = ft.ElevatedButton(
         "Submit Proof",

@@ -34,9 +34,9 @@ def create_profile_progress(email: str, user: str):
     )
     user_xp_ref.set({
         "User": user,
-        "Next Level": 1,
-        "Needed XP": 100,
-        "Current Level": 0,
+        "Next Level": 2,
+        "Needed XP": 1000,
+        "Current Level": 1,
         "Current XP": 0
     })
 
@@ -126,6 +126,20 @@ def add_current_xp(email: str, user: str, amount: int):
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection(
                 "PROGRESSION").document(user + " Prog.")
+    doc = prog_ref.get()
+    data = doc.to_dict()
+    if data is None:
+        data = {
+            "User": user,
+            "Current XP": 0,
+            "Needed XP": 1000,
+            "Current Level": 1,
+            "Next Level": 2
+        }
+        prog_ref.set(data)
+    else:
+        if "User" not in data:
+            prog_ref.update({"User": user})
     
     need_xp = prog_ref.get().to_dict().get("Needed XP")
     curr_xp = prog_ref.get().to_dict().get("Current XP")
@@ -133,7 +147,13 @@ def add_current_xp(email: str, user: str, amount: int):
 
     prog_ref.update({"Current XP": Increment(amount), 
                      "Needed XP": Increment(-(amount))})
-    increment_level(email, user, total_xp)
+    
+    # Get updated value
+    updated_need = prog_ref.get().to_dict().get("Needed XP")
+
+    # Only level up if threshold is met
+    if updated_need is not None and updated_need <= 0:
+        increment_level(email, user, total_xp)
 
 
 def increment_level(email:str, user: str, prev_goal: int):
@@ -141,8 +161,11 @@ def increment_level(email:str, user: str, prev_goal: int):
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection("PROGRESSION").document(user + " Prog.")
 
-    need_xp = prog_ref.get().to_dict().get("Needed XP")
-    set_need = prev_goal + 100
+    data = prog_ref.get().to_dict()
+    
+    need_xp = data.get("Needed XP", 1000)
+    current_level = data.get("Current Level", 1)
+    set_need = 1000 * (current_level + 1)
     
     if need_xp is not None and need_xp <= 0:
         prog_ref.update({"Current Level": Increment(1),
@@ -169,17 +192,13 @@ def subtract_current_xp(email: str, user: str, reward_cost: int, reward_level: i
 
 
 def get_experience_info(email: str, user: str):
-    search = DB.collection(
-        "FAMILY UNIT").document(email).collection(
-            "PROFILE").document(user).collection(
-                "PROGRESSION")
-    result = search.where(filter=FieldFilter("User", "==", user)).stream()
-    
-    details = []
-    for doc in result:
-        details.append(doc.to_dict())
+    prog_ref = DB.collection("FAMILY UNIT").document(email).collection(
+        "PROFILE").document(user).collection("PROGRESSION").document(user + " Prog.")
 
-    return details
+    doc = prog_ref.get()
+    if doc.exists:
+        return [doc.to_dict()]
+    return []
 
 
 def select_progression_info(email: str, user: str, column: str):
