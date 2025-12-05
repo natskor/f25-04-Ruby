@@ -3,7 +3,7 @@ from backend.database.family_unit import (add_current_xp, get_experience_info, i
 
 router = APIRouter(prefix="/progress", tags=["Individual Progress"])
 
-
+#
 @router.get("/xp/{member_id}")
 async def get_xp(member_id: str, email: str):
     docs = get_experience_info(email, member_id)

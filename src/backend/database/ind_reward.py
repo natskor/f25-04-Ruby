@@ -1,67 +1,70 @@
-from backend.database.family_unit import *
+# from firestore import db as DB
 from backend.database.firestore import db as DB
 from google.cloud.firestore_v1.base_query import FieldFilter
 
 # Reward creation.
-def create_ind_reward(email: str,
-                      profile: str,
-                      title: str,
+def create_ind_reward(name: str, 
+                      desc: str, 
                       lvl: int,
-                      xp: int,
-                      image: str):
-    reward_ref = DB.collection("FAMILY UNIT").document(
-                    email).collection("PROFILE").document(profile
-                        ).collection("INDIVIDUAL REWARD").document(profile + ", " + title)
+                      xp: int, 
+                      author: str,
+                      recipient: str):
+    reward_ref = DB.collection("INDIVIDUAL REWARD").document(
+        recipient + ", " + name
+        )
     reward_ref.set({
-                     "Author": email,
-                     "Recipient": profile,
-                     "Title": title,
+                     "Title": name,
+                     "Description": desc,
                      "Level Req": lvl,
                      "XP Req": xp,
-                     "Image": image,
+                     "Author": author,
+                     "Recipient": recipient,
                      "Redeemed": False
                     })
     
 # Reward redemption changes.
-def check_redemption(email: str, profile: str, title: str, reward_cost: int):
-    reward_ref = DB.collection("FAMILY UNIT").document(email).collection(
-                    "PROFILE").document(profile).collection(
-                        "INDIVIDUAL REWARD").document(profile + ", " + title)
-    
-    rew_lvl = reward_ref.get().to_dict().get("Level Req")
-    
-    if subtract_current_xp(email, profile, reward_cost, rew_lvl) is True:
-        reward_ref.update({"Redeemed": True})
-        return True
-    else:
-        return False
+def redeem_ind_reward(name: str, recipient: str):
+    DB.collection("INDIVIDUAL REWARD").document(
+        recipient + ", " + name
+        ).update({"Redeemed": True})
 
 # Remove reward.
-def remove_ind_reward(email: str, profile: str, title: str):
-    DB.collection("FAMILY UNIT").document(email).collection(
-        "PROFILE").document(profile).collection(
-            "INDIVIDUAL REWARD").document(profile + ", " + title).delete()
+def remove_ind_reward(name: str, recipient: str):
+    DB.collection("INDIVIDUAL REWARD").document(
+        recipient + ", " + name
+    ).delete()
 
 # Get all data.
-def get_ind_reward(email: str, profile: str, title: str):
-    search = DB.collection("FAMILY UNIT").document(email).collection(
-                "PROFILE").document(profile).collection("INDIVIDUAL REWARD")
-    
-    result = search.where(filter=FieldFilter("Title", "==", title)).stream()
+def get_ind_reward(name: str, recipient: str):
+    search = DB.collection("INDIVIDUAL REWARD")
 
-    details = []
+    result = search.where(
+        filter=FieldFilter(
+            "Title", "==", name
+        )
+    ).where(
+        filter=FieldFilter(
+            "Recipient", "==", recipient
+        )
+    ).stream()
+
     for doc in result:
-        details.append(doc.to_dict())
-
-    return details
+        print(f"{doc.id} => {doc.to_dict()}")
 
 # Select data.
-def select_ind_reward(email: str, profile: str, title: str, column: str):
-    search = DB.collection("FAMILY UNIT").document(email).collection(
-                "PROFILE").document(profile).collection("INDIVIDUAL REWARD")
-    
-    result = search.where(filter=FieldFilter("Title", "==", title)).stream()
+def select_ind_reward(name: str, recipient: str, column: str):
+    search = DB.collection("INDIVIDUAL REWARD")
+
+    result = search.where(
+        filter=FieldFilter(
+            "Title", "==", name
+        )
+    ).where(
+        filter=FieldFilter(
+            "Recipient", "==", recipient
+        )
+    ).stream()
 
     for doc in result:
         val = doc.to_dict()
-    return val[column]
+        print(f"{val[column]}")

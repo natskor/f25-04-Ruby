@@ -23,48 +23,15 @@ def ChoreDetails(page: ft.Page):
         "description": "Fetching details...",
         "reward_points": 0,
         "due_date": "",
-        "task_type": "Task",
-        "assigned_to": "Unknown"
+        "task_type": "Task"
     }
-
-    # Default avatar path
-    assignee_avatar = "images/Avatars/dragon.png"
 
     # Fetch real data from the Backend API
     if chore_id:
         try:
-            # 1. Fetch Chore Details
             resp = requests.get(f"{API_BASE_URL}/chores/{chore_id}", params={"email": email})
             if resp.status_code == 200:
                 chore_data = resp.json()
-                
-                # 2. Fetch Avatar for the Assignee
-                try:
-                    avatar_resp = requests.get(f"{API_BASE_URL}/avatar/list/{email}")
-                    if avatar_resp.status_code == 200:
-                        profiles = avatar_resp.json()
-                        # specific search for the assigned user's avatar
-                        for p in profiles:
-                            if p["profile"] == chore_data.get("assigned_to"):
-                                raw_avatar = p.get("avatar")
-                                
-                                # Robust path construction logic
-                                if raw_avatar:
-                                    # If the DB stores "wizard", convert to "images/Avatars/wizard.png"
-                                    # If the DB already stores a path, use it, but fix casing if needed
-                                    
-                                    # Strip extension if present to normalize
-                                    clean_name = raw_avatar.split('.')[0]
-                                    
-                                    # Clean up if it was stored with path prefixes incorrectly
-                                    if "/" in clean_name:
-                                        clean_name = clean_name.split("/")[-1]
-                                        
-                                    assignee_avatar = f"images/Avatars/{clean_name}.png"
-                                break
-                except Exception as ex:
-                    print(f"Error fetching avatars: {ex}")
-
             else:
                 print(f"Error fetching chore: {resp.text}")
                 page.snack_bar = ft.SnackBar(ft.Text("Could not load chore details."))
@@ -137,23 +104,14 @@ def ChoreDetails(page: ft.Page):
                     color="#473c9c",
                 ),
                 ft.Container(
-                    # Use the dynamically fetched avatar path
+                    # Image could be dynamic based on 'task_type' in the future
                     content=ft.Image(
-                        src=assignee_avatar, 
+                        src="images/avatars/dragon.png", 
                         width=150,
                         height=150,
-                        fit=ft.ImageFit.CONTAIN, # Changed to CONTAIN to prevent cutting off
+                        fit=ft.ImageFit.COVER,
                     ),
                     alignment=ft.alignment.center,
-                ),
-                # Display the Assignee's Name
-                ft.Text(
-                    f"Hero: {chore_data.get('assigned_to', 'Unknown')}",
-                    size=16,
-                    weight=ft.FontWeight.BOLD,
-                    text_align="center",
-                    color="#4A4F5A",
-                    font_family="LibreBaskerville",
                 ),
                 ft.Text(
                     chore_data.get("task_type", "Task"), # Dynamic Task Type

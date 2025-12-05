@@ -1,3 +1,4 @@
+#from firestore import db as DB
 from backend.database.firestore import db as DB
 from google.cloud.firestore_v1.base_query import FieldFilter
 from google.cloud.firestore import Increment
@@ -61,11 +62,8 @@ def get_family_info(email: str):
     search = DB.collection("FAMILY UNIT")
     result = search.where(filter=FieldFilter("FamilyID", "==", email)).stream()
     
-    details = []
     for doc in result:
-        details.append(doc.to_dict())
-
-    return details
+        print(f"{doc.id} => {doc.to_dict()}")
 
        
 def select_family_info(email: str, column: str):
@@ -74,8 +72,7 @@ def select_family_info(email: str, column: str):
     
     for doc in result:
         val = doc.to_dict()
-    
-    return val[column]
+        print(f"{val[column]}")
 
 
 ### "PROFILE" sub-collection.
@@ -94,11 +91,8 @@ def get_profile_info(email: str, user: str):
     search = DB.collection("FAMILY UNIT").document(email).collection("PROFILE")
     result = search.where(filter=FieldFilter("User", "==", user)).stream()
     
-    details = []
     for doc in result:
-        details.append(doc.to_dict())
-
-    return details
+        print(f"{doc.id} => {doc.to_dict()}")
 
 
 def select_profile_info(email: str, user: str, column: str):
@@ -107,8 +101,7 @@ def select_profile_info(email: str, user: str, column: str):
     
     for doc in result:
         val = doc.to_dict()
-    
-    return val[column]
+        print(f"{val[column]}")
 
 
 ### "PROGRESSION" sub-sub-collection.
@@ -121,51 +114,30 @@ def set_needed_xp(email: str, user: str, set_amount: int):
     prog_ref.update({"Needed XP": set_amount})
 
 
-def add_current_xp(email: str, user: str, amount: int):
+def update_progression(email: str, user: str, amount: int):
     prog_ref = DB.collection(
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection(
                 "PROGRESSION").document(user + " Prog.")
     
-    need_xp = prog_ref.get().to_dict().get("Needed XP")
-    curr_xp = prog_ref.get().to_dict().get("Current XP")
-    total_xp = need_xp + curr_xp
-
     prog_ref.update({"Current XP": Increment(amount), 
                      "Needed XP": Increment(-(amount))})
-    increment_level(email, user, total_xp)
+    increment_level(email, user)
 
 
-def increment_level(email:str, user: str, prev_goal: int):
+def increment_level(email:str, user: str):
     prog_ref = DB.collection(
         "FAMILY UNIT").document(email).collection(
             "PROFILE").document(user).collection("PROGRESSION").document(user + " Prog.")
-
-    need_xp = prog_ref.get().to_dict().get("Needed XP")
-    set_need = prev_goal + 100
+    
+    user_doc = prog_ref.get()
+    data = user_doc.to_dict()
+    need_xp = data.get("Needed XP")
     
     if need_xp is not None and need_xp <= 0:
         prog_ref.update({"Current Level": Increment(1),
-                         "Next Level": Increment(1)})
-        prog_ref.update({"Current XP": 0})
-        set_needed_xp(email, user, set_need)
-
-def subtract_current_xp(email: str, user: str, reward_cost: int, reward_level: int) -> bool:
-    prog_ref = DB.collection(
-        "FAMILY UNIT").document(email).collection(
-            "PROFILE").document(user).collection(
-                "PROGRESSION").document(user + " Prog.")
-    
-    curr_xp = prog_ref.get().to_dict().get("Current XP")
-    curr_lvl = prog_ref.get().to_dict().get("Current Level")
-
-    if curr_xp >= reward_cost and curr_lvl >= reward_level:
-        prog_ref.update({"Current XP": Increment(-(reward_cost)),
-                         "Needed XP": Increment(reward_cost)})
-        return True
-    else:
-        print("Not enough XP for reward.")
-        return False
+                         "Next Level": Increment(1),
+                         "Current XP": 0})
 
 
 def get_experience_info(email: str, user: str):
@@ -175,11 +147,8 @@ def get_experience_info(email: str, user: str):
                 "PROGRESSION")
     result = search.where(filter=FieldFilter("User", "==", user)).stream()
     
-    details = []
     for doc in result:
-        details.append(doc.to_dict())
-
-    return details
+        print(f"{doc.id} => {doc.to_dict()}")
 
 
 def select_progression_info(email: str, user: str, column: str):
@@ -191,4 +160,52 @@ def select_progression_info(email: str, user: str, column: str):
     
     for doc in result:
         val = doc.to_dict()
-    return val[column]
+        print(f"{val[column]}")
+
+
+###########################################################
+### Testing area.
+###########################################################
+# VARIABLES THAT ARE USED
+email : str = "parent@gmail.com"
+user_name : str = "Metal Eater"
+password : str = "superDopePassword77"
+role : str = "Parent"
+avatar : str = "wizard"
+give_this : int = 200
+set_this : int = 500
+###########################################################
+# FAMILY operations
+#create_family(email)
+#add_username(email, user_name)
+#add_password(email, password)
+
+#get_family_info(email)
+#select_family_info(email, "FamilyID")
+#select_family_info(email, "Username")
+#select_family_info(email, "Password")
+###########################################################
+# PROFILE operations
+#create_profile(email, user_name)
+#add_role(email, user_name, role)
+#add_pin(email, user_name, password)
+#add_avatar(email, user_name, avatar)
+
+#get_profile_info(email, user_name)
+#select_profile_info(email, user_name, "User")
+#select_profile_info(email, user_name, "Avatar")
+#select_profile_info(email, user_name, "Role")
+#select_profile_info(email, user_name, "PIN")
+###########################################################
+# PROGRESSION operations
+#create_profile_progress(email, user_name)
+#set_needed_xp(email, user_name, set_this)
+#update_progression(email, user_name, give_this)
+
+#get_experience_info(email, user_name)
+#select_progression_info(email, user_name, "User")
+#select_progression_info(email, user_name, "Next Level")
+#select_progression_info(email, user_name, "Needed XP")
+#select_progression_info(email, user_name, "Current Level")
+#select_progression_info(email, user_name, "Current XP")
+###########################################################

@@ -2,4 +2,7 @@
 .venv/
 .env
 __pycache__/
+<<<<<<< HEAD
 serviceAccountKey.json
+=======
+>>>>>>> f7095bd0edf062b9283280e4057a1b846469cf07

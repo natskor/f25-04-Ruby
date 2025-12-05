@@ -171,11 +171,11 @@ def themedDashboard(page: ft.Page):
         collab_total = collab_current / collab_goal if collab_goal > 0 else 0
         
     # Do the same for individual progress
-        member_id = profile_name  
-        user_response = requests.get(f"{API_BASE_URL}/progress/xp/{member_id}")
+        member_id = "Kaleb"  # replace this with logged-in user from db
+        user_response = requests.get(f"http://127.0.0.1:8000/progress/xp/{member_id}")
         user_data = user_response.json()
         user_current = user_data.get("current_xp", 0)
-        user_goal = user_data.get("goal_xp", 100)
+        user_goal = user_data.get("goal_xp", 1)
         user_total = user_current / user_goal if user_goal > 0 else 0
     except:
         # Using a default value to prevent errors if the backend is not running.
