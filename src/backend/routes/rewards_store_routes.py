@@ -12,6 +12,8 @@ async def get_rewards(email: str, profile: str):
     rewards = []
     for d in doc:
         item = d.to_dict()
+        if item.get("Redeemed") is True:
+            continue
         rewards.append({
             "id": d.id,
             "title": item.get("Title"),

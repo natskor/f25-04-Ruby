@@ -37,7 +37,8 @@ def create_profile_progress(email: str, user: str):
         "Next Level": 2,
         "Needed XP": 1000,
         "Current Level": 1,
-        "Current XP": 0
+        "Current XP": 0,
+        "Spendable XP": 0
     })
 
 ### "FAMILY" collection.
@@ -145,7 +146,8 @@ def add_current_xp(email: str, user: str, amount: int):
     curr_xp = prog_ref.get().to_dict().get("Current XP")
     total_xp = need_xp + curr_xp
 
-    prog_ref.update({"Current XP": Increment(amount), 
+    prog_ref.update({"Current XP": Increment(amount),
+                     "Spendable XP": Increment(amount), 
                      "Needed XP": Increment(-(amount))})
     
     # Get updated value
@@ -179,12 +181,11 @@ def subtract_current_xp(email: str, user: str, reward_cost: int, reward_level: i
             "PROFILE").document(user).collection(
                 "PROGRESSION").document(user + " Prog.")
     
-    curr_xp = prog_ref.get().to_dict().get("Current XP")
+    curr_xp = prog_ref.get().to_dict().get("Spendable XP", 0)
     curr_lvl = prog_ref.get().to_dict().get("Current Level")
 
     if curr_xp >= reward_cost and curr_lvl >= reward_level:
-        prog_ref.update({"Current XP": Increment(-(reward_cost)),
-                         "Needed XP": Increment(reward_cost)})
+        prog_ref.update({"Spendable XP": Increment(-(reward_cost))})
         return True
     else:
         print("Not enough XP for reward.")

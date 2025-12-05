@@ -23,7 +23,8 @@ async def get_xp(member_id: str, email: str):
     return {
         "member_id": member_id,
         "current_xp": current_xp,
-        "goal_xp": goal_xp
+        "goal_xp": goal_xp,
+        "spendable_xp": data.get("Spendable XP", 0)
     }
 
 
@@ -37,6 +38,7 @@ async def update_xp(member_id: str, email: str = Form(), xp_earned: int = Form()
             "member_id": member_id,
             "current_xp": 0,
             "goal_xp": 1000,
+            "spendable_xp": 0
         }
 
     data = docs[0]
@@ -48,7 +50,8 @@ async def update_xp(member_id: str, email: str = Form(), xp_earned: int = Form()
         "member_id": member_id,
         "message": f"{member_id} earned {xp_earned} XP!",
         "current_xp": current_xp,
-        "goal_xp": goal_xp
+        "goal_xp": goal_xp,
+         "spendable_xp": data.get("Spendable XP", 0)
     }
 
 

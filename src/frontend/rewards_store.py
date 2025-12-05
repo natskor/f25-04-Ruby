@@ -35,17 +35,22 @@ def StorePage(page: ft.Page):
                 params={"email": email}
             ).json()
 
-            return xp_data["current_xp"], xp_data["goal_xp"], level_data["level"]
+            return xp_data.get("spendable_xp", 0), xp_data.get("goal_xp", 1000), level_data.get("level", 1)
         except:
             return 0, 1000, 1
 
-    user_current_xp, user_goal_xp, user_level = load_user_stats()
+    user_spendable_xp, user_goal_xp, user_level = load_user_stats()
     
     def load_rewards():
         response = requests.get("http://127.0.0.1:8000/rewards_store/rewards", params={"email": email, "profile": profile})
         return response.json()
     
     rewards = load_rewards()
+    
+    if isinstance(rewards, list):
+        rewards = [r for r in rewards if isinstance(r, dict)]
+    else:
+        rewards = []
     
     def claim_reward(reward_id):
         response = requests.post(f"http://127.0.0.1:8000/rewards_store/claim/{reward_id}", data={"email": email, "profile": profile})
@@ -79,7 +84,7 @@ def StorePage(page: ft.Page):
                     color="#cccbff",
                     text_align="center",
                     font_family="LibreBaskerville"),
-                ft.Text(f"{user_current_xp}",
+                ft.Text(f"{user_spendable_xp}",
                     color="#cccbff",
                     size=20,
                     text_align="center",
@@ -114,7 +119,7 @@ def StorePage(page: ft.Page):
         level_req = reward["level_unlock"]
         reward_id = reward["id"]
 
-        enough_xp = user_current_xp >= cost
+        enough_xp = user_spendable_xp >= cost
         meets_level = user_level >= level_req
         unlocked = enough_xp and meets_level
 
